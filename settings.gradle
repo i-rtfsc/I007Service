@@ -1,0 +1,27 @@
+def initLocalGradleEnvironment() {
+
+    Properties properties = new Properties()
+
+    File propertyFile = new File(rootDir.getAbsolutePath() + "/local.properties")
+    properties.load(propertyFile.newDataInputStream())
+
+    gradle.ext.sdkDir = properties.getProperty('sdk.dir')
+    gradle.ext.ndkDir = properties.getProperty('ndk.dir')
+    gradle.ext.localDir = properties.getProperty('local.dir')
+
+    gradle.ext.debugKeystore = properties.getProperty('debug.keystore')
+}
+
+def initVersion() {
+     gradle.ext.compileSdkVersion = 27
+     gradle.ext.targetVersion = 27
+     gradle.ext.minSdkVersion = 19
+     gradle.ext.supportVersion = '27.0.3'
+     gradle.ext.versionCode = 10
+     gradle.ext.versionName = '1.0.0'
+}
+
+initLocalGradleEnvironment()
+initVersion()
+
+include ':i007Service', ':app'

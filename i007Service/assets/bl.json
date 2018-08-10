@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "apps": [
+    {
+      "packageName": "com.fooview.android.fooview",
+      "subType": "null",
+      "type": "tools"
+    }
+  ]
+}
