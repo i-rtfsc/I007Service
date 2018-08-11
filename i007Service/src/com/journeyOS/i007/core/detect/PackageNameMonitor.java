@@ -23,6 +23,7 @@ import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.base.util.Singleton;
 import com.journeyOS.i007.core.I007Core;
 import com.journeyOS.i007.core.NotifyManager;
+import com.journeyOS.i007.data.AppInfo;
 import com.journeyOS.i007.database.App;
 import com.journeyOS.i007.database.DatabaseManager;
 
@@ -60,29 +61,35 @@ public class PackageNameMonitor extends Monitor {
         if (packageName == null) {
             return;
         }
+        notifyApp(packageName);
+    }
 
+    private void notifyApp(String packageName) {
         App app = DatabaseManager.getDefault().queryApp(packageName);
-        DebugUtils.d(TAG, "activityResumed() called with: queryApp = [" + app.toString() + "]");
+        AppInfo appInfo = new AppInfo();
+        appInfo.factorId = I007Manager.SCENE_FACTOR_APP;
+        appInfo.packageName = packageName;
         if (ALBUM.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_ALBUM, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_ALBUM;
         } else if (BROWSER.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_BROWSER, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_BROWSER;
         } else if (GAME.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_GAME, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_GAME;
         } else if (IM.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_IM, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_IM;
         } else if (MUSIC.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_MUSIC, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_MUSIC;
         } else if (NEWS.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_NEWS, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_NEWS;
         } else if (READER.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_READER, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_READER;
         } else if (VIDEO.equals(app.type)) {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_VIDEO, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_VIDEO;
         } else {
-            NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, I007Manager.SCENE_FACTOR_APP_STATE_DEFAULT, packageName);
+            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_DEFAULT;
         }
 
+        NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, appInfo);
     }
 
     @Override

@@ -52,24 +52,6 @@ public class Clients extends ClientsHelper {
         }
     }
 
-    public void dispatchFactorEvent(final long factors, final long state, final String packageName) {
-        Operation operation = new Operation() {
-            @Override
-            public void execute(II007Listener listener, int pid) throws RemoteException {
-                try {
-                    DebugUtils.i(TAG, "dispatch to " + pid + " ("
-                            + state
-                            + packageName
-                            + ")");
-                    listener.onSceneChanged(factors, state, packageName);
-                } catch (Throwable e) {
-                    DebugUtils.w(TAG, "Exception in dispatch factor event with appInfo!!!");
-                }
-            }
-        };
-        foreach(operation, factors);
-    }
-
     public void dispatchFactorEvent(final long factors, final String msg) {
         Operation operation = new Operation() {
             @Override

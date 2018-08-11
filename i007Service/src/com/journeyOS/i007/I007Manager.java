@@ -21,6 +21,7 @@ import android.os.RemoteException;
 import com.journeyOS.i007.base.util.AppUtils;
 import com.journeyOS.i007.core.I007Core;
 import com.journeyOS.i007.core.service.ServiceManagerNative;
+import com.journeyOS.i007.data.BatteryInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 import com.journeyOS.i007.interfaces.II007Register;
 import com.journeyOS.i007.interfaces.II007Service;
@@ -58,6 +59,7 @@ public class I007Manager {
 
 
     public static void registerListener(long factors, II007Listener listener) {
+
         II007Register register = ServiceManagerNative.getI007Register();
         if (register != null) {
             try {

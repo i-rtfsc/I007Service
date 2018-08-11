@@ -20,7 +20,7 @@ import android.os.Binder;
 import android.os.Message;
 
 import com.journeyOS.i007.base.util.Singleton;
-import com.journeyOS.i007.core.AppInfo;
+import com.journeyOS.i007.data.AppInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 import com.journeyOS.i007.task.TaskManager;
 import com.journeyOS.litetask.TaskScheduler;
@@ -30,8 +30,7 @@ public class ClientSession {
     private final Clients mClisnts;
 
     private static final int DELAYED_MILLIS = 0;
-    private static final int MSG_STATE = 1;
-    private static final int MSG_OBJ = 2;
+    private static final int MSG_OBJ = 1;
 
     private static final Singleton<ClientSession> gDefault = new Singleton<ClientSession>() {
         @Override
@@ -58,19 +57,11 @@ public class ClientSession {
         mClisnts.removeListener(listener);
     }
 
-    public void dispatchFactorEvent(final long factoryId, final long state, final String packageName) {
-        Message message = Message.obtain();
-        message.what = MSG_STATE;
-        AppInfo appInfo = new AppInfo(factoryId, state, packageName);
-        message.obj = appInfo;
-        TaskScheduler.getInstance().getHandler(TaskManager.HANDLER_CLIENT_SESSION).sendMessageDelayed(message, DELAYED_MILLIS);
-    }
-
     public void dispatchFactorEvent(final long factoryId, final String msg) {
         Message message = Message.obtain();
         message.what = MSG_OBJ;
-        AppInfo appInfo = new AppInfo(factoryId, 0, msg);
-        message.obj = appInfo;
+        MessagesInfo info = new MessagesInfo(factoryId, msg);
+        message.obj = info;
         TaskScheduler.getInstance().getHandler(TaskManager.HANDLER_CLIENT_SESSION).sendMessageDelayed(message, DELAYED_MILLIS);
     }
 
@@ -80,18 +71,23 @@ public class ClientSession {
                     @Override
                     public void handleMessage(Message msg) {
                         switch (msg.what) {
-                            case MSG_STATE:
-                                AppInfo appInfo = (AppInfo) msg.obj;
-                                if (appInfo != null)
-                                    mClisnts.dispatchFactorEvent(appInfo.factorId, appInfo.state, appInfo.packageName);
-                                break;
                             case MSG_OBJ:
-                                AppInfo obj = (AppInfo) msg.obj;
-                                mClisnts.dispatchFactorEvent(obj.factorId, obj.packageName);
+                                MessagesInfo obj = (MessagesInfo) msg.obj;
+                                mClisnts.dispatchFactorEvent(obj.factoryId, obj.msg);
                                 break;
                         }
                     }
                 }
         );
+    }
+
+    private static class MessagesInfo {
+        public long factoryId;
+        public String msg;
+
+        private MessagesInfo(long factoryId, String msg) {
+            this.factoryId = factoryId;
+            this.msg = msg;
+        }
     }
 }

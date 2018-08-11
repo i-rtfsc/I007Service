@@ -8,6 +8,9 @@ import android.view.View;
 
 import com.journeyOS.i007.I007Manager;
 import com.journeyOS.i007.I007Manager.FACTORY;
+import com.journeyOS.i007.base.util.JsonHelper;
+import com.journeyOS.i007.data.AppInfo;
+import com.journeyOS.i007.data.LcdInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 
 
@@ -46,32 +49,27 @@ public class MonitorActivity extends Activity {
 
         I007Manager.registerListener(factors, new II007Listener.Stub() {
             @Override
-            public void onSceneChanged(long factorId, long state, String packageName) throws RemoteException {
-                Log.d(TAG, "onSceneChanged() called with: factorId = [" + factorId + "], state = [" + state + "], packageName = [" + packageName + "]");
-
+            public void onSceneChangedJson(long factorId, String msg) throws RemoteException {
+                Log.d(TAG, "on scene changed factorId = [" + factorId + "], json msg = [" + msg + "]");
                 FACTORY factory = I007Manager.getFactory(factorId);
                 switch (factory) {
                     case APP:
-                        boolean isGameState = I007Manager.isGame(state);
-                        boolean isGame = I007Manager.isGame(packageName);
-                        Log.d(TAG, "onSceneChanged() called with: isGameState = [" + isGameState + "], isGame = [" + isGame + "], packageName = [" + packageName + "]");
+                        AppInfo appInfo = JsonHelper.fromJson(msg, AppInfo.class);
+                        boolean isGameState = I007Manager.isGame(appInfo.state);
+                        Log.d(TAG, "on scene changed, is game by state = [" + isGameState + "], running packageName = [" + appInfo.packageName + "]");
                         break;
                     case LCD:
-                        if ((state & I007Manager.SCENE_FACTOR_LCD_STATE_ON) != 0) {
-                            Log.d(TAG, "onSceneChanged screen on");
-                        } else if ((state & I007Manager.SCENE_FACTOR_LCD_STATE_OFF) != 0) {
-                            Log.d(TAG, "onSceneChanged screen off");
+                        LcdInfo lcdInfo = JsonHelper.fromJson(msg, LcdInfo.class);
+                        boolean isGame = I007Manager.isGame(lcdInfo.packageName);
+                        Log.d(TAG, "on scene changed, is game by packageName = [" + isGame + "], running packageName = [" + lcdInfo.packageName + "]");
+                        if ((lcdInfo.state & I007Manager.SCENE_FACTOR_LCD_STATE_ON) != 0) {
+                            Log.d(TAG, "on scene changed, screen on");
+                        } else if ((lcdInfo.state & I007Manager.SCENE_FACTOR_LCD_STATE_OFF) != 0) {
+                            Log.d(TAG, "on scene changed, screen off");
                         }
                         break;
                 }
-
             }
-
-            @Override
-            public void onSceneChangedJson(long factorId, String msg) throws RemoteException {
-                Log.d(TAG, "onSceneChangedJson() called with: factorId = [" + factorId + "], msg = [" + msg + "]");
-            }
-
         });
     }
 

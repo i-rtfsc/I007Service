@@ -54,19 +54,6 @@ public class NotifyManager<T> {
         return 0;
     }
 
-    public int onFactorChanged(long factoryId, long state, String packageName) {
-        DebugUtils.d(TAG, "onFactorChanged() called with: factorId = [" + factoryId + "], state = [" + state + "], packageName = [" + packageName + "]");
-        synchronized (mLock) {
-            try {
-                ClientSession clientSession = ClientSession.getDefault();
-                clientSession.dispatchFactorEvent(factoryId, state, packageName);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return 0;
-    }
-
     public String getPackageName() {
         return sPackageName;
     }

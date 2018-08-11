@@ -10,6 +10,7 @@ import com.journeyOS.i007.I007Manager;
 import com.journeyOS.i007.base.util.Singleton;
 import com.journeyOS.i007.core.I007Core;
 import com.journeyOS.i007.core.NotifyManager;
+import com.journeyOS.i007.data.LcdInfo;
 
 public class LCDMonitor extends Monitor {
     private Context mContext;
@@ -58,7 +59,10 @@ public class LCDMonitor extends Monitor {
     }
 
     public void notifyLcd(long state) {
-        NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_LCD, state,
-                NotifyManager.getDefault().getPackageName());
+        LcdInfo lcdInfo = new LcdInfo();
+        lcdInfo.factorId = I007Manager.SCENE_FACTOR_LCD;
+        lcdInfo.state = state;
+        lcdInfo.packageName = NotifyManager.getDefault().getPackageName();
+        NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_LCD, lcdInfo);
     }
 }

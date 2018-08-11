@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007.core;
+package com.journeyOS.i007.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -22,31 +22,8 @@ import android.os.Parcelable;
 import com.journeyOS.i007.I007Manager;
 
 
-public class AppInfo implements Parcelable {
-    public long factorId;
+public class AppInfo extends BaseInfo implements Parcelable {
     public long state = I007Manager.SCENE_FACTOR_APP_STATE_DEFAULT;
-    public String packageName = "";
-
-    public AppInfo() {
-    }
-
-    public AppInfo(long factorId, long state, String packageName) {
-        this.factorId = factorId;
-        this.state = state;
-        this.packageName = packageName;
-    }
-
-    public AppInfo(AppInfo appInfo) {
-        this.factorId = appInfo.factorId;
-        this.state = appInfo.state;
-        this.packageName = appInfo.packageName;
-    }
-
-    protected AppInfo(Parcel in) {
-        this.factorId = in.readLong();
-        this.state = in.readLong();
-        this.packageName = in.readString();
-    }
 
     @Override
     public int describeContents() {
@@ -55,9 +32,20 @@ public class AppInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.factorId);
+        super.writeToParcel(dest, flags);
         dest.writeLong(this.state);
+        dest.writeLong(this.factorId);
         dest.writeString(this.packageName);
+    }
+
+    public AppInfo() {
+    }
+
+    protected AppInfo(Parcel in) {
+        super(in);
+        this.state = in.readLong();
+        this.factorId = in.readLong();
+        this.packageName = in.readString();
     }
 
     public static final Creator<AppInfo> CREATOR = new Creator<AppInfo>() {

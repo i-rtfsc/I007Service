@@ -5,7 +5,7 @@
 
 ## 引入
 ```java
-implementation 'com.journeyOS:i007Service:1.0.0'
+implementation 'com.journeyOS:i007Service:1.1.0'
 ```
 > 依赖
 ```java
@@ -34,35 +34,29 @@ final long factors = I007Manager.SCENE_FACTOR_APP | I007Manager.SCENE_FACTOR_LCD
 
 I007Manager.registerListener(factors, new II007Listener.Stub() {
     @Override
-    public void onSceneChanged(long factorId, long state, String packageName) throws RemoteException {
-        
-
+    public void onSceneChangedJson(long factorId, String msg) throws RemoteException {
+        Log.d(TAG, "on scene changed factorId = [" + factorId + "], json msg = [" + msg + "]");
         FACTORY factory = I007Manager.getFactory(factorId);
         switch (factory) {
             case APP:
-                boolean isGameState = I007Manager.isGame(state);
-                Log.d(TAG, "on scene changed, is game by state = [" + isGameState + "], running packageName = [" + packageName + "]");
+                AppInfo appInfo = JsonHelper.fromJson(msg, AppInfo.class);
+                boolean isGameState = I007Manager.isGame(appInfo.state);
+                Log.d(TAG, "on scene changed, is game by state = [" + isGameState + "], running packageName = [" + appInfo.packageName + "]");
                 break;
             case LCD:
-                boolean isGame = I007Manager.isGame(packageName);
-                Log.d(TAG, "on scene changed, is game by packageName = [" + isGame + "], running packageName = [" + packageName + "]");
-                if ((state & I007Manager.SCENE_FACTOR_LCD_STATE_ON) != 0) {
+                LcdInfo lcdInfo = JsonHelper.fromJson(msg, LcdInfo.class);
+                boolean isGame = I007Manager.isGame(lcdInfo.packageName);
+                Log.d(TAG, "on scene changed, is game by packageName = [" + isGame + "], running packageName = [" + lcdInfo.packageName + "]");
+                if ((lcdInfo.state & I007Manager.SCENE_FACTOR_LCD_STATE_ON) != 0) {
                     Log.d(TAG, "on scene changed, screen on");
-                } else if ((state & I007Manager.SCENE_FACTOR_LCD_STATE_OFF) != 0) {
+                } else if ((lcdInfo.state & I007Manager.SCENE_FACTOR_LCD_STATE_OFF) != 0) {
                     Log.d(TAG, "on scene changed, screen off");
                 }
                 break;
         }
-
     }
-
-    @Override
-    public void onSceneChangedJson(long factorId, String msg) throws RemoteException {
-    }
-
 });
 ```
 - factors：场景因子，在注册时把需要关心的场景传过去。如上诉代码（factors = I007Manager.SCENE_FACTOR_APP | I007Manager.SCENE_FACTOR_LCD）则表示监听app变化以及屏幕亮灭的变化
 - factorId：回传回来的场景因子
-- state：回传回来的状态
-- packageName：当前运行的程序包名
+- msg：回传回来的是json，解析如例子中所示
