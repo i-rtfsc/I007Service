@@ -19,6 +19,7 @@ package com.journeyOS.i007.core.detect;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.journeyOS.i007.I007Manager;
 import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.core.NotifyManager;
 import com.journeyOS.i007.database.DatabaseManager;
@@ -32,6 +33,7 @@ public class ActivityService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
 //        DebugUtils.d(TAG, "onAccessibilityEvent() called with: event = [" + event + "]");
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            I007Manager.keepAlive(this);
             String packageName = event.getPackageName().toString();
             DebugUtils.d(TAG, "on activiy lister, current package name = " + packageName);
             if (packageName == null) return;

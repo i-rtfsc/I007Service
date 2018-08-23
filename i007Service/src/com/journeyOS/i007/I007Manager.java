@@ -16,19 +16,24 @@
 
 package com.journeyOS.i007;
 
+import android.content.Context;
 import android.os.RemoteException;
 
 import com.journeyOS.i007.base.util.AppUtils;
+import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.core.I007Core;
+import com.journeyOS.i007.core.daemon.DaemonService;
 import com.journeyOS.i007.core.service.ServiceManagerNative;
 import com.journeyOS.i007.data.BatteryInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 import com.journeyOS.i007.interfaces.II007Register;
 import com.journeyOS.i007.interfaces.II007Service;
+import com.journeyOS.litetask.TaskScheduler;
 
 
 public class I007Manager {
     private static final String TAG = I007Manager.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     //////////////////// factoryId ////////////////////
     public static final long SCENE_FACTOR_APP = 1 << 1;
@@ -59,7 +64,6 @@ public class I007Manager {
 
 
     public static void registerListener(long factors, II007Listener listener) {
-
         II007Register register = ServiceManagerNative.getI007Register();
         if (register != null) {
             try {
@@ -109,6 +113,23 @@ public class I007Manager {
 
     public static void openSettingsAccessibilityService() {
         AppUtils.openSettingsAccessibilityService(I007Core.getCore().getContext());
+    }
+
+    public static void keepAlive(final Context context) {
+        boolean isSR = AppUtils.isServiceRunning(context, "com.journeyOS.i007.core.daemon.DaemonService");
+        if (DEBUG) DebugUtils.d(TAG, "is daemon service running = "+isSR);
+        if (!isSR) {
+            TaskScheduler.getInstance().getMainHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ServiceManagerNative.running(context);
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     public static FACTORY getFactory(long factorId) {

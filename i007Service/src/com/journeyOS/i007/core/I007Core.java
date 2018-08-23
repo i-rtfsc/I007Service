@@ -16,10 +16,10 @@
 
 package com.journeyOS.i007.core;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Looper;
 
+import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.base.util.Singleton;
 import com.journeyOS.i007.config.AppConfig;
 import com.journeyOS.i007.core.detect.MonitorManager;
@@ -28,9 +28,10 @@ import com.journeyOS.i007.core.service.ServiceManagerNative;
 
 public class I007Core {
     private static final String TAG = I007Core.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     private boolean mIsRunning = false;
-    private Application mContext;
+    private Context mContext;
 
     private static final Singleton<I007Core> gDefault = new Singleton<I007Core>() {
         @Override
@@ -46,7 +47,7 @@ public class I007Core {
         return gDefault.get();
     }
 
-    public void running(Application context) throws Throwable {
+    public void running(Context context) throws Throwable {
         if (!mIsRunning) {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 throw new IllegalStateException("I007Core.running() must called in main thread!");
@@ -60,11 +61,8 @@ public class I007Core {
     }
 
     public boolean isRunning() {
+        if (DEBUG) DebugUtils.d(TAG, "is i007 service running = "+mIsRunning);
         return mIsRunning;
-    }
-
-    public Application getApplication() {
-        return mContext;
     }
 
     public Context getContext() {

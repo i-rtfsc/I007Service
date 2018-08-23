@@ -16,10 +16,14 @@
 
 package com.journeyOS.i007.core;
 
+import android.util.ArrayMap;
+
 import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.base.util.JsonHelper;
 import com.journeyOS.i007.base.util.Singleton;
 import com.journeyOS.i007.core.clients.ClientSession;
+
+import java.util.Map;
 
 
 public class NotifyManager<T> {
@@ -47,6 +51,12 @@ public class NotifyManager<T> {
             try {
                 ClientSession clientSession = ClientSession.getDefault();
                 clientSession.dispatchFactorEvent(factoryId, JsonHelper.toJson(data));
+                if (mMapListener != null) {
+                    NotifyListener listener = mMapListener.get(factoryId);
+                    if (listener != null) {
+                        listener.onFactorChanged(factoryId, data);
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -60,5 +70,16 @@ public class NotifyManager<T> {
 
     public void setPackageName(String packageName) {
         this.sPackageName = packageName;
+    }
+
+
+    private Map<Long, NotifyListener> mMapListener = new ArrayMap<>();
+
+    public void setOnNotifyListener(long factoryId, NotifyListener listener) {
+        mMapListener.put(factoryId, listener);
+    }
+
+    public interface NotifyListener<T> {
+        void onFactorChanged(long factoryId, T data);
     }
 }

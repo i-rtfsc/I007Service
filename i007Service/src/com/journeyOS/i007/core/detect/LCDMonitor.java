@@ -52,8 +52,10 @@ public class LCDMonitor extends Monitor {
             action = intent.getAction();
             if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 notifyLcd(I007Manager.SCENE_FACTOR_LCD_STATE_ON);
+                //DaemonActivity.keepAlive(context);
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 notifyLcd(I007Manager.SCENE_FACTOR_LCD_STATE_OFF);
+                I007Manager.keepAlive(context);
             }
         }
     }

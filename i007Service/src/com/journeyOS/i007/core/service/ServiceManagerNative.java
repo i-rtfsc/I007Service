@@ -17,6 +17,7 @@
 package com.journeyOS.i007.core.service;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -35,7 +36,7 @@ public class ServiceManagerNative {
     private static II007Register m007Register = null;
     private static II007Service m007Service = null;
 
-    public static void running(Application context) {
+    public static void running(Context context) {
         DaemonService.running(context);
     }
 
@@ -45,7 +46,7 @@ public class ServiceManagerNative {
             public void binderDied() {
                 binder.unlinkToDeath(this, 0);
                 DebugUtils.e(TAG, "Ops, the server has crashed.");
-                android.os.Process.killProcess(android.os.Process.myPid());
+//                android.os.Process.killProcess(android.os.Process.myPid());
             }
         };
         try {

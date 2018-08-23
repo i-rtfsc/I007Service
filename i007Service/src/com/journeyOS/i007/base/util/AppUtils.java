@@ -16,10 +16,13 @@
 
 package com.journeyOS.i007.base.util;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.text.TextUtils;
+
+import java.util.List;
 
 
 public class AppUtils {
@@ -114,5 +117,25 @@ public class AppUtils {
         }
 
         return found;
+    }
+
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getClass().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isServiceRunning(Context context, String serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

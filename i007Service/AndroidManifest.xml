@@ -17,8 +17,9 @@
 
         <service
             android:name=".core.daemon.DaemonService"
+            android:enabled="true"
             android:exported="true"
-            android:process=":host"
+            android:process="com.journeyOS.i007.service"
             tools:ignore="ExportedService" />
 
         <service
