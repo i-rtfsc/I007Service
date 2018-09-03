@@ -33,7 +33,6 @@ public class DatabaseManager {
 
     private Object mLock = new Object();
     private LruCache<String, App> mCacheApps = new LruCache<String, App>(1500);
-    private LruCache<String, App> mBlCacheApps = new LruCache<String, App>(10);
 
     private static final Singleton<DatabaseManager> gDefault = new Singleton<DatabaseManager>() {
         @Override
@@ -119,17 +118,7 @@ public class DatabaseManager {
             return false;
         }
 
-        App app = null;
-//        synchronized (mLock) {
-//            app = mBlCacheApps.get(packageName);
-//        }
-//
-//        if (app != null) {
-//            return packageName.equals(app.packageName);
-//        } else {
-            app = DBOperate.getDefault().queryApp(DBConfig.BL_APPS_URL, packageName);
-//            mBlCacheApps.put(packageName, app);
-            return packageName.equals(app.packageName);
-//        }
+        App app = DBOperate.getDefault().queryApp(DBConfig.BL_APPS_URL, packageName);
+        return packageName.equals(app.packageName);
     }
 }

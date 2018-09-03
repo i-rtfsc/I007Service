@@ -20,7 +20,6 @@ import android.os.Binder;
 import android.os.Message;
 
 import com.journeyOS.i007.base.util.Singleton;
-import com.journeyOS.i007.data.AppInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 import com.journeyOS.i007.task.TaskManager;
 import com.journeyOS.litetask.TaskScheduler;
@@ -57,10 +56,10 @@ public class ClientSession {
         mClisnts.removeListener(listener);
     }
 
-    public void dispatchFactorEvent(final long factoryId, final String msg) {
+    public void dispatchFactorEvent(final long factoryId, final String state, final String packageName) {
         Message message = Message.obtain();
         message.what = MSG_OBJ;
-        MessagesInfo info = new MessagesInfo(factoryId, msg);
+        MessagesInfo info = new MessagesInfo(factoryId, state, packageName);
         message.obj = info;
         TaskScheduler.getInstance().getHandler(TaskManager.HANDLER_CLIENT_SESSION).sendMessageDelayed(message, DELAYED_MILLIS);
     }
@@ -73,7 +72,7 @@ public class ClientSession {
                         switch (msg.what) {
                             case MSG_OBJ:
                                 MessagesInfo obj = (MessagesInfo) msg.obj;
-                                mClisnts.dispatchFactorEvent(obj.factoryId, obj.msg);
+                                mClisnts.dispatchFactorEvent(obj.factoryId, obj.state, obj.packageName);
                                 break;
                         }
                     }
@@ -83,11 +82,13 @@ public class ClientSession {
 
     private static class MessagesInfo {
         public long factoryId;
-        public String msg;
+        public String state;
+        public String packageName;
 
-        private MessagesInfo(long factoryId, String msg) {
+        private MessagesInfo(long factoryId, String state, String packageName) {
             this.factoryId = factoryId;
-            this.msg = msg;
+            this.state = state;
+            this.packageName = packageName;
         }
     }
 }

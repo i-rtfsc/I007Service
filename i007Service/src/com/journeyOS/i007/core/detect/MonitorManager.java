@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 
 public class MonitorManager {
-
     private static final String TAG = MonitorManager.class.getSimpleName();
 
     private static final MonitorManager sInstance = new MonitorManager();
@@ -63,7 +62,9 @@ public class MonitorManager {
     public void init(Context context) {
         addMonitor(PackageNameMonitor.getDefault());
         addMonitor(LCDMonitor.getDefault());
-
+        addMonitor(NetworkMonitor.getDefault());
+        addMonitor(HeadSetMonitor.getDefault());
+        addMonitor(BatteryMonitor.getDefault());
         startMonitors();
     }
 }

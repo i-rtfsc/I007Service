@@ -19,16 +19,19 @@ package com.journeyOS.i007;
 import android.content.Context;
 import android.os.RemoteException;
 
+import com.journeyOS.i007.DataResource.APP;
 import com.journeyOS.i007.base.util.AppUtils;
 import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.core.I007Core;
-import com.journeyOS.i007.core.daemon.DaemonService;
+import com.journeyOS.i007.core.SceneUtils;
 import com.journeyOS.i007.core.service.ServiceManagerNative;
-import com.journeyOS.i007.data.BatteryInfo;
 import com.journeyOS.i007.interfaces.II007Listener;
 import com.journeyOS.i007.interfaces.II007Register;
 import com.journeyOS.i007.interfaces.II007Service;
 import com.journeyOS.litetask.TaskScheduler;
+
+import static com.journeyOS.i007.DataResource.FACTORY;
+import static com.journeyOS.i007.DataResource.NetWork;
 
 
 public class I007Manager {
@@ -38,29 +41,38 @@ public class I007Manager {
     //////////////////// factoryId ////////////////////
     public static final long SCENE_FACTOR_APP = 1 << 1;
     public static final long SCENE_FACTOR_LCD = 1 << 2;
+    public static final long SCENE_FACTOR_NET = 1 << 3;
+    public static final long SCENE_FACTOR_HEADSET = 1 << 4;
+    public static final long SCENE_FACTOR_BATTERY = 1 << 5;
 
-    /////////////////////////// app type ///////////////////////////
-    public static final long SCENE_FACTOR_APP_STATE_DEFAULT = 1 << 1;
-    public static final long SCENE_FACTOR_APP_STATE_ALBUM = 1 << 2;
-    public static final long SCENE_FACTOR_APP_STATE_BROWSER = 1 << 3;
-    public static final long SCENE_FACTOR_APP_STATE_GAME = 1 << 4;
-    public static final long SCENE_FACTOR_APP_STATE_IM = 1 << 5;
-    public static final long SCENE_FACTOR_APP_STATE_MUSIC = 1 << 6;
-    public static final long SCENE_FACTOR_APP_STATE_NEWS = 1 << 7;
-    public static final long SCENE_FACTOR_APP_STATE_READER = 1 << 8;
-    public static final long SCENE_FACTOR_APP_STATE_VIDEO = 1 << 9;
-    /////////////////////////// app type ///////////////////////////
-
-    //////////////////////// lcd state ////////////////////////
+    public static final String SCENE_APP_STATE_DEFAULT = "D";
+    public static final String SCENE_APP_STATE_ALBUM = "A";
+    public static final String SCENE_APP_STATE_BROWSER = "B";
+    public static final String SCENE_APP_STATE_GAME = "G";
+    public static final String SCENE_APP_STATE_IM = "I";
+    public static final String SCENE_APP_STATE_MUSIC = "M";
+    public static final String SCENE_APP_STATE_NEWS = "N";
+    public static final String SCENE_APP_STATE_READER = "R";
+    public static final String SCENE_APP_STATE_VIDEO = "V";
     /**
      * when the device wakes up and becomes interactive
      */
-    public static final long SCENE_FACTOR_LCD_STATE_ON = 1 << 1;
+    public static final String SCENE_LCD_STATE_ON = "L";
     /**
      * when the device goes to sleep and becomes non-interactive
      */
-    public static final long SCENE_FACTOR_LCD_STATE_OFF = 1 << 2;
-    //////////////////////// lcd state ////////////////////////
+    public static final String SCENE_LCD_STATE_OFF = "X";
+
+    public static final String SCENE_NET_STATE_ON = "N";
+    public static final String SCENE_NET_STATE_OFF = "X";
+    public static final String SCENE_NET_STATE_TYPE_WIFI = "W";
+    public static final String SCENE_NET_STATE_TYPE_4G = "4";
+    public static final String SCENE_NET_STATE_TYPE_3G = "3";
+    public static final String SCENE_NET_STATE_TYPE_2G = "2";
+    public static final String SCENE_NET_STATE_TYPE_UNKNOWN = "U";
+
+    public static final String SCENE_HEADSET_STATE_ON = "E";
+    public static final String SCENE_HEADSET_STATE_OFF = "X";
 
 
     public static void registerListener(long factors, II007Listener listener) {
@@ -86,6 +98,7 @@ public class I007Manager {
     }
 
     public static boolean isGame(String packageName) {
+        if (packageName == null) return false;
         II007Service service = ServiceManagerNative.getI007Service();
         if (service != null) {
             try {
@@ -97,27 +110,9 @@ public class I007Manager {
         return false;
     }
 
-    public static boolean isGame(long state) {
-        boolean isGame = (state & SCENE_FACTOR_APP_STATE_GAME) != 0;
-        return isGame;
-    }
-
-    @Deprecated
-    public static void autoEnableAccessibilityService() {
-        AppUtils.autoEnableAccessibilityService(I007Core.getCore().getContext());
-    }
-
-    public static boolean isServiceEnabled() {
-        return AppUtils.isServiceEnabled(I007Core.getCore().getContext());
-    }
-
-    public static void openSettingsAccessibilityService() {
-        AppUtils.openSettingsAccessibilityService(I007Core.getCore().getContext());
-    }
-
     public static void keepAlive(final Context context) {
         boolean isSR = AppUtils.isServiceRunning(context, "com.journeyOS.i007.core.daemon.DaemonService");
-        if (DEBUG) DebugUtils.d(TAG, "is daemon service running = "+isSR);
+        if (DEBUG) DebugUtils.d(TAG, "is daemon service running = " + isSR);
         if (!isSR) {
             TaskScheduler.getInstance().getMainHandler().post(new Runnable() {
                 @Override
@@ -137,19 +132,143 @@ public class I007Manager {
             return FACTORY.APP;
         } else if ((factorId & SCENE_FACTOR_LCD) != 0) {
             return FACTORY.LCD;
+        } else if ((factorId & SCENE_FACTOR_NET) != 0) {
+            return FACTORY.NET;
+        } else if ((factorId & SCENE_FACTOR_BATTERY) != 0) {
+            return FACTORY.BATTERY;
         }
         return FACTORY.APP;
     }
 
-    public enum FACTORY {//factoryId
-        APP(1),
-        LCD(2);
-
-        private int value;
-
-        private FACTORY(int value) {
-            this.value = value;
+    public static APP getApp(String status) {
+        if (SceneUtils.isAlbum(status)) {
+            return APP.ALBUM;
+        } else if (SceneUtils.isBrowser(status)) {
+            return APP.BROWSER;
+        } else if (SceneUtils.isGame(status)) {
+            return APP.GAME;
+        } else if (SceneUtils.isIM(status)) {
+            return APP.IM;
+        } else if (SceneUtils.isMusic(status)) {
+            return APP.MUSIC;
+        } else if (SceneUtils.isNews(status)) {
+            return APP.NEWS;
+        } else if (SceneUtils.isReader(status)) {
+            return APP.READER;
+        } else if (SceneUtils.isVideo(status)) {
+            return APP.VIDEO;
         }
+        return APP.DEFAULT;
     }
 
+    public static boolean isAlbum(String status) {
+        return SceneUtils.isAlbum(status);
+    }
+
+    public static boolean isBrowser(String status) {
+        return SceneUtils.isBrowser(status);
+    }
+
+    public static boolean isGame2(String status) {
+        return SceneUtils.isGame(status);
+    }
+
+    public static boolean isIM(String status) {
+        return SceneUtils.isIM(status);
+    }
+
+    public static boolean isMusic(String status) {
+        return SceneUtils.isMusic(status);
+    }
+
+    public static boolean isNews(String status) {
+        return SceneUtils.isNews(status);
+    }
+
+    public static boolean isReader(String status) {
+        return SceneUtils.isReader(status);
+    }
+
+    public static boolean isVideo(String status) {
+        return SceneUtils.isVideo(status);
+    }
+
+    public static boolean isScreenOn(String status) {
+        return SceneUtils.isScreenOn(status);
+    }
+
+    public static boolean isHeadSetPlug(String status) {
+        return SceneUtils.isHeadSetPlug(status);
+    }
+
+    public static boolean isNetAvailable(String status) {
+        return SceneUtils.isNetAvailable(status);
+    }
+
+    public static boolean isWifi(String status) {
+        return SceneUtils.isWifi(status);
+    }
+
+    public static boolean is4G(String status) {
+        return SceneUtils.is4G(status);
+    }
+
+    public static boolean is3G(String status) {
+        return SceneUtils.is3G(status);
+    }
+
+    public static boolean is2G(String status) {
+        return SceneUtils.is2G(status);
+    }
+
+    public static NetWork getNetWork(String status) {
+        if (SceneUtils.isNetAvailable(status)) {
+            if (SceneUtils.isWifi(status)) {
+                return NetWork.WIFI;
+            } else if (SceneUtils.is4G(status)) {
+                return NetWork.NET4G;
+            } else if (SceneUtils.is3G(status)) {
+                return NetWork.NET3G;
+            } else if (SceneUtils.is2G(status)) {
+                return NetWork.NET2G;
+            } else {
+                return NetWork.UNKNOWN;
+            }
+        }
+
+        return NetWork.DISCONNECTED;
+    }
+
+    public static int getBatteryStatus(String status) {
+        return SceneUtils.getBatteryStatus(status);
+    }
+
+    public static int getBatteryLevel(String status) {
+        return SceneUtils.getBatteryLevel(status);
+    }
+
+    public static int getBatteryHealth(String status) {
+        return SceneUtils.getBatteryHealth(status);
+    }
+
+    public static int getBatteryTemperature(String status) {
+        return SceneUtils.getBatteryTemperature(status);
+    }
+
+    public static int getBatteryPlugged(String status) {
+        return SceneUtils.getBatteryPlugged(status);
+    }
+
+    @Deprecated
+    public static void autoEnableAccessibilityService() {
+        AppUtils.autoEnableAccessibilityService(I007Core.getCore().getContext());
+    }
+
+    public static boolean isServiceEnabled() {
+        return AppUtils.isServiceEnabled(I007Core.getCore().getContext());
+    }
+
+    public static void openSettingsAccessibilityService() {
+        AppUtils.openSettingsAccessibilityService(I007Core.getCore().getContext());
+    }
 }

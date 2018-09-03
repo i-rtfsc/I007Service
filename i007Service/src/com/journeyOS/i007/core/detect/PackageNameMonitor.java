@@ -23,9 +23,6 @@ import com.journeyOS.i007.base.util.DebugUtils;
 import com.journeyOS.i007.base.util.Singleton;
 import com.journeyOS.i007.core.I007Core;
 import com.journeyOS.i007.core.NotifyManager;
-import com.journeyOS.i007.data.AppInfo;
-import com.journeyOS.i007.database.App;
-import com.journeyOS.i007.database.DatabaseManager;
 
 
 public class PackageNameMonitor extends Monitor {
@@ -61,35 +58,7 @@ public class PackageNameMonitor extends Monitor {
         if (packageName == null) {
             return;
         }
-        notifyApp(packageName);
-    }
-
-    private void notifyApp(String packageName) {
-        App app = DatabaseManager.getDefault().queryApp(packageName);
-        AppInfo appInfo = new AppInfo();
-        appInfo.factorId = I007Manager.SCENE_FACTOR_APP;
-        appInfo.packageName = packageName;
-        if (ALBUM.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_ALBUM;
-        } else if (BROWSER.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_BROWSER;
-        } else if (GAME.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_GAME;
-        } else if (IM.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_IM;
-        } else if (MUSIC.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_MUSIC;
-        } else if (NEWS.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_NEWS;
-        } else if (READER.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_READER;
-        } else if (VIDEO.equals(app.type)) {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_VIDEO;
-        } else {
-            appInfo.state = I007Manager.SCENE_FACTOR_APP_STATE_DEFAULT;
-        }
-
-        NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, appInfo);
+        NotifyManager.getDefault().onFactorChanged(I007Manager.SCENE_FACTOR_APP, packageName);
     }
 
     @Override
