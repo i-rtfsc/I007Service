@@ -52,7 +52,7 @@ public class Clients extends ClientsHelper {
         }
     }
 
-    public void dispatchFactorEvent(final long factors, final String state, final String packageName) {
+    public synchronized void dispatchFactorEvent(final long factors, final String state, final String packageName) {
         Operation operation = new Operation() {
             @Override
             public void execute(II007Listener listener, int pid) throws RemoteException {

@@ -56,7 +56,7 @@ public class ClientSession {
         mClisnts.removeListener(listener);
     }
 
-    public void dispatchFactorEvent(final long factoryId, final String state, final String packageName) {
+    public synchronized void dispatchFactorEvent(final long factoryId, final String state, final String packageName) {
         Message message = Message.obtain();
         message.what = MSG_OBJ;
         MessagesInfo info = new MessagesInfo(factoryId, state, packageName);
