@@ -6,13 +6,17 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
-import com.journeyOS.i007.DataResource.FACTORY;
-import com.journeyOS.i007.I007Manager;
-import com.journeyOS.i007.interfaces.II007Listener;
+import com.journeyOS.i007Service.DataResource.FACTORY;
+import com.journeyOS.i007Service.I007Manager;
+import com.journeyOS.i007Service.hook.HookManager;
+import com.journeyOS.i007Service.hook.listeners.MethodInvokeListener;
+import com.journeyOS.i007Service.interfaces.II007Listener;
+
+import java.lang.reflect.Method;
 
 
 public class MonitorActivity extends Activity {
-    private static final String TAG = "Monitor";
+    private static final String TAG = "Solo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,27 @@ public class MonitorActivity extends Activity {
             @Override
             public void onClick(View view) {
                 listener();
+            }
+        });
+
+        findViewById(R.id.hookAMS).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hookAMS();
+            }
+        });
+
+        findViewById(R.id.hookInputMethod).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hookInputMethod();
+            }
+        });
+
+        findViewById(R.id.hookClipboard).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hookClipboard();
             }
         });
     }
@@ -82,7 +107,47 @@ public class MonitorActivity extends Activity {
                 }
             }
         });
-
     }
 
+    private void hookAMS() {
+        HookManager.hookActivityManager(new MethodInvokeListener() {
+            @Override
+            public Object[] invoke(Object obj, Method method, Object[] args) {
+                return args;
+            }
+
+            @Override
+            public void onMethod(Object obj, Method method, Object result) {
+                Log.d(TAG, "onMethod(Hook AMS) called with: obj = [" + obj + "], method = [" + method + "], result = [" + result + "]");
+            }
+        });
+    }
+
+    private void hookInputMethod() {
+        HookManager.hookInputMethodManager(new MethodInvokeListener() {
+            @Override
+            public Object[] invoke(Object obj, Method method, Object[] args) {
+                return args;
+            }
+
+            @Override
+            public void onMethod(Object obj, Method method, Object result) {
+                Log.d(TAG, "onMethod(Hook InputMethod) called with: obj = [" + obj + "], method = [" + method + "], result = [" + result + "]");
+            }
+        });
+    }
+
+    private void hookClipboard() {
+        HookManager.hookClipboardManager(new MethodInvokeListener() {
+            @Override
+            public Object[] invoke(Object obj, Method method, Object[] args) {
+                return args;
+            }
+
+            @Override
+            public void onMethod(Object obj, Method method, Object result) {
+                Log.d(TAG, "onMethod(Hook Clipboard) called with: obj = [" + obj + "], method = [" + method + "], result = [" + result + "]");
+            }
+        });
+    }
 }

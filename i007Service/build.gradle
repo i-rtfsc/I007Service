@@ -3,14 +3,13 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 android {
-    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
-    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion gradle.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)
-        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
-        versionCode Integer.parseInt(project.ANDROID_BUILD_VERSION_CODE)
-        versionName project.ANDROID_BUILD_VERSION_NAME
+        minSdkVersion gradle.minSdkVersion
+        targetSdkVersion gradle.targetVersion
+        versionCode gradle.versionCode
+        versionName gradle.versionName
     }
 
     buildTypes {
@@ -44,8 +43,21 @@ android {
 dependencies {
     implementation "com.google.code.gson:gson:2.8.1"
     implementation 'com.journeyOS:liteprovider:1.0.0'
-    implementation 'com.journeyOS:litetask:1.0.5'
 }
+
+
+task deleteJar(type: Delete) {
+    delete 'libs/jars/i007Service.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('libs/jars/')
+    include('classes.jar')
+    rename('classes.jar', 'i007Service.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -66,7 +78,7 @@ artifacts {
 }
 
 group = "com.journeyOS"
-version = "1.2.0"
+version = "1.3.0"
 
 def siteUrl = 'https://github.com/journeyOS/I007Service'
 def gitUrl = 'git@github.com:journeyOS/I007Service.git'

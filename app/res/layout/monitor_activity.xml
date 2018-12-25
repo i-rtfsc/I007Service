@@ -4,20 +4,40 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <EditText
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name" />
+        android:layout_marginTop="12dp"
+        android:hint="Click to show input method" />
 
     <Button
         android:id="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="授权"/>
+        android:text="授权" />
 
     <Button
         android:id="@+id/listener"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="注册监听"/>
+        android:text="注册监听 I007Service" />
+
+    <Button
+        android:id="@+id/hookAMS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hook AMS" />
+
+    <Button
+        android:id="@+id/hookInputMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hook InputMethod" />
+
+    <Button
+        android:id="@+id/hookClipboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hook Clipboard" />
+
 </LinearLayout>

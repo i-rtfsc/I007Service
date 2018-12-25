@@ -1,9 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.journeyOS.i007">
+    package="com.journeyOS.i007Service">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,7 +13,7 @@
 
         <provider
             android:name=".database.I007Provider"
-            android:authorities="com.journeyOS.i007"
+            android:authorities="com.journeyOS.i007Service"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
@@ -22,7 +21,7 @@
             android:name=".core.daemon.DaemonService"
             android:enabled="true"
             android:exported="true"
-            android:process="com.journeyOS.i007.service"
+            android:process="com.journeyOS.i007Service"
             tools:ignore="ExportedService" />
 
         <service

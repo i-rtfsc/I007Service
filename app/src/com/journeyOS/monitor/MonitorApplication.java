@@ -4,7 +4,8 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.journeyOS.i007.core.I007Core;
+import com.journeyOS.i007Service.core.I007Core;
+import com.journeyOS.i007Service.hook.HookManager;
 
 public class MonitorApplication extends Application {
     private Application mApplication;
@@ -12,16 +13,8 @@ public class MonitorApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mApplication = this;
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    I007Core.getCore().running(mApplication);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
-        });
+
+        I007Core.getCore().running(mApplication);
+        HookManager.applyHooks(mApplication);
     }
 }
