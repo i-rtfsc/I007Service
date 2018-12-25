@@ -16,10 +16,10 @@
 
 package com.journeyOS.i007Service.database;
 
+import com.journeyOS.liteprovider.Column;
+import com.journeyOS.liteprovider.LiteProvider;
+import com.journeyOS.liteprovider.Table;
 
-import com.journeyOS.i007Service.liteprovider.Column;
-import com.journeyOS.i007Service.liteprovider.LiteProvider;
-import com.journeyOS.i007Service.liteprovider.Table;
 
 public class I007Provider extends LiteProvider {
     @Override
