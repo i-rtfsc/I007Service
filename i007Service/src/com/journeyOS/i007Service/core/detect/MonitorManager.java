@@ -58,7 +58,7 @@ public class MonitorManager {
     }
 
     public void init() {
-        addMonitor(PackageNameMonitor.getDefault());
+        addMonitor(AccessibilityMonitor.getDefault());
         addMonitor(LCDMonitor.getDefault());
         addMonitor(NetworkMonitor.getDefault());
         addMonitor(HeadSetMonitor.getDefault());

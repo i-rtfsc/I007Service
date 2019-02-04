@@ -24,14 +24,14 @@ import static com.journeyOS.i007Service.core.NotifyManager.POS_THIRD;
 import static com.journeyOS.i007Service.core.NotifyManager.POS_THIRD_BATTERY_PLUGGED;
 import static com.journeyOS.i007Service.core.NotifyManager.POS_THIRD_BATTERY_TEMPERATURE_END;
 import static com.journeyOS.i007Service.core.NotifyManager.POS_THIRD_BATTERY_TEMPERATURE_START;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.ALBUM;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.BROWSER;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.GAME;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.IM;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.MUSIC;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.NEWS;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.READER;
-import static com.journeyOS.i007Service.core.detect.PackageNameMonitor.VIDEO;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.ALBUM;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.BROWSER;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.GAME;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.IM;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.MUSIC;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.NEWS;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.READER;
+import static com.journeyOS.i007Service.core.detect.AccessibilityMonitor.VIDEO;
 
 public class SceneUtils {
     public static final String SEPARATOR = "-";

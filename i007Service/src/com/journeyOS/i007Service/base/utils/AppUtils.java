@@ -25,7 +25,7 @@ import android.text.TextUtils;
 
 public class AppUtils {
     private static final String TAG = AppUtils.class.getSimpleName();
-    private static final String ACCESSIBILITY_SERVICES = "com.journeyOS.i007/com.journeyOS.i007.detect.ActivityService";
+    private static final String ACCESSIBILITY_SERVICES = "com.journeyOS.i007Service.core.accessibility.AccessibilityService";
 
     //<uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     @Deprecated

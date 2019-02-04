@@ -114,6 +114,10 @@ public class NotifyManager<T> {
         return 0;
     }
 
+    public String getCurrentState() {
+        return sState;
+    }
+
     public String getPackageName() {
         return sPackageName;
     }

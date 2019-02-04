@@ -22,7 +22,7 @@ import android.text.TextUtils;
 
 import com.journeyOS.i007Service.base.constants.ServiceNameConstants;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
-import com.journeyOS.i007Service.core.detect.PackageNameMonitor;
+import com.journeyOS.i007Service.core.detect.AccessibilityMonitor;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
 import com.journeyOS.i007Service.database.App;
 import com.journeyOS.i007Service.database.DatabaseManager;
@@ -64,7 +64,7 @@ public class I007Service extends II007Service.Stub {
     @Override
     public boolean isGame(String packageName) throws RemoteException {
         App app = DatabaseManager.getDefault().queryApp(packageName);
-        if (PackageNameMonitor.GAME.equals(app.type)) {
+        if (AccessibilityMonitor.GAME.equals(app.type)) {
             return true;
         }
         return false;
@@ -76,7 +76,7 @@ public class I007Service extends II007Service.Stub {
             return false;
         }
 
-        return DatabaseManager.getDefault().addApp(packageName, PackageNameMonitor.GAME);
+        return DatabaseManager.getDefault().addApp(packageName, AccessibilityMonitor.GAME);
     }
 
     @Override

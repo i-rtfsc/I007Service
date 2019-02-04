@@ -22,6 +22,7 @@ import com.journeyOS.i007Service.DataResource.APP;
 import com.journeyOS.i007Service.base.utils.AppUtils;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.core.I007Core;
+import com.journeyOS.i007Service.core.NotifyManager;
 import com.journeyOS.i007Service.core.SceneUtils;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
 import com.journeyOS.i007Service.interfaces.II007Listener;
@@ -167,6 +168,15 @@ public class I007Manager {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 获取当前状态
+     *
+     * @return 当状态
+     */
+    public String getCurrentState() {
+        return NotifyManager.getDefault().getCurrentState();
     }
 
     /**
