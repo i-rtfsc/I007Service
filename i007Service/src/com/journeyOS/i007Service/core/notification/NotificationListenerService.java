@@ -18,17 +18,23 @@ package com.journeyOS.i007Service.core.notification;
 
 import android.service.notification.StatusBarNotification;
 
+import com.journeyOS.i007Service.core.ServiceLifecycleListener;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NotificationListenerService extends android.service.notification.NotificationListenerService {
 
     private CopyOnWriteArrayList<NotificationListener> mNotificationListeners = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<ServiceLifecycleListener> mLifecycleListeners = new CopyOnWriteArrayList<>();
     private static NotificationListenerService sInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        for (ServiceLifecycleListener listener : mLifecycleListeners) {
+            listener.onRunning();
+        }
     }
 
     public static NotificationListenerService getInstance() {
@@ -64,9 +70,21 @@ public class NotificationListenerService extends android.service.notification.No
         return mNotificationListeners.remove(listener);
     }
 
+
+    public void addLifecycleListener(ServiceLifecycleListener listener) {
+        mLifecycleListeners.add(listener);
+    }
+
+    public boolean removeLifecycleListener(ServiceLifecycleListener listener) {
+        return mLifecycleListeners.remove(listener);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        for (ServiceLifecycleListener listener : mLifecycleListeners) {
+            listener.onStoping();
+        }
         sInstance = null;
     }
 }

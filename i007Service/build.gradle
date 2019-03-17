@@ -78,7 +78,7 @@ artifacts {
 }
 
 group = "com.journeyOS"
-version = "1.5.0"
+version = "1.5.1"
 
 def siteUrl = 'https://github.com/journeyOS/I007Service'
 def gitUrl = 'git@github.com:journeyOS/I007Service.git'

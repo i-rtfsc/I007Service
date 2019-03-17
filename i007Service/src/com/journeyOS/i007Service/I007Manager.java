@@ -24,7 +24,10 @@ import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.core.I007Core;
 import com.journeyOS.i007Service.core.NotifyManager;
 import com.journeyOS.i007Service.core.SceneUtils;
+import com.journeyOS.i007Service.core.detect.AccessibilityMonitor;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
+import com.journeyOS.i007Service.database.App;
+import com.journeyOS.i007Service.database.DatabaseManager;
 import com.journeyOS.i007Service.interfaces.II007Listener;
 import com.journeyOS.i007Service.interfaces.II007Register;
 import com.journeyOS.i007Service.interfaces.II007Service;
@@ -262,6 +265,38 @@ public class I007Manager {
         } else if (SceneUtils.isReader(status)) {
             return APP.READER;
         } else if (SceneUtils.isVideo(status)) {
+            return APP.VIDEO;
+        }
+        return APP.DEFAULT;
+    }
+
+    /**
+     * 根据状态获取APP类型
+     *
+     * @param packageName 包名
+     * @return APP类型
+     */
+    public static APP getAppType(String packageName) {
+        App app = DatabaseManager.getDefault().queryApp(packageName);
+        if (app == null) {
+            return APP.DEFAULT;
+        }
+
+        if (AccessibilityMonitor.ALBUM.equals(app.type)) {
+            return APP.ALBUM;
+        } else if (AccessibilityMonitor.BROWSER.equals(app.type)) {
+            return APP.BROWSER;
+        } else if (AccessibilityMonitor.GAME.equals(app.type)) {
+            return APP.GAME;
+        } else if (AccessibilityMonitor.IM.equals(app.type)) {
+            return APP.IM;
+        } else if (AccessibilityMonitor.MUSIC.equals(app.type)) {
+            return APP.MUSIC;
+        } else if (AccessibilityMonitor.NEWS.equals(app.type)) {
+            return APP.NEWS;
+        } else if (AccessibilityMonitor.READER.equals(app.type)) {
+            return APP.READER;
+        } else if (AccessibilityMonitor.VIDEO.equals(app.type)) {
             return APP.VIDEO;
         }
         return APP.DEFAULT;

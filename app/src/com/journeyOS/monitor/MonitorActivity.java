@@ -81,7 +81,7 @@ public class MonitorActivity extends Activity {
                 switch (factory) {
                     case APP:
                         Log.d(TAG, "app has been changed, packageName = [" + packageName + "]" +
-                                ", app type = [" + I007Manager.getApp(status) + "]" +
+                                ", app type = [" + I007Manager.getAppType(packageName) + "]" +
                                 ", is game = [" + I007Manager.isGame2(status) + "]");
                         break;
                     case LCD:
