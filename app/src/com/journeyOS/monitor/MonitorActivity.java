@@ -1,5 +1,6 @@
 package com.journeyOS.monitor;
 
+import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -8,6 +9,7 @@ import android.view.View;
 
 import com.journeyOS.i007Service.DataResource.FACTORY;
 import com.journeyOS.i007Service.I007Manager;
+import com.journeyOS.i007Service.core.accessibility.AccessibilityManager;
 import com.journeyOS.i007Service.hook.HookManager;
 import com.journeyOS.i007Service.hook.listeners.MethodInvokeListener;
 import com.journeyOS.i007Service.interfaces.II007Listener;
@@ -55,6 +57,27 @@ public class MonitorActivity extends Activity {
             @Override
             public void onClick(View view) {
                 hookClipboard();
+            }
+        });
+
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AccessibilityManager.getDefault().performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
+            }
+        });
+
+        findViewById(R.id.home).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AccessibilityManager.getDefault().performGlobalAction(AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS);
+            }
+        });
+
+        findViewById(R.id.recents).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AccessibilityManager.getDefault().performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG);
             }
         });
     }
@@ -150,4 +173,5 @@ public class MonitorActivity extends Activity {
             }
         });
     }
+
 }

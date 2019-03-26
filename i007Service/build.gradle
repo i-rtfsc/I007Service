@@ -3,13 +3,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 android {
-    compileSdkVersion gradle.compileSdkVersion
+    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion gradle.minSdkVersion
-        targetSdkVersion gradle.targetVersion
-        versionCode gradle.versionCode
-        versionName gradle.versionName
+        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)
+        versionCode Integer.parseInt(project.ANDROID_BUILD_VERSION_CODE)
+        versionName project.ANDROID_BUILD_VERSION_NAME
     }
 
     buildTypes {
@@ -78,7 +79,7 @@ artifacts {
 }
 
 group = "com.journeyOS"
-version = "1.5.1"
+version = "1.5.1.001"
 
 def siteUrl = 'https://github.com/journeyOS/I007Service'
 def gitUrl = 'git@github.com:journeyOS/I007Service.git'
