@@ -49,17 +49,23 @@ public class NotificationListenerService extends android.service.notification.No
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         for (NotificationListener listener : mNotificationListeners) {
-            listener.onNotification(Notification.create(
+            listener.onNotification(sbn, Notification.create(
                     sbn.getNotification(), sbn.getPackageName()));
         }
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
+        for (NotificationListener listener : mNotificationListeners) {
+            listener.onNotificationRemoved(sbn, null);
+        }
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn, RankingMap rankingMap) {
+        for (NotificationListener listener : mNotificationListeners) {
+            listener.onNotificationRemoved(sbn, rankingMap);
+        }
     }
 
     public void addListener(NotificationListener listener) {

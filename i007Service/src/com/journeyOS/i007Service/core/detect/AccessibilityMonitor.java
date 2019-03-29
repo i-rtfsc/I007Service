@@ -17,6 +17,8 @@
 package com.journeyOS.i007Service.core.detect;
 
 import android.content.Context;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
 
 import com.journeyOS.i007Service.I007Manager;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
@@ -106,7 +108,12 @@ public class AccessibilityMonitor extends Monitor implements ActivityListener, N
     }
 
     @Override
-    public void onNotification(Notification notification) {
+    public void onNotification(StatusBarNotification sbn, Notification notification) {
         DebugUtils.d(TAG, "on notification lister, notification = [" + notification + "]");
+    }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn, NotificationListenerService.RankingMap rankingMap) {
+        DebugUtils.d(TAG, "on notification remove lister, notification = [" + sbn + "]");
     }
 }

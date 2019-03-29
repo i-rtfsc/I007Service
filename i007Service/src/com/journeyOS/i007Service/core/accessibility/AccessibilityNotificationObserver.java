@@ -17,6 +17,8 @@
 package com.journeyOS.i007Service.core.accessibility;
 
 import android.content.Context;
+import android.service.notification.NotificationListenerService.RankingMap;
+import android.service.notification.StatusBarNotification;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.journeyOS.i007Service.base.utils.DebugUtils;
@@ -111,7 +113,7 @@ public class AccessibilityNotificationObserver implements NotificationListener, 
         if (event.getParcelableData() instanceof Notification) {
             android.app.Notification notification = (android.app.Notification) event.getParcelableData();
             DebugUtils.d(TAG, "onNotification: " + notification + "; " + event);
-            onNotification(Notification.create(notification, event.getPackageName().toString()));
+            onNotification(null, Notification.create(notification, event.getPackageName().toString()));
         } else {
             List<CharSequence> list = event.getText();
             DebugUtils.d(TAG, "onNotification: " + list + "; " + event);
@@ -142,12 +144,23 @@ public class AccessibilityNotificationObserver implements NotificationListener, 
     }
 
     @Override
-    public void onNotification(Notification notification) {
+    public void onNotification(StatusBarNotification sbn, Notification notification) {
         for (NotificationListener listener : mNotificationListeners) {
             try {
-                listener.onNotification(notification);
+                listener.onNotification(sbn, notification);
             } catch (Exception e) {
                 DebugUtils.e(TAG, "Error onNotification: " + notification + " Listener: " + listener, e);
+            }
+        }
+    }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn, RankingMap rankingMap) {
+        for (NotificationListener listener : mNotificationListeners) {
+            try {
+                listener.onNotificationRemoved(sbn, rankingMap);
+            } catch (Exception e) {
+                DebugUtils.e(TAG, "Error onNotificationRemoved: " + sbn + " Listener: " + listener, e);
             }
         }
     }

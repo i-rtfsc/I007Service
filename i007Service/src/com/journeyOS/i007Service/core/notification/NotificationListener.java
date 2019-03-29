@@ -16,6 +16,11 @@
 
 package com.journeyOS.i007Service.core.notification;
 
+import android.service.notification.NotificationListenerService.RankingMap;
+import android.service.notification.StatusBarNotification;
+
 public interface NotificationListener {
-    void onNotification(Notification notification);
+    void onNotification(StatusBarNotification sbn, Notification notification);
+
+    void onNotificationRemoved(StatusBarNotification sbn, RankingMap rankingMap);
 }
