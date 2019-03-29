@@ -34,7 +34,8 @@ public class IIActivityManagerCompat {
 
     public static Object getObject() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         Field gDefaultField = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= 26) {
             Class<?> activityManager = Class.forName("android.app.ActivityManager");
             gDefaultField = activityManager.getDeclaredField("IActivityManagerSingleton");
         } else {

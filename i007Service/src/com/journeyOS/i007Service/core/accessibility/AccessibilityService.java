@@ -113,13 +113,13 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
         return mFastRootInActiveWindow;
     }
 
-    public static boolean disable() {
-        if (instance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            instance.disableSelf();
-            return true;
-        }
-        return false;
-    }
+//    public static boolean disable() {
+//        if (instance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            instance.disableSelf();
+//            return true;
+//        }
+//        return false;
+//    }
 
     public static boolean waitForEnabled(long timeOut) {
         if (instance != null)
