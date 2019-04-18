@@ -29,6 +29,7 @@ import com.journeyOS.i007Service.core.accessibility.AccessibilityInfoObserver;
 import com.journeyOS.i007Service.core.accessibility.AccessibilityNotificationObserver;
 import com.journeyOS.i007Service.core.accessibility.AccessibilityService;
 import com.journeyOS.i007Service.core.accessibility.ActivityListener;
+import com.journeyOS.i007Service.core.notification.MusicMetadata;
 import com.journeyOS.i007Service.core.notification.Notification;
 import com.journeyOS.i007Service.core.notification.NotificationListener;
 import com.journeyOS.i007Service.database.DatabaseManager;
@@ -115,5 +116,9 @@ public class AccessibilityMonitor extends Monitor implements ActivityListener, N
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn, NotificationListenerService.RankingMap rankingMap) {
         DebugUtils.d(TAG, "on notification remove lister, notification = [" + sbn + "]");
+    }
+
+    @Override
+    public void onMusicMetadataUpdate(MusicMetadata metadata) {
     }
 }

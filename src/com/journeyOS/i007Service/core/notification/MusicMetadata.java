@@ -16,13 +16,10 @@
 
 package com.journeyOS.i007Service.core.notification;
 
-import android.service.notification.NotificationListenerService.RankingMap;
-import android.service.notification.StatusBarNotification;
+import android.graphics.Bitmap;
 
-public interface NotificationListener {
-    void onNotification(StatusBarNotification sbn, Notification notification);
-
-    void onNotificationRemoved(StatusBarNotification sbn, RankingMap rankingMap);
-
-    void onMusicMetadataUpdate(MusicMetadata metadata);
+public class MusicMetadata {
+    public String singer;
+    public String title;
+    public Bitmap album;
 }

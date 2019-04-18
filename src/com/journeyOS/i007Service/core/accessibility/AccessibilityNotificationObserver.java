@@ -22,6 +22,7 @@ import android.service.notification.StatusBarNotification;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.journeyOS.i007Service.base.utils.DebugUtils;
+import com.journeyOS.i007Service.core.notification.MusicMetadata;
 import com.journeyOS.i007Service.core.notification.Notification;
 import com.journeyOS.i007Service.core.notification.NotificationListener;
 
@@ -163,5 +164,10 @@ public class AccessibilityNotificationObserver implements NotificationListener, 
                 DebugUtils.e(TAG, "Error onNotificationRemoved: " + sbn + " Listener: " + listener, e);
             }
         }
+    }
+
+    @Override
+    public void onMusicMetadataUpdate(MusicMetadata metadata) {
+
     }
 }
