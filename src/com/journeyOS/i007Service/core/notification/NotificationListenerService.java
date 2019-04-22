@@ -44,7 +44,8 @@ public class NotificationListenerService extends android.service.notification.No
         super.onCreate();
         sInstance = this;
         mAudioManager = (AudioManager) sInstance.getSystemService(Context.AUDIO_SERVICE);
-        registerRemoteController();
+//        部分用户因为没权限导致注册就crash，情况紧急先不调用
+//        registerRemoteController();
         for (ServiceLifecycleListener listener : mLifecycleListeners) {
             listener.onRunning();
         }
