@@ -32,7 +32,7 @@
             android:name=".core.daemon.DaemonService"
             android:enabled="true"
             android:exported="true"
-            android:process="com.journeyOS.i007Service"
+            android:process=":core"
             tools:ignore="ExportedService" />
 
         <service
