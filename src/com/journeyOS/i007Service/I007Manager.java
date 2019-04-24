@@ -24,6 +24,7 @@ import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.core.I007Core;
 import com.journeyOS.i007Service.core.NotifyManager;
 import com.journeyOS.i007Service.core.SceneUtils;
+import com.journeyOS.i007Service.core.daemon.AliveActivity;
 import com.journeyOS.i007Service.core.detect.AccessibilityMonitor;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
 import com.journeyOS.i007Service.database.App;
@@ -213,6 +214,7 @@ public class I007Manager {
                 @Override
                 public void run() {
                     try {
+//                        AliveActivity.navigationActivity(I007Core.getCore().getContext());
                         ServiceManagerNative.running();
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();

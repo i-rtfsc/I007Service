@@ -18,16 +18,20 @@ package com.journeyOS.i007Service.database;
 
 import android.net.Uri;
 
+import com.journeyOS.i007Service.core.I007Core;
+
 
 public class DBConfig {
 
     public static final int SCHEMA_VERSION = 1;
 
-    public static final String AUTHORITIES = "com.journeyOS.i007Service";
+    //public static final String AUTHORITIES = "com.journeyOS.i007Service";
+    public static final String AUTHORITIES = (I007Core.getCore().getContext() != null) ?
+            I007Core.getCore().getContext().getPackageName() : "com.journeyOS.edge";
 
-    public static final Uri APPS_URL = Uri.parse("content://" + AUTHORITIES + "/" + "apps");
+    public static final Uri APPS_URL = Uri.parse("content://" + AUTHORITIES + ".i007Service/" + "apps");
 
-    public static final Uri BL_APPS_URL = Uri.parse("content://" + AUTHORITIES + "/" + "blapps");
+    public static final Uri BL_APPS_URL = Uri.parse("content://" + AUTHORITIES + ".i007Service/" + "blapps");
 
     //Column
     public static final String PACKAGE_NAME = "packageName";

@@ -11,9 +11,20 @@
         android:allowBackup="true"
         android:supportsRtl="true">
 
+        <activity
+            android:name=".core.daemon.AliveActivity"
+            android:excludeFromRecents="true"
+            android:process="com.journeyOS.i007Service.alive"
+            android:theme="@style/OnePixelTheme">
+            <intent-filter>
+                <action android:name="com.journeyOS.i007Service.daemon.keep_alive" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".database.I007Provider"
-            android:authorities="com.journeyOS.i007Service"
+            android:authorities="${applicationId}.i007Service"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 

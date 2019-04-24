@@ -19,5 +19,5 @@ package com.journeyOS.i007Service.base.constants;
 
 public class Constant {
     //SharedPreferences KEY
-    public static final String DB_INIT = "dbInited";
+    public static final String DB_INIT = "i007DbInited";
 }
