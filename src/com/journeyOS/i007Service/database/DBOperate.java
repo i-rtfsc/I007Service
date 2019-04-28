@@ -171,16 +171,18 @@ public class DBOperate {
     }
 
     public void saveOrUpdate(Uri uri, App app) {
-        DebugUtils.d(TAG, "save or update app = [" + app + "]");
         if (app == null) {
             return;
         }
+        DebugUtils.d(TAG, "save or update app = [" + app.toString() + "]");
+
         ContentValues values = new ContentValues();
         String packageName = app.packageName;
         values.put(DBConfig.PACKAGE_NAME, packageName);
         values.put(DBConfig.TYPE, app.type);
         if (isExists(uri, packageName)) {
-            mCr.update(uri, values, DBConfig.PACKAGE_NAME + "=?", new String[]{packageName});
+            int result = mCr.update(uri, values, DBConfig.PACKAGE_NAME + "=?", new String[]{packageName});
+            DebugUtils.d(TAG, "update app, result = [" + result + "]");
         } else {
             mCr.insert(uri, values);
         }

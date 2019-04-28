@@ -24,7 +24,6 @@ import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.core.I007Core;
 import com.journeyOS.i007Service.core.NotifyManager;
 import com.journeyOS.i007Service.core.SceneUtils;
-import com.journeyOS.i007Service.core.daemon.AliveActivity;
 import com.journeyOS.i007Service.core.detect.AccessibilityMonitor;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
 import com.journeyOS.i007Service.database.App;
@@ -184,26 +183,6 @@ public class I007Manager {
     }
 
     /**
-     * 根据包名判断是否是游戏
-     *
-     * @param packageName 应用包名
-     * @return true:游戏
-     * false:非游戏
-     */
-    public static boolean isGame(String packageName) {
-        if (packageName == null) return false;
-        II007Service service = ServiceManagerNative.getI007Service();
-        if (service != null) {
-            try {
-                return service.isGame(packageName);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    /**
      * 进程常驻
      */
     public static void keepAlive() {
@@ -327,13 +306,73 @@ public class I007Manager {
     }
 
     /**
+     * 根据包名判断是否是游戏
+     *
+     * @param packageName 应用包名
+     * @return true:游戏
+     * false:非游戏
+     */
+    public static boolean isGame(String packageName) {
+        if (packageName == null) return false;
+        II007Service service = ServiceManagerNative.getI007Service();
+        if (service != null) {
+            try {
+                return service.isGame(packageName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 把包名packageName添加到游戏列表中
+     *
+     * @param source      执行的应用，后续可能会加限制。指定某些应用才可以执行
+     * @param packageName 需要添加到游戏列表的包名
+     */
+    public static void addGame(String source, String packageName) {
+        boolean isGame = isGame(packageName);
+        if (!isGame) {
+            II007Service service = ServiceManagerNative.getI007Service();
+            if (service != null) {
+                try {
+                    service.addGame(source, packageName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 把包名packageName从游戏列表中移除
+     *
+     * @param source      执行的应用，后续可能会加限制。指定某些应用才可以执行
+     * @param packageName 需要从游戏列表中移除包名
+     */
+    public static void removeGame(String source, String packageName) {
+        boolean isGame = isGame(packageName);
+        if (isGame) {
+            II007Service service = ServiceManagerNative.getI007Service();
+            if (service != null) {
+                try {
+                    service.removeGame(source, packageName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * 根据状态判断是否是游戏APP
      *
      * @param status 回调的状态
      * @return true:游戏APP
      * false:非游戏APP
      */
-    public static boolean isGame2(String status) {
+    public static boolean checkGame(String status) {
         return SceneUtils.isGame(status);
     }
 
@@ -344,7 +383,7 @@ public class I007Manager {
      * @return true:聊天APP
      * false:非聊天APP
      */
-    public static boolean isIM(String status) {
+    public static boolean checkIM(String status) {
         return SceneUtils.isIM(status);
     }
 
@@ -355,7 +394,7 @@ public class I007Manager {
      * @return true:音乐APP
      * false:非音乐APP
      */
-    public static boolean isMusic(String status) {
+    public static boolean checkMusic(String status) {
         return SceneUtils.isMusic(status);
     }
 
@@ -366,7 +405,7 @@ public class I007Manager {
      * @return true:新闻APP
      * false:非新闻APP
      */
-    public static boolean isNews(String status) {
+    public static boolean checkNews(String status) {
         return SceneUtils.isNews(status);
     }
 
@@ -377,8 +416,68 @@ public class I007Manager {
      * @return true:阅读APP
      * false:非阅读APP
      */
-    public static boolean isReader(String status) {
+    public static boolean checkReader(String status) {
         return SceneUtils.isReader(status);
+    }
+
+    /**
+     * 根据包名判断是否是视频APP
+     *
+     * @param status 回调的状态
+     * @return true:视频APP
+     * false:非视频APP
+     */
+    public static boolean isVideo(String packageName) {
+        if (packageName == null) return false;
+        II007Service service = ServiceManagerNative.getI007Service();
+        if (service != null) {
+            try {
+                return service.isVideo(packageName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 把包名packageName添加到视频列表中
+     *
+     * @param source      执行的应用，后续可能会加限制。指定某些应用才可以执行
+     * @param packageName 需要添加到视频列表的包名
+     */
+    public static void addVideo(String source, String packageName) {
+        boolean isVideo = isVideo(packageName);
+        if (!isVideo) {
+            II007Service service = ServiceManagerNative.getI007Service();
+            if (service != null) {
+                try {
+                    service.addVideo(source, packageName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 把包名packageName从视频列表中移除
+     *
+     * @param source      执行的应用，后续可能会加限制。指定某些应用才可以执行
+     * @param packageName 需要从视频列表中移除包名
+     */
+    public static void removeVideo(String source, String packageName) {
+        boolean isVideo = isVideo(packageName);
+        if (isVideo) {
+            II007Service service = ServiceManagerNative.getI007Service();
+            if (service != null) {
+                try {
+                    service.removeVideo(source, packageName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -388,7 +487,7 @@ public class I007Manager {
      * @return true:视频APP
      * false:非视频APP
      */
-    public static boolean isVideo(String status) {
+    public static boolean checkVideo(String status) {
         return SceneUtils.isVideo(status);
     }
 

@@ -65,6 +65,7 @@ public class DatabaseManager {
                 app.packageName = packageName;
                 app.type = type;
                 DBOperate.getDefault().saveOrUpdate(DBConfig.APPS_URL, app);
+                mCacheApps.put(packageName, app);
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -96,6 +97,7 @@ public class DatabaseManager {
         synchronized (mLock) {
             try {
                 DBOperate.getDefault().deleteApp(DBConfig.APPS_URL, packageName);
+                mCacheApps.remove(packageName);
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();

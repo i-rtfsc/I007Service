@@ -34,7 +34,7 @@ public class I007Provider extends LiteProvider {
 
     @Table
     public class Apps {
-        @Column(Column.FieldType.TEXT)
+        @Column(value = Column.FieldType.TEXT, primaryKey = true)
         public static final String PACKAGE_NAME = DBConfig.PACKAGE_NAME;
 
         @Column(Column.FieldType.TEXT)
@@ -46,7 +46,7 @@ public class I007Provider extends LiteProvider {
 
     @Table
     public class BLApps {
-        @Column(Column.FieldType.TEXT)
+        @Column(value = Column.FieldType.TEXT, primaryKey = true)
         public static final String PACKAGE_NAME = DBConfig.PACKAGE_NAME;
 
         @Column(Column.FieldType.TEXT)

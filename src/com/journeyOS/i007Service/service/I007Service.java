@@ -88,4 +88,32 @@ public class I007Service extends II007Service.Stub {
         return DatabaseManager.getDefault().removeApp(packageName);
     }
 
+    @Override
+    public boolean isVideo(String packageName) throws RemoteException {
+        App app = DatabaseManager.getDefault().queryApp(packageName);
+        DebugUtils.d(TAG, "isVideo() called with: App = [" + app.type + "], packageName = [" + packageName + "]");
+        if (AccessibilityMonitor.VIDEO.equals(app.type)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addVideo(String source, String packageName) throws RemoteException {
+        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(packageName)) {
+            return false;
+        }
+
+        return DatabaseManager.getDefault().addApp(packageName, AccessibilityMonitor.VIDEO);
+    }
+
+    @Override
+    public boolean removeVideo(String source, String packageName) throws RemoteException {
+        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(packageName)) {
+            return false;
+        }
+
+        return DatabaseManager.getDefault().removeApp(packageName);
+    }
+
 }

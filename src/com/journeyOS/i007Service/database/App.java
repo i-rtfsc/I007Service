@@ -35,14 +35,14 @@ public class App implements Parcelable {
     public String type;
     public String subType;
 
-//    @Override
-//    public String toString() {
-//        return "App{" +
-//                "packageName='" + packageName + '\'' +
-//                ", type='" + type + '\'' +
+    @Override
+    public String toString() {
+        return "App{" +
+                "packageName='" + packageName + '\'' +
+                ", type='" + type + '\'' +
 //                ", subType='" + subType + '\'' +
-//                '}';
-//    }
+                '}';
+    }
 
     public App() {
     }
