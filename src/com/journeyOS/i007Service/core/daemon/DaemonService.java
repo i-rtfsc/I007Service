@@ -21,6 +21,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import com.journeyOS.i007Service.I007Manager;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
@@ -35,9 +36,13 @@ public class DaemonService extends Service {
 
     public static void running(Context context) {
         if (DEBUG) DebugUtils.d(TAG, "daemon service will be running!");
-        context.startService(new Intent(context, DaemonService.class));
-        I007Service.systemReady();
-        I007Register.systemReady();
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isScreenOn();
+        if (isScreenOn) {
+            context.startService(new Intent(context, DaemonService.class));
+            I007Service.systemReady();
+            I007Register.systemReady();
+        }
     }
 
     @Override
