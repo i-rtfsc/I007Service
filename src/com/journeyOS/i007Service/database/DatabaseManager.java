@@ -46,6 +46,17 @@ public class DatabaseManager {
     }
 
     public void init() {
+        if (SpUtils.getInstant().getInt(Constant.DB_BL_INIT, 0) != 0) {
+            return;
+        }
+
+        TaskManager.getDefault().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                DBOperate.getDefault().initTableBlApp();
+            }
+        });
+
         if (SpUtils.getInstant().getInt(Constant.DB_INIT, 0) != 0) {
             return;
         }

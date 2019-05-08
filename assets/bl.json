@@ -5,6 +5,11 @@
       "packageName": "com.fooview.android.fooview",
       "subType": "null",
       "type": "tools"
+    },
+    {
+      "packageName": "com.journeyOS.edge",
+      "subType": "null",
+      "type": "tools"
     }
   ]
 }

@@ -152,7 +152,9 @@ public class DBOperate {
                 SpUtils.getInstant().put(Constant.DB_INIT, Integer.parseInt(appInfo.version));
             }
         }
+    }
 
+    public void initTableBlApp() {
         //init "blapps" table
         String bl = FileUtils.readFileFromAsset(mContext, FileUtils.BL);
         if (bl != null) {
@@ -160,6 +162,7 @@ public class DBOperate {
             if (appInfo != null) {
                 List<App> blApps = appInfo.apps;
                 saveOrUpdate(DBConfig.BL_APPS_URL, blApps);
+                SpUtils.getInstant().put(Constant.DB_BL_INIT, Integer.parseInt(appInfo.version));
             }
         }
     }
