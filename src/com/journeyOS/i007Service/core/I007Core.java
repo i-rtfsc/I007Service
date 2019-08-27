@@ -21,7 +21,6 @@ import android.app.Application;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.base.utils.Singleton;
 import com.journeyOS.i007Service.config.AppConfig;
-import com.journeyOS.i007Service.core.detect.MonitorManager;
 import com.journeyOS.i007Service.core.service.ServiceManagerNative;
 
 
@@ -50,7 +49,7 @@ public class I007Core {
             this.sContext = context;
             AppConfig.initialize();
             ServiceManagerNative.running();
-            MonitorManager.getInstance().init();
+//            MonitorManager.getInstance().init();
         }
     }
 

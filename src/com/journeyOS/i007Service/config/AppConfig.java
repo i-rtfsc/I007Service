@@ -21,7 +21,6 @@ import android.content.Context;
 
 import com.journeyOS.i007Service.base.utils.SpUtils;
 import com.journeyOS.i007Service.core.I007Core;
-import com.journeyOS.i007Service.database.DatabaseManager;
 
 
 public class AppConfig {
@@ -38,7 +37,7 @@ public class AppConfig {
     }
 
     private static void initDatabase() {
-        DatabaseManager.getDefault().init();
+        //DatabaseManager.getDefault().init();
     }
 
     private static void initSharedPreference(Context context) {

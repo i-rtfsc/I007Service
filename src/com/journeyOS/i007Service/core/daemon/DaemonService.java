@@ -21,10 +21,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.PowerManager;
 
-import com.journeyOS.i007Service.I007Manager;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
+import com.journeyOS.i007Service.service.I007Engine;
 import com.journeyOS.i007Service.service.I007Register;
 import com.journeyOS.i007Service.service.I007Service;
 
@@ -36,13 +35,11 @@ public class DaemonService extends Service {
 
     public static void running(Context context) {
         if (DEBUG) DebugUtils.d(TAG, "daemon service will be running!");
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        boolean isScreenOn = pm.isScreenOn();
-        if (isScreenOn) {
-            context.startService(new Intent(context, DaemonService.class));
-            I007Service.systemReady();
-            I007Register.systemReady();
-        }
+        context.startService(new Intent(context, DaemonService.class));
+
+        I007Register.Companion.get().systemReady();
+        I007Service.Companion.get().systemReady();
+        I007Engine.Companion.get().systemReady();
     }
 
     @Override
@@ -50,7 +47,7 @@ public class DaemonService extends Service {
         super.onDestroy();
         if (DEBUG) DebugUtils.d(TAG, "daemon service die!");
 //        running(this);//can't don't andorid version > 8.0
-        I007Manager.keepAlive();
+//        I007Manager.keepAlive();
     }
 
     @Override

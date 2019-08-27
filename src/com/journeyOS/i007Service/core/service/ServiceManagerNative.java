@@ -20,13 +20,14 @@ import android.app.Application;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.journeyOS.i007Service.base.constants.ServiceNameConstants;
+import com.journeyOS.i007Service.II007Engine;
+import com.journeyOS.i007Service.II007Register;
+import com.journeyOS.i007Service.II007Service;
+import com.journeyOS.i007Service.base.Constant;
 import com.journeyOS.i007Service.base.utils.DebugUtils;
 import com.journeyOS.i007Service.core.I007Core;
 import com.journeyOS.i007Service.core.ServiceCache;
 import com.journeyOS.i007Service.core.daemon.DaemonService;
-import com.journeyOS.i007Service.interfaces.II007Register;
-import com.journeyOS.i007Service.interfaces.II007Service;
 
 /**
  * The manager of all services which is running in I007Service Process
@@ -36,6 +37,7 @@ public class ServiceManagerNative {
     private static Application sContext = null;
     private static II007Register m007Register = null;
     private static II007Service m007Service = null;
+    private static II007Engine m007Engine = null;
 
     public static void running() {
         if (!I007Core.getCore().isRunning()) {
@@ -67,8 +69,8 @@ public class ServiceManagerNative {
             if (m007Register != null) {
                 return m007Register;
             }
-            IBinder obj = ServiceManagerNative.getService(ServiceNameConstants.I007_REGISTER);
-            ServiceManagerNative.linkBinderDied(obj);
+            IBinder obj = getService(Constant.I007_REGISTER);
+            linkBinderDied(obj);
             if (obj != null) {
                 m007Register = II007Register.Stub.asInterface(obj);
             }
@@ -84,12 +86,29 @@ public class ServiceManagerNative {
             if (m007Service != null) {
                 return m007Service;
             }
-            IBinder obj = ServiceManagerNative.getService(ServiceNameConstants.I007_SERVICE);
-            ServiceManagerNative.linkBinderDied(obj);
+            IBinder obj = getService(Constant.I007_SERVICE);
+            linkBinderDied(obj);
             if (obj != null) {
                 m007Service = II007Service.Stub.asInterface(obj);
             }
             return m007Service;
+        } catch (Throwable e) {
+
+        }
+        return null;
+    }
+
+    public static II007Engine getII007Engine() {
+        try {
+            if (m007Engine != null) {
+                return m007Engine;
+            }
+            IBinder obj = getService(Constant.I007_ENGINE);
+            linkBinderDied(obj);
+            if (obj != null) {
+                m007Engine = II007Engine.Stub.asInterface(obj);
+            }
+            return m007Engine;
         } catch (Throwable e) {
 
         }

@@ -20,7 +20,6 @@ import android.content.Context;
 
 import com.journeyOS.i007Service.base.utils.Singleton;
 import com.journeyOS.i007Service.core.I007Core;
-import com.journeyOS.i007Service.core.detect.MonitorManager;
 
 public class AccessibilityManager {
     private static final String TAG = AccessibilityManager.class.getSimpleName();
@@ -31,7 +30,6 @@ public class AccessibilityManager {
         mContext = I007Core.getCore().getContext();
         mAs = AccessibilityService.getInstance();
         if (mAs == null) {
-            MonitorManager.getInstance().init();
             mAs = AccessibilityService.getInstance();
         }
     }
