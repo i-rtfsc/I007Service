@@ -1,6 +1,6 @@
 package com.journeyOS.i007Service.task
 
-import com.journeyOS.liteprovider.utils.LogUtils
+import com.journeyOS.i007Service.base.utils.DebugUtils
 import java.util.concurrent.*
 
 
@@ -41,15 +41,15 @@ object TaskManager {
             return ft.get(TIME_OUT, TimeUnit.MILLISECONDS)
         } catch (e: InterruptedException) {
             ft.cancel(true)
-            LogUtils.d("interrupted exception = $e")
+            DebugUtils.d("interrupted exception = $e")
             e.printStackTrace()
         } catch (e: ExecutionException) {
             ft.cancel(true)
-            LogUtils.d("execution exception = $e")
+            DebugUtils.d("execution exception = $e")
             e.printStackTrace()
         } catch (e: TimeoutException) {
             ft.cancel(true)
-            LogUtils.d("timeout exception = $e")
+            DebugUtils.d("timeout exception = $e")
             e.printStackTrace()
         }
 

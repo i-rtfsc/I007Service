@@ -55,7 +55,6 @@ dependencies {
     compileOnly "android.arch.persistence.room:runtime:$project.ROOM"
     kapt "android.arch.persistence.room:compiler:$project.ROOM"
     compileOnly "io.reactivex.rxjava2:rxandroid:$project.RX_ANDROID"
-    implementation 'com.journeyOS:liteprovider:1.2.1'
 }
 
 
