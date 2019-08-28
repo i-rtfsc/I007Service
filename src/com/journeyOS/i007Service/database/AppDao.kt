@@ -16,7 +16,7 @@
 
 package com.journeyOS.i007Service.database
 
-import android.arch.persistence.room.*
+import androidx.room.*
 
 @Dao
 interface AppDao {

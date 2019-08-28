@@ -16,9 +16,8 @@
 
 package com.journeyOS.i007Service.database
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-
+import androidx.room.ColumnInfo
+import androidx.room.Entity
 
 @Entity(tableName = DBConfigs.APP_TABLE, primaryKeys = [DBConfigs.APP_PACKAGE_NAME])
 class App {
