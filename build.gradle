@@ -52,8 +52,8 @@ android {
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$project.KOTLIN"
     compileOnly "com.google.code.gson:gson:$project.GSON"
-    compileOnly "android.arch.persistence.room:runtime:$project.ROOM"
-    kapt "android.arch.persistence.room:compiler:$project.ROOM"
+    compileOnly "androidx.room:room-runtime:$project.ROOM"
+    kapt "androidx.room:room-compiler:$project.ROOM"
     compileOnly "io.reactivex.rxjava2:rxandroid:$project.RX_ANDROID"
 }
 
