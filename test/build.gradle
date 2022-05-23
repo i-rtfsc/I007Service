@@ -1,0 +1,90 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
+
+android {
+    def androidSdk = rootProject.ext.androidSdk
+    compileSdkVersion androidSdk.compileSdkVersion
+    defaultConfig {
+        applicationId "com.journeyOS.i007test"
+        minSdkVersion androidSdk.minSdkVersion
+        targetSdkVersion androidSdk.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            assets.srcDirs = ['assets']
+            res.srcDirs = ['res']
+            java.srcDirs = ['src']
+            aidl.srcDirs = ['aidl']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../keystore/platform.jks")
+            storePassword 'android'
+            keyAlias 'platform'
+            keyPassword 'android'
+        }
+        debug {
+            storeFile file("../keystore/platform.jks")
+            storePassword 'android'
+            keyAlias 'platform'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            zipAlignEnabled true
+            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            zipAlignEnabled true
+            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == 'release') {
+            variant.outputs.all {
+                outputFileName = new File("./../../../../../out/release/", "I007SDK.apk")
+            }
+        }
+        if (variant.buildType.name == 'debug') {
+            variant.outputs.all {
+                outputFileName = new File("./../../../../../out/debug/", "I007SDK.apk")
+            }
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':sdk')
+
+    //androidx support
+    rootProject.ext.androidxSupportDependencies.each { dependence -> api dependence.value }
+    //kotlin
+    rootProject.ext.kotlinDependencies.each { dependence -> api dependence.value }
+}
+
+defaultTasks 'clean', 'assembleRelease'

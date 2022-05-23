@@ -1,0 +1,15 @@
+apply from: "../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    api project(':sdk')
+
+    //androidx support
+    rootProject.ext.androidxSupportDependencies.each { dependence -> api dependence.value }
+    //kotlin
+    rootProject.ext.kotlinDependencies.each { dependence -> api dependence.value }
+
+    def threePartyDependencies = rootProject.ext.threePartyDependencies
+    //gson
+    api threePartyDependencies["gson"]
+}

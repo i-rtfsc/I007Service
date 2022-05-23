@@ -1,0 +1,12 @@
+apply from: "../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    compileOnly project(':base')
+
+    def threePartyDependencies = rootProject.ext.threePartyDependencies
+    //room
+    api threePartyDependencies["room-runtime"]
+    kapt threePartyDependencies["room-compiler"]
+}

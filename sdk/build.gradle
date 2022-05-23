@@ -1,0 +1,18 @@
+apply from: "../module.gradle"
+
+dependencies {
+    api fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task deleteJar(type: Delete) {
+    delete './build/i007_service.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/full_jar/release/')
+    into('./build/')
+    include('full.jar')
+    rename('full.jar', 'i007_service.jar')
+}
+
+createJar.dependsOn(deleteJar, build)

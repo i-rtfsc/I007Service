@@ -1,0 +1,5 @@
+include ':sdk'
+include ':base'
+include ':database'
+include ':service'
+//include ':test'
