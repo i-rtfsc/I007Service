@@ -16,9 +16,8 @@
 
 package com.journeyOS.i007manager;
 
-import com.journeyOS.i007manager.II007Observer;
+import com.journeyOS.i007manager.I007Result;
 
-interface II007Manager {
-    boolean registerListener(long factors, in II007Observer listener);
-    boolean unregisterListener(in  II007Observer listener);
+interface II007Observer {
+    oneway void onSceneChanged(in I007Result result);
 }

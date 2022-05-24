@@ -27,6 +27,9 @@ import com.journeyOS.i007manager.base.ServiceManagerNative;
 import java.util.concurrent.atomic.AtomicReference;
 
 
+/**
+ * @author solo
+ */
 public class I007Manager {
     /**
      * 前台变化为何种类型APP场景
@@ -106,15 +109,16 @@ public class I007Manager {
     }
 
     /**
-     * 监听场景变化
+     * 注册事件监听
      *
      * @param factors  场景因子
-     * @param listener 回调
+     * @param observer 监听回调方
+     * @return 是否成功
      */
-    public boolean registerListener(long factors, II007Listener listener) {
+    public boolean subscribeObserver(long factors, I007Observer observer) {
         boolean register;
         try {
-            register = mRemote.registerListener(factors, listener);
+            register = mRemote.registerListener(factors, observer);
         } catch (RemoteException | NullPointerException e) {
             register = false;
             Log.e(TAG, "registerListener fail: ", e);
@@ -123,15 +127,15 @@ public class I007Manager {
     }
 
     /**
-     * 解注册
+     * 注销事件监听
      *
-     * @param factors  场景因子
-     * @param listener 回调
+     * @param observer 回调
+     * @return 是否成功
      */
-    public boolean unregisterListener(long factors, II007Listener listener) {
+    public boolean unsubscribeObserver(I007Observer observer) {
         boolean unregister;
         try {
-            unregister = mRemote.unregisterListener(factors, listener);
+            unregister = mRemote.unregisterListener(observer);
         } catch (RemoteException | NullPointerException e) {
             unregister = false;
             Log.e(TAG, "unregisterListener fail: ", e);

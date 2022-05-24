@@ -20,7 +20,8 @@ import android.os.Handler;
 import android.os.RemoteException;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.i007manager.II007Listener;
+import com.journeyOS.i007manager.I007Result;
+import com.journeyOS.i007manager.II007Observer;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -36,7 +37,7 @@ public class Clients extends ClientsHelper {
         super(handler);
     }
 
-    public boolean addListener(II007Listener listener, long factors, int callingPid) {
+    public boolean addListener(II007Observer listener, long factors, int callingPid) {
         if (addRemoteListener(listener, factors, callingPid)) {
             SmartLog.i(TAG, "addListener " + listener
                     + " for " + callingPid + " " + Long.toHexString(factors));
@@ -46,7 +47,7 @@ public class Clients extends ClientsHelper {
         }
     }
 
-    public void removeListener(II007Listener listener) {
+    public void removeListener(II007Observer listener) {
         try {
             removeRemoteListener(listener);
             SmartLog.i(TAG, "removeListener " + listener);
@@ -55,28 +56,25 @@ public class Clients extends ClientsHelper {
         }
     }
 
-    public synchronized void dispatchFactorEvent(final long factors, final String state, final String packageName) {
+    public synchronized void dispatchFactorEvent(final I007Result result) {
         Operation operation = new Operation() {
             @Override
-            public void execute(II007Listener listener, int pid) throws RemoteException {
+            public void execute(II007Observer listener, int pid) throws RemoteException {
                 try {
-                    SmartLog.i(TAG, "dispatch to " + pid + " ("
-                            + state
-                            + packageName
-                            + ")");
-                    listener.onSceneChanged(factors, state, packageName);
+                    SmartLog.d(TAG, "dispatch to pid = [" + pid + "], result = [" + result + "]");
+                    listener.onSceneChanged(result);
                 } catch (Throwable e) {
                     SmartLog.w(TAG, "Exception in dispatch factor event with appInfo!!!");
                 }
             }
         };
-        foreach(operation, factors);
+        foreach(operation, result.getFactoryId());
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw) {
         pw.println(super.toString());
     }
 
-    private interface Operation extends ListenerOperation<II007Listener> {
+    private interface Operation extends ListenerOperation<II007Observer> {
     }
 }

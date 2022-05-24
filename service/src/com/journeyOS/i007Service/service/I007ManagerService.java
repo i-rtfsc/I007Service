@@ -21,8 +21,10 @@ import android.os.RemoteException;
 
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.service.clients.ClientSession;
-import com.journeyOS.i007manager.II007Listener;
+import com.journeyOS.i007manager.I007Manager;
+import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Manager;
+import com.journeyOS.i007manager.II007Observer;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,7 +37,6 @@ public class I007ManagerService extends II007Manager.Stub {
     private static final AtomicReference<I007ManagerService> sService = new AtomicReference<>();
 
     private Context mContext;
-
 
     public static I007ManagerService getService() {
         return sService.get();
@@ -55,15 +56,23 @@ public class I007ManagerService extends II007Manager.Stub {
     }
 
     @Override
-    public boolean registerListener(long factors, II007Listener listener) throws RemoteException {
+    public boolean registerListener(long factors, II007Observer listener) throws RemoteException {
         ClientSession.getDefault().insertToCategory(factors, listener);
+        testNotify();
         return true;
     }
 
     @Override
-    public boolean unregisterListener(long factors, II007Listener listener) throws RemoteException {
+    public boolean unregisterListener(II007Observer listener) throws RemoteException {
         ClientSession.getDefault().removeFromCategory(listener);
         return true;
     }
 
+    private void testNotify() {
+        I007Result result =  new I007Result.Builder()
+                .setFactoryId(I007Manager.SCENE_FACTOR_APP)
+                .setPackageName("test-pk")
+                .build();
+        ClientSession.getDefault().dispatchFactorEvent(result);
+    }
 }

@@ -16,6 +16,8 @@
 
 package com.journeyOS.i007manager;
 
-interface II007Listener {
-    oneway void onSceneChanged(long factorId, String status, String packageName);
+/**
+ * @author solo
+ */
+public abstract class I007Observer extends II007Observer.Stub {
 }

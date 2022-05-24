@@ -24,6 +24,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+/**
+ * @author solo
+ */
 public abstract class BaseContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {

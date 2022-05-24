@@ -23,7 +23,8 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.journeyOS.common.utils.Singleton;
-import com.journeyOS.i007manager.II007Listener;
+import com.journeyOS.i007manager.I007Result;
+import com.journeyOS.i007manager.II007Observer;
 
 /**
  * @author solo
@@ -51,37 +52,24 @@ public class ClientSession {
         return gDefault.get();
     }
 
-    public void insertToCategory(long factorsFromClient, II007Listener listener) {
+    public void insertToCategory(long factorsFromClient, II007Observer listener) {
         int callingPid = Binder.getCallingPid();
         mClisnts.addListener(listener, factorsFromClient, callingPid);
     }
 
-    public void removeFromCategory(II007Listener listener) {
+    public void removeFromCategory(II007Observer listener) {
         mClisnts.removeListener(listener);
     }
 
-    public synchronized void dispatchFactorEvent(final long factoryId, final String state, final String packageName) {
+    public synchronized void dispatchFactorEvent(final I007Result result) {
         Message message = Message.obtain();
         message.what = H.MSG_OBJ;
-        MessagesInfo info = new MessagesInfo(factoryId, state, packageName);
-        message.obj = info;
+        message.obj = result;
         mHandler.sendMessageDelayed(message, H.DELAYED_MILLIS);
     }
 
-    private class MessagesInfo {
-        public long factoryId;
-        public String state;
-        public String packageName;
-
-        private MessagesInfo(long factoryId, String state, String packageName) {
-            this.factoryId = factoryId;
-            this.state = state;
-            this.packageName = packageName;
-        }
-    }
-
     private class H extends Handler {
-        public static final int DELAYED_MILLIS = 0;
+        public static final long DELAYED_MILLIS = 2000;
         public static final int MSG_OBJ = 1;
 
         public H(Looper looper) {
@@ -92,8 +80,7 @@ public class ClientSession {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_OBJ:
-                    MessagesInfo obj = (MessagesInfo) msg.obj;
-                    mClisnts.dispatchFactorEvent(obj.factoryId, obj.state, obj.packageName);
+                    mClisnts.dispatchFactorEvent((I007Result) msg.obj);
                     break;
             }
         }

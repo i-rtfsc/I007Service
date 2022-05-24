@@ -19,6 +19,7 @@ package com.journeyOS.i007Service.debug;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -30,7 +31,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
-import com.journeyOS.i007manager.II007Listener;
+import com.journeyOS.i007manager.I007Observer;
+import com.journeyOS.i007manager.I007Result;
 
 /**
  * @author solo
@@ -82,12 +84,12 @@ public class DebugActivity extends AppCompatActivity {
 
     private void test() {
         I007Core.getCore().startup(mContext);
-        I007Manager.getInstance(mContext).registerListener(I007Manager.SCENE_FACTOR_APP,
-                new II007Listener.Stub() {
-                    @Override
-                    public void onSceneChanged(long factorId, String status, String packageName) throws RemoteException {
-
-                    }
-                });
+        I007Manager i007m = I007Manager.getInstance(mContext);
+        i007m.subscribeObserver(I007Manager.SCENE_FACTOR_APP, new I007Observer() {
+            @Override
+            public void onSceneChanged(I007Result result) throws RemoteException {
+                Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
+            }
+        });
     }
 }

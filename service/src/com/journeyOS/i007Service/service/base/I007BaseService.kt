@@ -44,7 +44,9 @@ open class I007BaseService : Service() {
         SmartLog.d(TAG, "i007 base service destroy")
     }
 
-    //显示正在播放的notification
+    /**
+     * 显示正在播放的notification
+     */
     fun showForegroundService() = NotificationHelper
         .buildForegroundService(
             R.drawable.svg_service,
