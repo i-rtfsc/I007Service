@@ -25,6 +25,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 /**
+ * ContentProvider基类
+ *
  * @author solo
  */
 public abstract class BaseContentProvider extends ContentProvider {

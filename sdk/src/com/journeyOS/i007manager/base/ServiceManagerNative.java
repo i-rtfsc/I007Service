@@ -67,6 +67,12 @@ public class ServiceManagerNative {
         }
     }
 
+    /**
+     * 获取服务
+     *
+     * @param name 服务名称
+     * @return binder对象
+     */
     public static IBinder getService(String name) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
@@ -80,6 +86,12 @@ public class ServiceManagerNative {
         return null;
     }
 
+    /**
+     * 新增服务
+     *
+     * @param name    服务名称
+     * @param service binder对象
+     */
     public static void addService(String name, IBinder service) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
@@ -92,6 +104,11 @@ public class ServiceManagerNative {
 
     }
 
+    /**
+     * 删除（关闭）服务
+     *
+     * @param name 服务名称
+     */
     public static void removeService(String name) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
@@ -103,6 +120,11 @@ public class ServiceManagerNative {
         }
     }
 
+    /**
+     * 启动服务init服务
+     *
+     * @param context
+     */
     public static void startup(Context context) {
         new ProviderCaller.Builder(context)
                 .authority(SERVICE_SYNC_AUTHORITY)

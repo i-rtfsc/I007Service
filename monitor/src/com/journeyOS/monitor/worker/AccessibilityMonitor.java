@@ -33,13 +33,13 @@ import com.journeyOS.monitor.accessibility.AccessibilityService;
 import com.journeyOS.monitor.accessibility.ActivityListener;
 
 /**
+ * Accessibility监听器
+ *
  * @author solo
  */
 public class AccessibilityMonitor extends Monitor implements ActivityListener {
     private static final String TAG = AccessibilityMonitor.class.getSimpleName();
-
     private volatile static AccessibilityMonitor INSTANCE = null;
-
     private AccessibilityInfoObserver mAccessibilityInfoObserver;
     private Context mContext = null;
     private String mPackageName = null;
@@ -50,6 +50,11 @@ public class AccessibilityMonitor extends Monitor implements ActivityListener {
         mContext = I007Core.getCore().getContext();
     }
 
+    /**
+     * 获取AccessibilityMonitor单例
+     *
+     * @return AccessibilityMonitor实例
+     */
     public static AccessibilityMonitor getInstance() {
         if (INSTANCE == null) {
             synchronized (AccessibilityMonitor.class) {

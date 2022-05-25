@@ -67,6 +67,12 @@ public class LocalDataSourceImpl implements LocalDataSource {
         });
     }
 
+    /**
+     * 获取LocalDataSourceImpl单例
+     *
+     * @param context 上下文
+     * @return LocalDataSourceImpl实例
+     */
     public static LocalDataSourceImpl getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (LocalDataSourceImpl.class) {
@@ -79,6 +85,9 @@ public class LocalDataSourceImpl implements LocalDataSource {
         return INSTANCE;
     }
 
+    /**
+     * 注销LocalDataSourceImpl单例
+     */
     public static void destroyInstance() {
         INSTANCE = null;
     }
@@ -261,6 +270,9 @@ public class LocalDataSourceImpl implements LocalDataSource {
         return setting.getFloat();
     }
 
+    /**
+     * 用来解析asset目录的json字符串
+     */
     public class Apps {
         public String version;
         public List<App> apps;

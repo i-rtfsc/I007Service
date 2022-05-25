@@ -37,6 +37,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
 
     /**
      * 获取HttpDataSourceImpl实例
+     *
      * @param context 上下文
      * @return HttpDataSourceImpl
      */

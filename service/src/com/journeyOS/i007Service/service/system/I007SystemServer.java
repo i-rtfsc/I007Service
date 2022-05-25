@@ -23,11 +23,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.i007Service.service.DaemonService;
-import com.journeyOS.i007Service.service.I007ManagerService;
 import com.journeyOS.framework.service.BaseContentProvider;
 import com.journeyOS.framework.service.ServiceCache;
 import com.journeyOS.framework.service.ServiceFetcher;
+import com.journeyOS.i007Service.service.DaemonService;
+import com.journeyOS.i007Service.service.I007ManagerService;
 import com.journeyOS.i007manager.base.ServiceConstants;
 import com.journeyOS.i007manager.base.ServiceManagerNative;
 

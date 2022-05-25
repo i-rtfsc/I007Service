@@ -22,7 +22,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import com.journeyOS.common.utils.Singleton;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Observer;
 
@@ -30,17 +29,10 @@ import com.journeyOS.i007manager.II007Observer;
  * @author solo
  */
 public class ClientSession {
-
-    private static final Singleton<ClientSession> gDefault = new Singleton<ClientSession>() {
-        @Override
-        protected ClientSession create() {
-            return new ClientSession();
-        }
-    };
+    private volatile static ClientSession INSTANCE = null;
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;
     private final Clients mClisnts;
-
     private ClientSession() {
         mHandlerThread = new HandlerThread("ClientSession");
         mHandlerThread.start();
@@ -48,19 +40,86 @@ public class ClientSession {
         mClisnts = new Clients(mHandler);
     }
 
-    public static ClientSession getDefault() {
-        return gDefault.get();
+    public static ClientSession getInstance() {
+        if (INSTANCE == null) {
+            synchronized (ClientSession.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new ClientSession();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
-    public void insertToCategory(long factorsFromClient, II007Observer listener) {
+    /**
+     * 插入监听回调方
+     *
+     * @param listener 监听回调方
+     * @return 是否成功
+     */
+    public boolean insertToCategory(II007Observer listener) {
         int callingPid = Binder.getCallingPid();
-        mClisnts.addListener(listener, factorsFromClient, callingPid);
+        return mClisnts.addRemoteListener(callingPid, listener);
     }
 
-    public void removeFromCategory(II007Observer listener) {
-        mClisnts.removeListener(listener);
+    /**
+     * 删除监听回调方
+     *
+     * @param listener 监听回调方
+     * @return 是否成功
+     */
+    public boolean removeFromCategory(II007Observer listener) {
+        return mClisnts.removeRemoteListener(listener);
     }
 
+    /**
+     * 设置场景因子
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean setFactorToCategory(long factors) {
+        int callingPid = Binder.getCallingPid();
+        return mClisnts.setRemoteFactor(callingPid, factors);
+    }
+
+    /**
+     * 新增场景因子
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean updateFactorToCategory(long factors) {
+        int callingPid = Binder.getCallingPid();
+        return mClisnts.updateRemoteFactor(callingPid, factors);
+    }
+
+    /**
+     * 清除场景因子
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean removeFactorFromCategory(long factors) {
+        int callingPid = Binder.getCallingPid();
+        return mClisnts.removeRemoteFactor(callingPid, factors);
+    }
+
+    /**
+     * 判断所有的客户端里是否存在输入的场景因子
+     *
+     * @param factors 场景因子
+     * @return 存在场景因子
+     */
+    public boolean checkFactorFromCategory(long factors) {
+        return mClisnts.checkFactor(factors);
+    }
+
+    /**
+     * 派发结果给回调方
+     *
+     * @param result 结果数据
+     */
     public synchronized void dispatchFactorEvent(final I007Result result) {
         Message message = Message.obtain();
         message.what = H.MSG_OBJ;

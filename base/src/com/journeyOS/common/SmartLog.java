@@ -27,6 +27,11 @@ import android.util.Log;
 public class SmartLog {
     private static final String TAG = "I007Service";
 
+    /**
+     * 通过命令 adb shell setprop log.tag.I007Service D 打开log
+     *
+     * @return 是否打开log
+     */
     public static boolean isDebug() {
         return Log.isLoggable(TAG, android.util.Log.DEBUG);
     }

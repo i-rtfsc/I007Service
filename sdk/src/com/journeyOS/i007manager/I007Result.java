@@ -23,6 +23,7 @@ import android.os.Parcelable;
  * @author solo
  */
 public class I007Result implements Parcelable {
+
     public static final Creator<I007Result> CREATOR = new Creator<I007Result>() {
         @Override
         public I007Result createFromParcel(Parcel in) {
@@ -36,12 +37,14 @@ public class I007Result implements Parcelable {
     };
     private long factoryId;
     private I007App app;
+    private I007Net net;
     private I007Battery battery;
     private I007Screen screen;
 
-    public I007Result(long factoryId, I007App app, I007Battery battery, I007Screen screen) {
+    public I007Result(long factoryId, I007App app, I007Net net, I007Battery battery, I007Screen screen) {
         this.factoryId = factoryId;
         this.app = app;
+        this.net = net;
         this.battery = battery;
         this.screen = screen;
     }
@@ -49,6 +52,7 @@ public class I007Result implements Parcelable {
     protected I007Result(Parcel in) {
         factoryId = in.readLong();
         app = in.readParcelable(I007App.class.getClassLoader());
+        net = in.readParcelable(I007Net.class.getClassLoader());
         battery = in.readParcelable(I007Battery.class.getClassLoader());
         screen = in.readParcelable(I007Screen.class.getClassLoader());
     }
@@ -57,6 +61,7 @@ public class I007Result implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(factoryId);
         dest.writeParcelable(app, flags);
+        dest.writeParcelable(net, flags);
         dest.writeParcelable(battery, flags);
         dest.writeParcelable(screen, flags);
     }
@@ -64,16 +69,6 @@ public class I007Result implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public String toString() {
-        return "I007Result{" +
-                "factoryId=" + factoryId +
-                ", app=" + app +
-                ", battery=" + battery +
-                ", screen=" + screen +
-                '}';
     }
 
     public long getFactoryId() {
@@ -84,6 +79,10 @@ public class I007Result implements Parcelable {
         return app;
     }
 
+    public I007Net getNet() {
+        return net;
+    }
+
     public I007Battery getBattery() {
         return battery;
     }
@@ -92,9 +91,21 @@ public class I007Result implements Parcelable {
         return screen;
     }
 
+    @Override
+    public String toString() {
+        return "I007Result{" +
+                "factoryId=" + factoryId +
+                ", app=" + app +
+                ", net=" + net +
+                ", battery=" + battery +
+                ", screen=" + screen +
+                '}';
+    }
+
     public static class Builder {
         private long factoryId;
         private I007App app;
+        private I007Net net;
         private I007Battery battery;
         private I007Screen screen;
 
@@ -105,6 +116,11 @@ public class I007Result implements Parcelable {
 
         public Builder setApp(I007App app) {
             this.app = app;
+            return this;
+        }
+
+        public Builder setNet(I007Net net) {
+            this.net = net;
             return this;
         }
 
@@ -119,7 +135,7 @@ public class I007Result implements Parcelable {
         }
 
         public I007Result build() {
-            return new I007Result(factoryId, app, battery, screen);
+            return new I007Result(factoryId, app, net, battery, screen);
         }
     }
 }

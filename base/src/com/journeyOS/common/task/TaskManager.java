@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 
 /**
  * TaskManager
+ *
  * @author solo
  */
 public final class TaskManager {

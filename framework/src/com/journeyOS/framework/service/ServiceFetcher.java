@@ -22,6 +22,8 @@ import android.os.RemoteException;
 import com.journeyOS.i007manager.base.IServiceFetcher;
 
 /**
+ * 远程获取服务
+ *
  * @author solo
  */
 public class ServiceFetcher extends IServiceFetcher.Stub {

@@ -54,21 +54,39 @@ public class I007ManagerService extends II007Manager.Stub implements MonitorMana
     }
 
     @Override
-    public boolean registerListener(long factors, II007Observer listener) throws RemoteException {
-        MonitorManager.getInstance().start(factors);
-        ClientSession.getDefault().insertToCategory(factors, listener);
-        return true;
+    public boolean registerListener(II007Observer listener) throws RemoteException {
+        return ClientSession.getInstance().insertToCategory(listener);
     }
 
     @Override
     public boolean unregisterListener(II007Observer listener) throws RemoteException {
-        ClientSession.getDefault().removeFromCategory(listener);
+        ClientSession.getInstance().removeFromCategory(listener);
         return true;
     }
 
     @Override
+    public boolean setFactor(long factors) throws RemoteException {
+        MonitorManager.getInstance().start(factors);
+        return ClientSession.getInstance().setFactorToCategory(factors);
+    }
+
+    @Override
+    public boolean updateFactor(long factors) throws RemoteException {
+        MonitorManager.getInstance().start(factors);
+        return ClientSession.getInstance().updateFactorToCategory(factors);
+    }
+
+    @Override
+    public boolean removeFactor(long factors) throws RemoteException {
+        if (ClientSession.getInstance().checkFactorFromCategory(factors)) {
+            MonitorManager.getInstance().stop(factors);
+        }
+
+        return ClientSession.getInstance().removeFactorFromCategory(factors);
+    }
+
+    @Override
     public void onChanged(I007Result result) {
-        MonitorManager.getInstance().start(result.getFactoryId());
-        ClientSession.getDefault().dispatchFactorEvent(result);
+        ClientSession.getInstance().dispatchFactorEvent(result);
     }
 }

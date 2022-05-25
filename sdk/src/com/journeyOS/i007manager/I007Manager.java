@@ -55,10 +55,9 @@ public class I007Manager {
      * 电池电量、温度等变化场景
      */
     public static final long SCENE_FACTOR_BATTERY = 1 << 5;
-    private static final String TAG = I007Manager.class.getSimpleName();
-    private static final boolean DEBUG = true;
-    private static final AtomicReference<I007Manager> INSTANCE = new AtomicReference<>();
 
+    private static final String TAG = I007Manager.class.getSimpleName();
+    private static final AtomicReference<I007Manager> INSTANCE = new AtomicReference<>();
     private II007Manager mRemote;
     private IBinder.DeathRecipient mDeathRecipient = new IBinder.DeathRecipient() {
         @Override
@@ -76,10 +75,10 @@ public class I007Manager {
     }
 
     /**
-     * 获取EventManager单例.
+     * 获取I007Manager单例.
      *
      * @param context 上下文
-     * @return EventManager的单例
+     * @return I007Manager的单例
      */
     public static I007Manager getInstance(Context context) {
         I007Manager manager = INSTANCE.get();
@@ -113,16 +112,24 @@ public class I007Manager {
     }
 
     /**
+     * 通过命令 adb shell setprop log.tag.I007Service D 打开log
+     *
+     * @return 是否打开log
+     */
+    public boolean isDebug() {
+        return Log.isLoggable("I007Service", android.util.Log.DEBUG);
+    }
+
+    /**
      * 注册事件监听
      *
-     * @param factors  场景因子
      * @param observer 监听回调方
      * @return 是否成功
      */
-    public boolean subscribeObserver(long factors, I007Observer observer) {
+    public boolean subscribeObserver(I007Observer observer) {
         boolean register;
         try {
-            register = mRemote.registerListener(factors, observer);
+            register = mRemote.registerListener(observer);
         } catch (RemoteException | NullPointerException e) {
             register = false;
             Log.e(TAG, "registerListener fail: ", e);
@@ -145,5 +152,56 @@ public class I007Manager {
             Log.e(TAG, "unregisterListener fail: ", e);
         }
         return unregister;
+    }
+
+    /**
+     * 以覆盖（替换）的方式设置场景因子
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean setFactor(long factors) {
+        boolean result;
+        try {
+            result = mRemote.setFactor(factors);
+        } catch (RemoteException | NullPointerException e) {
+            result = false;
+            Log.e(TAG, "setFactor fail: ", e);
+        }
+        return result;
+    }
+
+    /**
+     * 新增场景因子（｜计算）
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean updateFactor(long factors) {
+        boolean result;
+        try {
+            result = mRemote.updateFactor(factors);
+        } catch (RemoteException | NullPointerException e) {
+            result = false;
+            Log.e(TAG, "setFactor fail: ", e);
+        }
+        return result;
+    }
+
+    /**
+     * 删除场景因子（^计算）
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean removeFactor(long factors) {
+        boolean result;
+        try {
+            result = mRemote.removeFactor(factors);
+        } catch (RemoteException | NullPointerException e) {
+            result = false;
+            Log.e(TAG, "setFactor fail: ", e);
+        }
+        return result;
     }
 }

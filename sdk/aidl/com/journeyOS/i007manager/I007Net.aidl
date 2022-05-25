@@ -16,12 +16,4 @@
 
 package com.journeyOS.i007manager;
 
-import com.journeyOS.i007manager.II007Observer;
-
-interface II007Manager {
-    boolean registerListener(in II007Observer listener);
-    boolean unregisterListener(in II007Observer listener);
-    boolean setFactor(long factors);
-    boolean updateFactor(long factors);
-    boolean removeFactor(long factors);
-}
+parcelable I007Net;

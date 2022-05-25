@@ -32,8 +32,8 @@ import java.util.Map;
  *
  * @author solo
  */
-public class ClientsHelper<TListener extends IInterface> {
-    private static final String TAG = ClientsHelper.class.getSimpleName();
+public class ClientsImpl<TListener extends IInterface> {
+    private static final String TAG = ClientsImpl.class.getSimpleName();
     private final Handler mHandler;
 
     /**
@@ -43,26 +43,24 @@ public class ClientsHelper<TListener extends IInterface> {
 
 
     /**
-     * TODO
-     * 后期改成：
-     * 1. binder对象跟II007Observer对应起来
-     * 2. binder对象跟场景因子对应起来，这样做有几个好处：
-     *      - 客户端不用解除监听可以随时更换场景因子
-     *      - 在解注册的时候，或者客户端断开连接的时候检查相应的场景因子是否还相应monitor，如果不相应则stop，节省资源
-     */
-
-    /**
      * 构造函数
      *
      * @param handler Handler
      */
-    public ClientsHelper(Handler handler) {
+    public ClientsImpl(Handler handler) {
         mHandler = handler;
     }
 
-    protected boolean addRemoteListener(TListener listener, long factors, int pid) {
+    /**
+     * 注册事件监听
+     *
+     * @param pid      客户端进程号
+     * @param listener 监听回调方
+     * @return 是否成功
+     */
+    public boolean addRemoteListener(int pid, TListener listener) {
         IBinder binder = listener.asBinder();
-        LinkedListener deathListener = new LinkedListener(listener, factors, pid);
+        LinkedListener deathListener = new LinkedListener(pid, listener);
         synchronized (mListenerMap) {
             if (mListenerMap.containsKey(binder)) {
                 // listener already added
@@ -81,7 +79,13 @@ public class ClientsHelper<TListener extends IInterface> {
         return true;
     }
 
-    protected void removeRemoteListener(TListener listener) {
+    /**
+     * 注销事件监听
+     *
+     * @param listener 监听回调方
+     * @return 是否成功
+     */
+    public boolean removeRemoteListener(TListener listener) {
         IBinder binder = listener.asBinder();
         LinkedListener linkedListener;
         synchronized (mListenerMap) {
@@ -90,6 +94,107 @@ public class ClientsHelper<TListener extends IInterface> {
         if (linkedListener != null) {
             binder.unlinkToDeath(linkedListener, 0);
         }
+        return true;
+    }
+
+    /**
+     * 设置场景因子
+     *
+     * @param pid     客户端进程
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean setRemoteFactor(int pid, long factors) {
+        boolean result = false;
+        for (Map.Entry<IBinder, LinkedListener> entry : mListenerMap.entrySet()) {
+            IBinder binder = entry.getKey();
+            LinkedListener linkedListener = entry.getValue();
+            if (pid == linkedListener.getPid()) {
+                linkedListener.setFactors(factors);
+                mListenerMap.replace(binder, linkedListener);
+                result = true;
+            }
+            if (result) {
+                break;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 新增场景因子
+     *
+     * @param pid     客户端进程
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean updateRemoteFactor(int pid, long factors) {
+        boolean result = false;
+        for (Map.Entry<IBinder, LinkedListener> entry : mListenerMap.entrySet()) {
+            IBinder binder = entry.getKey();
+            LinkedListener linkedListener = entry.getValue();
+            if (pid == linkedListener.getPid()) {
+                long sourceFactors = linkedListener.getFactors();
+                sourceFactors |= factors;
+                linkedListener.setFactors(sourceFactors);
+                mListenerMap.replace(binder, linkedListener);
+                result = true;
+            }
+            if (result) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 删除场景因子
+     *
+     * @param pid     客户端进程号
+     * @param factors 场景因子
+     * @return 是否成功
+     */
+    public boolean removeRemoteFactor(int pid, long factors) {
+        boolean result = false;
+        for (Map.Entry<IBinder, LinkedListener> entry : mListenerMap.entrySet()) {
+            IBinder binder = entry.getKey();
+            LinkedListener linkedListener = entry.getValue();
+            if (pid == linkedListener.getPid()) {
+                long sourceFactors = linkedListener.getFactors();
+                sourceFactors ^= factors;
+                linkedListener.setFactors(sourceFactors);
+                mListenerMap.replace(binder, linkedListener);
+                result = true;
+            }
+            if (result) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 判断所有的客户端里是否存在输入的场景因子
+     *
+     * @param factors 场景因子
+     * @return 存在场景因子
+     */
+    public boolean checkFactor(long factors) {
+        boolean exist = false;
+        for (Map.Entry<IBinder, LinkedListener> entry : mListenerMap.entrySet()) {
+            //IBinder binder = entry.getKey();
+            LinkedListener linkedListener = entry.getValue();
+
+            if ((linkedListener.getFactors() & factors) != 0) {
+                exist = true;
+            }
+
+            if (exist) {
+                break;
+            }
+        }
+
+        return exist;
     }
 
     protected void foreach(ListenerOperation<TListener> operation, long factors) {
@@ -101,7 +206,7 @@ public class ClientsHelper<TListener extends IInterface> {
     private void foreachUnsafe(ListenerOperation<TListener> operation, long factors) {
         for (LinkedListener linkedListener : mListenerMap.values()) {
             if ((linkedListener.getFactors() & factors) != 0) {
-                post(linkedListener.getUnderlyingListener(), operation, linkedListener.mPid);
+                post(linkedListener.getUnderlyingListener(), operation, linkedListener.getPid());
             }
         }
     }
@@ -135,12 +240,11 @@ public class ClientsHelper<TListener extends IInterface> {
     private class LinkedListener implements IBinder.DeathRecipient {
         private final TListener mListener;
         private final int mPid;
-        private final long mFactors;
+        private long mFactors;
 
-        public LinkedListener(TListener listener, long factors, int pid) {
+        public LinkedListener(int pid, TListener listener) {
             mListener = listener;
             mPid = pid;
-            mFactors = factors;
         }
 
         public TListener getUnderlyingListener() {
@@ -160,6 +264,13 @@ public class ClientsHelper<TListener extends IInterface> {
         public long getFactors() {
             return mFactors;
         }
+
+        public void setFactors(long factors) {
+            if (SmartLog.isDebug()) {
+                SmartLog.d(TAG, "factors = [" + factors + "]");
+            }
+            this.mFactors = factors;
+        }
     }
 
     private class HandlerRunnable implements Runnable {
@@ -167,8 +278,7 @@ public class ClientsHelper<TListener extends IInterface> {
         private final ListenerOperation<TListener> mOperation;
         private final int mPid;
 
-        public HandlerRunnable(TListener listener,
-                               ListenerOperation<TListener> operation, int pid) {
+        public HandlerRunnable(TListener listener, ListenerOperation<TListener> operation, int pid) {
             mListener = listener;
             mOperation = operation;
             mPid = pid;

@@ -62,18 +62,26 @@ public class DebugActivity extends AppCompatActivity {
         mLayout.addView(textView);
 
         Button button = new Button(this);
-        button.setText("Text");
+        button.setText("Set");
         button.setOnClickListener(v -> {
-            SmartLog.d(TAG, "text button click");
-            test();
+            SmartLog.d(TAG, "set button click");
+            init();
         });
         mLayout.addView(button);
 
         button = new Button(this);
-        button.setText("Image");
+        button.setText("Update");
         button.setOnClickListener(v -> {
-            SmartLog.d(TAG, "image button click");
-            //TODO
+            SmartLog.d(TAG, "update button click");
+            update();
+        });
+        mLayout.addView(button);
+
+        button = new Button(this);
+        button.setText("Remove");
+        button.setOnClickListener(v -> {
+            SmartLog.d(TAG, "remove button click");
+            remove();
         });
         mLayout.addView(button);
 
@@ -82,17 +90,28 @@ public class DebugActivity extends AppCompatActivity {
         setContentView(sv);
     }
 
-    private void test() {
+    private void init() {
         I007Core.getCore().startup(mContext);
         I007Manager i007m = I007Manager.getInstance(mContext);
-        i007m.subscribeObserver(I007Manager.SCENE_FACTOR_APP
-                        | I007Manager.SCENE_FACTOR_LCD
-                        | I007Manager.SCENE_FACTOR_BATTERY,
-                new I007Observer() {
-                    @Override
-                    public void onSceneChanged(I007Result result) throws RemoteException {
-                        Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
-                    }
-                });
+        i007m.subscribeObserver(new I007Observer() {
+            @Override
+            public void onSceneChanged(I007Result result) throws RemoteException {
+                Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
+            }
+        });
+
+        i007m.setFactor(I007Manager.SCENE_FACTOR_APP
+                | I007Manager.SCENE_FACTOR_LCD);
     }
+
+    private void update() {
+        I007Manager i007m = I007Manager.getInstance(mContext);
+        i007m.updateFactor(I007Manager.SCENE_FACTOR_BATTERY);
+    }
+
+    private void remove() {
+        I007Manager i007m = I007Manager.getInstance(mContext);
+        i007m.removeFactor(I007Manager.SCENE_FACTOR_BATTERY);
+    }
+
 }

@@ -36,6 +36,7 @@ public class AESUtils {
 
     /**
      * 加密
+     *
      * @param content 上下文
      * @return 加密后的字符串
      */
@@ -45,6 +46,7 @@ public class AESUtils {
 
     /**
      * 解密
+     *
      * @param content 上下文
      * @return 解密后的字符串
      */
@@ -54,8 +56,9 @@ public class AESUtils {
 
     /**
      * 加密
+     *
      * @param content 上下文
-     * @param key 密钥
+     * @param key     密钥
      * @return 加密后的字符串
      */
     private static String encrypt(String content, String key) {
@@ -78,8 +81,9 @@ public class AESUtils {
 
     /**
      * 解密
+     *
      * @param content 上下文
-     * @param key 密钥
+     * @param key     密钥
      * @return 解密后的字符串
      */
     private static String decrypt(String content, String key) {

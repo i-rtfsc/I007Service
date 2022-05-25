@@ -30,20 +30,25 @@ import com.journeyOS.monitor.Monitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
+ * 电池监听器
+ *
  * @author solo
  */
 public class BatteryMonitor extends Monitor {
     private static final String TAG = BatteryMonitor.class.getSimpleName();
-
     private volatile static BatteryMonitor INSTANCE = null;
     private Context mContext;
     private BatteryBroadcastReceiver mReceiver;
-
 
     private BatteryMonitor() {
         SmartLog.d(TAG, "init");
     }
 
+    /**
+     * 获取BatteryMonitor单例
+     *
+     * @return BatteryMonitor
+     */
     public static BatteryMonitor getInstance() {
         if (INSTANCE == null) {
             synchronized (BatteryMonitor.class) {

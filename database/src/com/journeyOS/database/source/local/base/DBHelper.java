@@ -36,6 +36,13 @@ public class DBHelper {
     private static final String TAG = DBHelper.class.getSimpleName();
 
     private volatile static DBHelper INSTANCE = null;
+    private final Map<String, Object> mDatabaseMap = new HashMap<>();
+    private final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            //upgrade
+        }
+    };
 
     private DBHelper() {
     }
@@ -56,15 +63,6 @@ public class DBHelper {
         }
         return INSTANCE;
     }
-
-    private final Map<String, Object> mDatabaseMap = new HashMap<>();
-    private final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            //upgrade
-        }
-    };
-
 
     /**
      * 获取RoomDatabase

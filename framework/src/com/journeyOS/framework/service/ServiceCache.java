@@ -25,24 +25,48 @@ import java.util.Map;
 
 
 /**
+ * 服务缓存
+ *
  * @author solo
  */
 public class ServiceCache {
     private static final String TAG = ServiceCache.class.getSimpleName();
     private static final Map<String, IBinder> sCache = new HashMap<>(10);
 
+    /**
+     * 添加服务
+     *
+     * @param name    服务名称
+     * @param service binder对象
+     */
     public static void addService(String name, IBinder service) {
         sCache.put(name, service);
     }
 
-    public static IBinder removeService(String name) {
-        return sCache.remove(name);
-    }
-
+    /**
+     * 获取服务
+     *
+     * @param name 服务名称
+     * @return binder对象
+     */
     public static IBinder getService(String name) {
         return sCache.get(name);
     }
 
+
+    /**
+     * 删除服务
+     *
+     * @param name 服务名称
+     * @return binder对象
+     */
+    public static IBinder removeService(String name) {
+        return sCache.remove(name);
+    }
+
+    /**
+     * 打印所有服务信息
+     */
     public static void dumpService() {
         SmartLog.d(TAG, "service size = [" + sCache.size() + "]");
         for (String key : sCache.keySet()) {

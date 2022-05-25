@@ -33,6 +33,7 @@ public abstract class Monitor {
         if (mInit) {
             SmartLog.d(TAG, this.getClass().getSimpleName() + " is already inited");
         } else {
+            SmartLog.d(TAG, this.getClass().getSimpleName() + " init , factoryId = [" + mFactoryId + "]");
             onInit(factoryId);
             mInit = true;
         }
@@ -43,6 +44,7 @@ public abstract class Monitor {
         if (mStart) {
             SmartLog.d(TAG, this.getClass().getSimpleName() + " is already started");
         } else {
+            SmartLog.d(TAG, this.getClass().getSimpleName() + " start , factoryId = [" + mFactoryId + "]");
             onStart();
             mStart = true;
         }
@@ -54,6 +56,7 @@ public abstract class Monitor {
         if (!mStart) {
             SmartLog.d(TAG, this.getClass().getSimpleName() + " is already stopped");
         } else {
+            SmartLog.d(TAG, this.getClass().getSimpleName() + " stop , factoryId = [" + mFactoryId + "]");
             onStop();
             mInit = false;
             mStart = false;

@@ -29,42 +29,11 @@ import com.journeyOS.i007manager.II007Observer;
  *
  * @author solo
  */
-public class Clients extends ClientsHelper {
+public class Clients extends ClientsImpl {
     private static final String TAG = Clients.class.getSimpleName();
 
     public Clients(Handler handler) {
         super(handler);
-    }
-
-    /**
-     * 添加客户端
-     *
-     * @param listener   II007Observer
-     * @param factors    场景因子
-     * @param callingPid 客户端进程号
-     * @return 返回boolean 添加是否正确
-     */
-    public boolean addListener(II007Observer listener, long factors, int callingPid) {
-        if (addRemoteListener(listener, factors, callingPid)) {
-            SmartLog.i(TAG, "addListener " + listener + " for " + callingPid + " " + Long.toHexString(factors));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 删除客户端
-     *
-     * @param listener
-     */
-    public void removeListener(II007Observer listener) {
-        try {
-            removeRemoteListener(listener);
-            SmartLog.i(TAG, "removeListener " + listener);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -86,10 +55,6 @@ public class Clients extends ClientsHelper {
         };
         foreach(operation, result.getFactoryId());
     }
-
-//    public void dump(FileDescriptor fd, PrintWriter pw) {
-//        pw.println(super.toString());
-//    }
 
     private interface Operation extends ListenerOperation<II007Observer> {
     }

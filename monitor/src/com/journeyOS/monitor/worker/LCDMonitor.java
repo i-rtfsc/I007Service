@@ -29,20 +29,25 @@ import com.journeyOS.monitor.Monitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
+ * 屏幕监听器
+ *
  * @author solo
  */
 public class LCDMonitor extends Monitor {
     private static final String TAG = LCDMonitor.class.getSimpleName();
-
     private volatile static LCDMonitor INSTANCE = null;
     private Context mContext;
     private ScreenBroadcastReceiver mReceiver;
-
 
     private LCDMonitor() {
         SmartLog.d(TAG, "init");
     }
 
+    /**
+     * 获取LCDMonitor单例
+     *
+     * @return LCDMonitor实例
+     */
     public static LCDMonitor getInstance() {
         if (INSTANCE == null) {
             synchronized (LCDMonitor.class) {

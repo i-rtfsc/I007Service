@@ -18,12 +18,12 @@ package com.journeyOS.monitor;
 
 import android.util.Log;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.monitor.worker.AccessibilityMonitor;
 import com.journeyOS.monitor.worker.BatteryMonitor;
 import com.journeyOS.monitor.worker.LCDMonitor;
+import com.journeyOS.monitor.worker.NetworkMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,11 @@ public class MonitorManager {
     private MonitorManager() {
     }
 
+    /**
+     * 获取MonitorManager单例
+     *
+     * @return MonitorManager实例
+     */
     public static MonitorManager getInstance() {
         if (INSTANCE == null) {
             synchronized (MonitorManager.class) {
@@ -53,6 +58,11 @@ public class MonitorManager {
         return INSTANCE;
     }
 
+    /**
+     * 获取 I007Result.Builder
+     *
+     * @return I007Result.Builder
+     */
     public I007Result.Builder getBuilder() {
         return mBuilder;
     }
@@ -87,7 +97,12 @@ public class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            //TODO
+            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            if (monitor == null) {
+                monitor = NetworkMonitor.getInstance();
+                monitor.init(I007Manager.SCENE_FACTOR_NET);
+                mMonitors.put(I007Manager.SCENE_FACTOR_NET, monitor);
+            }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
@@ -105,8 +120,13 @@ public class MonitorManager {
         return true;
     }
 
+    /**
+     * 启动monitor
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
     public boolean start(long factors) {
-        SmartLog.d(TAG, "factors = [" + factors + "]");
         init(factors);
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
@@ -120,7 +140,8 @@ public class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            //TODO
+            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
@@ -134,6 +155,12 @@ public class MonitorManager {
         return result;
     }
 
+    /**
+     * 暂停monitor
+     *
+     * @param factors 场景因子
+     * @return 是否成功
+     */
     public boolean stop(long factors) {
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
@@ -142,11 +169,13 @@ public class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            //TODO
+            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            //TODO
+            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
@@ -160,6 +189,11 @@ public class MonitorManager {
         return result;
     }
 
+    /**
+     * 通知结果
+     *
+     * @param builder I007Result.Builder
+     */
     public synchronized void notifyResult(I007Result.Builder builder) {
         setBuilder(builder);
         I007Result result = builder.build();
