@@ -23,46 +23,6 @@ import android.os.Parcelable;
  * @author solo
  */
 public class I007Result implements Parcelable {
-    private long factoryId;
-    private String packageName;
-    private Battery battery;
-
-    public I007Result(long factoryId, String packageName, Battery battery) {
-        this.factoryId = factoryId;
-        this.packageName = packageName;
-        this.battery = battery;
-    }
-
-    public long getFactoryId() {
-        return factoryId;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public Battery getBattery() {
-        return battery;
-    }
-
-    protected I007Result(Parcel in) {
-        factoryId = in.readLong();
-        packageName = in.readString();
-        battery = in.readParcelable(Battery.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(factoryId);
-        dest.writeString(packageName);
-        dest.writeParcelable(battery, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     public static final Creator<I007Result> CREATOR = new Creator<I007Result>() {
         @Override
         public I007Result createFromParcel(Parcel in) {
@@ -74,38 +34,92 @@ public class I007Result implements Parcelable {
             return new I007Result[size];
         }
     };
+    private long factoryId;
+    private I007App app;
+    private I007Battery battery;
+    private I007Screen screen;
+
+    public I007Result(long factoryId, I007App app, I007Battery battery, I007Screen screen) {
+        this.factoryId = factoryId;
+        this.app = app;
+        this.battery = battery;
+        this.screen = screen;
+    }
+
+    protected I007Result(Parcel in) {
+        factoryId = in.readLong();
+        app = in.readParcelable(I007App.class.getClassLoader());
+        battery = in.readParcelable(I007Battery.class.getClassLoader());
+        screen = in.readParcelable(I007Screen.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(factoryId);
+        dest.writeParcelable(app, flags);
+        dest.writeParcelable(battery, flags);
+        dest.writeParcelable(screen, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public String toString() {
         return "I007Result{" +
                 "factoryId=" + factoryId +
-                ", packageName='" + packageName + '\'' +
+                ", app=" + app +
                 ", battery=" + battery +
+                ", screen=" + screen +
                 '}';
+    }
+
+    public long getFactoryId() {
+        return factoryId;
+    }
+
+    public I007App getApp() {
+        return app;
+    }
+
+    public I007Battery getBattery() {
+        return battery;
+    }
+
+    public I007Screen getScreen() {
+        return screen;
     }
 
     public static class Builder {
         private long factoryId;
-        private String packageName;
-        private Battery battery;
+        private I007App app;
+        private I007Battery battery;
+        private I007Screen screen;
 
         public Builder setFactoryId(long factoryId) {
             this.factoryId = factoryId;
             return this;
         }
 
-        public Builder setPackageName(String packageName) {
-            this.packageName = packageName;
+        public Builder setApp(I007App app) {
+            this.app = app;
             return this;
         }
 
-        public Builder setBattery(Battery battery) {
+        public Builder setBattery(I007Battery battery) {
             this.battery = battery;
             return this;
         }
 
+        public Builder setScreen(I007Screen screen) {
+            this.screen = screen;
+            return this;
+        }
+
         public I007Result build() {
-            return new I007Result(factoryId, packageName, battery);
+            return new I007Result(factoryId, app, battery, screen);
         }
     }
 }

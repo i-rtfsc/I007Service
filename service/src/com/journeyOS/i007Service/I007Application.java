@@ -29,5 +29,6 @@ public class I007Application extends Application {
     public void onCreate() {
         super.onCreate();
         I007Core.getCore().startup(this);
+        AppConfig.getInstance().initialize(this);
     }
 }

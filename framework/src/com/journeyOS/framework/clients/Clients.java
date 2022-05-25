@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.service.clients;
+package com.journeyOS.framework.clients;
 
 import android.os.Handler;
 import android.os.RemoteException;
@@ -23,11 +23,10 @@ import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Observer;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-
 
 /**
+ * 客户端
+ *
  * @author solo
  */
 public class Clients extends ClientsHelper {
@@ -37,16 +36,28 @@ public class Clients extends ClientsHelper {
         super(handler);
     }
 
+    /**
+     * 添加客户端
+     *
+     * @param listener   II007Observer
+     * @param factors    场景因子
+     * @param callingPid 客户端进程号
+     * @return 返回boolean 添加是否正确
+     */
     public boolean addListener(II007Observer listener, long factors, int callingPid) {
         if (addRemoteListener(listener, factors, callingPid)) {
-            SmartLog.i(TAG, "addListener " + listener
-                    + " for " + callingPid + " " + Long.toHexString(factors));
+            SmartLog.i(TAG, "addListener " + listener + " for " + callingPid + " " + Long.toHexString(factors));
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * 删除客户端
+     *
+     * @param listener
+     */
     public void removeListener(II007Observer listener) {
         try {
             removeRemoteListener(listener);
@@ -56,6 +67,11 @@ public class Clients extends ClientsHelper {
         }
     }
 
+    /**
+     * 派发事件给客户端
+     *
+     * @param result I007Result
+     */
     public synchronized void dispatchFactorEvent(final I007Result result) {
         Operation operation = new Operation() {
             @Override
@@ -71,9 +87,9 @@ public class Clients extends ClientsHelper {
         foreach(operation, result.getFactoryId());
     }
 
-    public void dump(FileDescriptor fd, PrintWriter pw) {
-        pw.println(super.toString());
-    }
+//    public void dump(FileDescriptor fd, PrintWriter pw) {
+//        pw.println(super.toString());
+//    }
 
     private interface Operation extends ListenerOperation<II007Observer> {
     }

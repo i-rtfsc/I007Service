@@ -1,0 +1,6 @@
+apply from: "../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly project(':framework')
+}

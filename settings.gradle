@@ -1,5 +1,7 @@
 include ':sdk'
 include ':base'
 include ':database'
+include ':framework'
+include ':monitor'
 include ':service'
 //include ':test'

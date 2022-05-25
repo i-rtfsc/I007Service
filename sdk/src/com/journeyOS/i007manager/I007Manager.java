@@ -32,6 +32,10 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class I007Manager {
     /**
+     * 未知场景
+     */
+    public static final long SCENE_FACTOR_UNKNOWN = -1;
+    /**
      * 前台变化为何种类型APP场景
      */
     public static final long SCENE_FACTOR_APP = 1 << 1;

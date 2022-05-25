@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.service.core.base;
+package com.journeyOS.framework.service;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

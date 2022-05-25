@@ -35,6 +35,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
         mContext = context;
     }
 
+    /**
+     * 获取HttpDataSourceImpl实例
+     * @param context 上下文
+     * @return HttpDataSourceImpl
+     */
     public static HttpDataSourceImpl getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (HttpDataSourceImpl.class) {

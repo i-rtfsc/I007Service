@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.service.core.base;
+package com.journeyOS.i007manager;
 
-import android.content.Context;
-
-/**
- * @author solo
- */
-public interface IService {
-    /**
-     * 服务启动
-     *
-     * @param context 上下午
-     */
-    void onCreate(Context context);
-}
+parcelable I007Screen;

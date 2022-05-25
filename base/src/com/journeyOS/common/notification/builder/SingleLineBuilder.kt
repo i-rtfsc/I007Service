@@ -18,4 +18,8 @@ package com.journeyOS.common.notification.builder
 
 import android.content.Context
 
+/**
+ * 一行通知
+ * @author solo
+ */
 class SingleLineBuilder(context: Context) : BaseBuilder(context)

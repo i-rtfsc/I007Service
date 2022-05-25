@@ -20,23 +20,21 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.i007Service.service.clients.ClientSession;
-import com.journeyOS.i007manager.I007Manager;
+import com.journeyOS.framework.clients.ClientSession;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Manager;
 import com.journeyOS.i007manager.II007Observer;
+import com.journeyOS.monitor.MonitorManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author solo
  */
-public class I007ManagerService extends II007Manager.Stub {
+public class I007ManagerService extends II007Manager.Stub implements MonitorManager.OnSceneListener {
     private static final String TAG = I007ManagerService.class.getSimpleName();
 
     private static final AtomicReference<I007ManagerService> sService = new AtomicReference<>();
-
-    private Context mContext;
 
     public static I007ManagerService getService() {
         return sService.get();
@@ -50,15 +48,15 @@ public class I007ManagerService extends II007Manager.Stub {
     }
 
     public void onCreate(Context context) {
-        SmartLog.d(TAG, "I007 manager service running = [" + context + "]");
-        mContext = context;
+        SmartLog.d(TAG, "I007 manager service running...");
         sService.set(this);
+        MonitorManager.getInstance().registerListener(this);
     }
 
     @Override
     public boolean registerListener(long factors, II007Observer listener) throws RemoteException {
+        MonitorManager.getInstance().start(factors);
         ClientSession.getDefault().insertToCategory(factors, listener);
-        testNotify();
         return true;
     }
 
@@ -68,11 +66,9 @@ public class I007ManagerService extends II007Manager.Stub {
         return true;
     }
 
-    private void testNotify() {
-        I007Result result =  new I007Result.Builder()
-                .setFactoryId(I007Manager.SCENE_FACTOR_APP)
-                .setPackageName("test-pk")
-                .build();
+    @Override
+    public void onChanged(I007Result result) {
+        MonitorManager.getInstance().start(result.getFactoryId());
         ClientSession.getDefault().dispatchFactorEvent(result);
     }
 }

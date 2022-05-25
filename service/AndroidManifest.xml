@@ -32,7 +32,7 @@
         android:theme="@style/AppTheme">
 
         <provider
-            android:name=".service.core.I007SystemServer"
+            android:name=".service.system.I007SystemServer"
             android:authorities="com.journeyOS.i007manager.syncprovider"
             android:exported="true" />
 

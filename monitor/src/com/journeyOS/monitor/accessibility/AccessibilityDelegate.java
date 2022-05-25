@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007manager;
+package com.journeyOS.monitor.accessibility;
 
-import com.journeyOS.i007manager.II007Observer;
+import android.view.accessibility.AccessibilityEvent;
 
-interface II007Manager {
-    boolean registerListener(long factors, in II007Observer listener);
-    boolean unregisterListener(in II007Observer listener);
+import java.util.Set;
+
+/**
+ * @author solo
+ */
+public interface AccessibilityDelegate {
+    Set<Integer> ALL_EVENT_TYPES = null;
+
+    boolean onAccessibilityEvent(AccessibilityService service, AccessibilityEvent event);
+
+    /**
+     * 返回调用onAccessibilityEvent时的EventType的集合。如果需要对所有EventType都有效，返回null。
+     */
+    Set<Integer> getEventTypes();
 }
+

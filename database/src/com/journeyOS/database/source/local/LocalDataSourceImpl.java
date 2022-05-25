@@ -30,12 +30,12 @@ import com.journeyOS.common.utils.JsonHelper;
 import com.journeyOS.database.source.api.LocalDataSource;
 import com.journeyOS.database.source.local.app.App;
 import com.journeyOS.database.source.local.app.AppDao;
-import com.journeyOS.database.source.local.app.Setting;
-import com.journeyOS.database.source.local.app.SettingDao;
 import com.journeyOS.database.source.local.base.DBConfigs;
 import com.journeyOS.database.source.local.base.DBConstant;
 import com.journeyOS.database.source.local.base.DBHelper;
 import com.journeyOS.database.source.local.base.I007Database;
+import com.journeyOS.database.source.local.setting.Setting;
+import com.journeyOS.database.source.local.setting.SettingDao;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class LocalDataSourceImpl implements LocalDataSource {
 
     private LocalDataSourceImpl(Context context) {
         mContext = context;
-        I007Database database = DBHelper.getDefault().getRoomDatabaseBuilder(context,
+        I007Database database = DBHelper.getInstance().getRoomDatabaseBuilder(context,
                 I007Database.class, DBConfigs.DB_NAME);
         mAppDao = database.appDao();
         mSettingDao = database.settingDao();
@@ -190,9 +190,9 @@ public class LocalDataSourceImpl implements LocalDataSource {
             final String object = clazz.getName();
 
             setting = new Setting();
-            setting.setValue(key);
-            setting.setValue(defaultValue.toString());
-            setting.setType(object);
+            setting.key = key;
+            setting.value = defaultValue.toString();
+            setting.object = object;
         }
 
         return setting;
@@ -203,12 +203,11 @@ public class LocalDataSourceImpl implements LocalDataSource {
         Setting setting = mSettingDao.getSetting(key);
         if (setting == null) {
             setting = new Setting();
-            setting.setKey(key);
-
+            setting.key = key;
         }
         Class<?> clazz = defaultValue.getClass();
-        setting.setType(clazz.getName());
-        setting.setValue(defaultValue.toString());
+        setting.object = clazz.getName();
+        setting.value = defaultValue.toString();
         mSettingDao.saveSetting(setting);
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.service.clients;
+package com.journeyOS.framework.clients;
 
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,14 +28,34 @@ import java.util.Map;
 
 
 /**
+ * 客户端Helper
+ *
  * @author solo
  */
 public class ClientsHelper<TListener extends IInterface> {
     private static final String TAG = ClientsHelper.class.getSimpleName();
     private final Handler mHandler;
 
+    /**
+     * binder对象跟II007Observer对应起来
+     */
     private final Map<IBinder, LinkedListener> mListenerMap = new HashMap<>();
 
+
+    /**
+     * TODO
+     * 后期改成：
+     * 1. binder对象跟II007Observer对应起来
+     * 2. binder对象跟场景因子对应起来，这样做有几个好处：
+     *      - 客户端不用解除监听可以随时更换场景因子
+     *      - 在解注册的时候，或者客户端断开连接的时候检查相应的场景因子是否还相应monitor，如果不相应则stop，节省资源
+     */
+
+    /**
+     * 构造函数
+     *
+     * @param handler Handler
+     */
     public ClientsHelper(Handler handler) {
         mHandler = handler;
     }

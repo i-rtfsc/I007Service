@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.service.clients;
+package com.journeyOS.framework.clients;
 
 import android.os.Binder;
 import android.os.Handler;
@@ -69,7 +69,7 @@ public class ClientSession {
     }
 
     private class H extends Handler {
-        public static final long DELAYED_MILLIS = 2000;
+        public static final long DELAYED_MILLIS = 15;
         public static final int MSG_OBJ = 1;
 
         public H(Looper looper) {

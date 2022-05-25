@@ -28,9 +28,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * 文件操作类
+ *
+ * @author solo
+ */
 public class FileUtils {
     private static final String TAG = FileUtils.class.getSimpleName();
 
+    /**
+     * 从自己app的Asset目录读取文件，并返回字符串
+     *
+     * @param context  上下文
+     * @param fileName 文件名
+     * @return 字符串
+     */
     public static String readFileFromAsset(Context context, String fileName) {
         if (context == null || fileName == null) {
             SmartLog.w(TAG, "Context or file name can't be NULL");
@@ -47,6 +59,12 @@ public class FileUtils {
         return null;
     }
 
+    /**
+     * 从输入流读取并返回字符串
+     *
+     * @param inputStream 输入流
+     * @return 字符串
+     */
     public static String readFileFromInputStream(InputStream inputStream) {
         if (inputStream == null) {
             SmartLog.w(TAG, "InputStream can't be NULL");
@@ -76,6 +94,12 @@ public class FileUtils {
         return null;
     }
 
+    /**
+     * 保存文件
+     *
+     * @param file  文件（文件的目录）
+     * @param value 写入文件的字符串
+     */
     public static void write2File(File file, String value) {
         try {
             if (!file.exists()) {

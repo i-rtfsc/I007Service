@@ -26,6 +26,10 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 
+/**
+ * 通知基类
+ * @author solo
+ */
 open class BaseBuilder(context: Context) : ContextWrapper(context) {
     private var mManager: NotificationManager? = null
         get() {
@@ -75,19 +79,25 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
 
     var `when`: Long = 0
 
-    //事件
+    /**
+     * 事件
+     */
     var contentIntent: PendingIntent? = null
     var deleteIntent: PendingIntent? = null
     var fullscreenIntent: PendingIntent? = null
 
-    //种类
+    /**
+     * 种类
+     */
     var style: NotificationCompat.Style? = null
 
     var onGoing = false
 
     var foregroundService = false
 
-    //带按钮的
+    /**
+     * 带按钮
+     */
     private val btnActionBeans by lazy { arrayListOf<BtnActionBean>() }
 
     protected val cBuilder by lazy { NotificationCompat.Builder(this, packageName + priority) }
@@ -131,7 +141,9 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
 
     fun setDeleteIntent(deleteIntent: PendingIntent) = apply { this.deleteIntent = deleteIntent }
 
-    //todo
+    /**
+     * TODO
+     */
     fun setFullScreenIntent(fullscreenIntent: PendingIntent) =
         apply { this.fullscreenIntent = fullscreenIntent }
 
@@ -154,19 +166,38 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
 
     open fun build(channelId: String) {
         cBuilder.setChannelId(channelId)
-        cBuilder.setContentIntent(contentIntent)// 该通知要启动的Intent
-        if (smallIcon > 0) cBuilder.setSmallIcon(smallIcon)// 设置顶部状态栏的小图标
-        if (bigIcon > 0) cBuilder.setLargeIcon(
-            BitmapFactory.decodeResource(
-                this.resources,
-                bigIcon
+        /**
+         * 该通知要启动的Intent
+         */
+        cBuilder.setContentIntent(contentIntent)
+        /**
+         * 设置顶部状态栏的小图标
+         */
+        if (smallIcon > 0) {
+            cBuilder.setSmallIcon(smallIcon)
+        }
+        if (bigIcon > 0) {
+            cBuilder.setLargeIcon(
+                BitmapFactory.decodeResource(
+                    this.resources,
+                    bigIcon
+                )
             )
-        )
+        }
 
-        cBuilder.setTicker(ticker ?: "有新消息")// 在顶部状态栏中的提示信息
+        /**
+         * 在顶部状态栏中的提示信息
+         */
+        cBuilder.setTicker(ticker ?: "有新消息")
 
-        cBuilder.setContentTitle(contentTitle)// 设置通知中心的标题
-        contentText?.apply { cBuilder.setContentText(this) }// 设置通知中心中的内容
+        /**
+         * 设置通知中心的标题
+         */
+        cBuilder.setContentTitle(contentTitle)
+        /**
+         * 设置通知中心中的内容
+         */
+        contentText?.apply { cBuilder.setContentText(this) }
 
         cBuilder.setWhen(System.currentTimeMillis())
         //cBuilder.setStyle()
@@ -177,7 +208,9 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
          */
         cBuilder.setAutoCancel(true)
 
-        // 将Ongoing设为true 那么notification将不能滑动删除
+        /**
+         * 将Ongoing设为true 那么notification将不能滑动删除
+         */
         // notifyBuilder.setOngoing(true);
         /*
          * 从Android4.1开始，可以通过以下方法，设置notification的优先级，
@@ -192,10 +225,14 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
         if (lights) defaults = defaults or Notification.DEFAULT_LIGHTS
         cBuilder.setDefaults(defaults)
 
-        //按钮
+        /**
+         * 按钮
+         */
         btnActionBeans.forEach { cBuilder.addAction(it.icon, it.text, it.pendingIntent) }
 
-        //headUp
+        /**
+         * headUp
+         */
         if (headUp) {
             cBuilder.priority = NotificationCompat.PRIORITY_MAX
             cBuilder.setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -207,7 +244,9 @@ open class BaseBuilder(context: Context) : ContextWrapper(context) {
         cBuilder.setOngoing(onGoing)
         cBuilder.setFullScreenIntent(fullscreenIntent, true)
 //        cBuilder.setVisibility(lockScreenVisibility)
-        //设置小图标着色
+        /**
+         * 设置小图标着色
+         */
         cBuilder.color = Color.parseColor("#00D766")
     }
 

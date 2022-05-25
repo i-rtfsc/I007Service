@@ -20,8 +20,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.journeyOS.database.source.local.app.App
 import com.journeyOS.database.source.local.app.AppDao
-import com.journeyOS.database.source.local.app.Setting
-import com.journeyOS.database.source.local.app.SettingDao
+import com.journeyOS.database.source.local.setting.Setting
+import com.journeyOS.database.source.local.setting.SettingDao
 
 /**
  * Base class for all Room databases. All classes that are annotated with Database must extend this class.

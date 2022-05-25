@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007manager;
+package com.journeyOS.monitor.accessibility;
 
-import com.journeyOS.i007manager.II007Observer;
-
-interface II007Manager {
-    boolean registerListener(long factors, in II007Observer listener);
-    boolean unregisterListener(in II007Observer listener);
+public interface ActivityListener {
+    void activityResumed(String packageName, String activity);
 }

@@ -22,6 +22,11 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * AES加密
+ *
+ * @author solo
+ */
 public class AESUtils {
     private static String KEY = "AD42F6697B035B7580E4FEF93BE20BAD";
     private static String CHARSET = "utf-8";
@@ -29,14 +34,30 @@ public class AESUtils {
     private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static String ALGORITHM = "AES";
 
+    /**
+     * 加密
+     * @param content 上下文
+     * @return 加密后的字符串
+     */
     public static String encrypt(String content) {
         return encrypt(content, KEY);
     }
 
+    /**
+     * 解密
+     * @param content 上下文
+     * @return 解密后的字符串
+     */
     public static String decrypt(String content) {
         return decrypt(content, KEY);
     }
 
+    /**
+     * 加密
+     * @param content 上下文
+     * @param key 密钥
+     * @return 加密后的字符串
+     */
     private static String encrypt(String content, String key) {
         try {
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), ALGORITHM);
@@ -55,6 +76,12 @@ public class AESUtils {
         return null;
     }
 
+    /**
+     * 解密
+     * @param content 上下文
+     * @param key 密钥
+     * @return 解密后的字符串
+     */
     private static String decrypt(String content, String key) {
         try {
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), ALGORITHM);

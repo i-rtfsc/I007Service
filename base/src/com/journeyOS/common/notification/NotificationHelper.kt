@@ -22,6 +22,11 @@ import android.app.PendingIntent
 import com.journeyOS.common.notification.builder.SingleLineBuilder
 import com.journeyOS.i007manager.I007Core
 
+
+/**
+ * 通知Helper
+ * @author solo
+ */
 object NotificationHelper {
 
     private val mContext by lazy {

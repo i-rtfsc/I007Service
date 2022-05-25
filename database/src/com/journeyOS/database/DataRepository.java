@@ -21,6 +21,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.journeyOS.common.SmartLog;
 import com.journeyOS.database.source.api.HttpDataSource;
 import com.journeyOS.database.source.api.LocalDataSource;
 import com.journeyOS.database.source.http.HttpDataSourceImpl;
@@ -33,15 +34,23 @@ import java.util.List;
  * @author solo
  */
 public class DataRepository implements HttpDataSource, LocalDataSource {
+    private static final String TAG = DataRepository.class.getSimpleName();
     private volatile static DataRepository INSTANCE = null;
     private final HttpDataSource mHttpDataSource;
     private final LocalDataSource mLocalDataSource;
 
     private DataRepository(Context context) {
+        SmartLog.d(TAG, "init data impl...");
         this.mHttpDataSource = HttpDataSourceImpl.getInstance(context);
         this.mLocalDataSource = LocalDataSourceImpl.getInstance(context);
     }
 
+    /**
+     * 获取DataRepository实例
+     *
+     * @param context 上下文
+     * @return DataRepository
+     */
     public static DataRepository getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (DataRepository.class) {

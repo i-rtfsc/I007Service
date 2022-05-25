@@ -24,8 +24,6 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.journeyOS.common.utils.Singleton;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,12 +35,28 @@ import java.util.Map;
 public class DBHelper {
     private static final String TAG = DBHelper.class.getSimpleName();
 
-    private static final Singleton<DBHelper> gDefault = new Singleton<DBHelper>() {
-        @Override
-        protected DBHelper create() {
-            return new DBHelper();
+    private volatile static DBHelper INSTANCE = null;
+
+    private DBHelper() {
+    }
+
+    /**
+     * 获取DBHelper实例
+     *
+     * @return DBHelper
+     */
+    public static DBHelper getInstance() {
+        if (INSTANCE == null) {
+            synchronized (DBHelper.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new DBHelper();
+
+                }
+            }
         }
-    };
+        return INSTANCE;
+    }
+
     private final Map<String, Object> mDatabaseMap = new HashMap<>();
     private final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -51,13 +65,16 @@ public class DBHelper {
         }
     };
 
-    private DBHelper() {
-    }
 
-    public static DBHelper getDefault() {
-        return gDefault.get();
-    }
-
+    /**
+     * 获取RoomDatabase
+     *
+     * @param context 上下文
+     * @param dbCls   RoomDatabase
+     * @param dbName  数据库名字
+     * @param <T>     RoomDatabase
+     * @return RoomDatabase
+     */
     public synchronized <T extends RoomDatabase> T getRoomDatabaseBuilder(Context context, Class<T> dbCls, String dbName) {
         String dbClsName = dbCls.getName();
         if (mDatabaseMap.get(dbClsName) == null) {

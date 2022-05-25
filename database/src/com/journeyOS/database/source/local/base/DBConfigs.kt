@@ -58,6 +58,17 @@ object DBConfigs {
         const val VALUE = "value"
 
         //column
-        const val TYPE = "type"
+        const val OBJECT = "object"
+    }
+
+    object AppType {
+        const val ALBUM = "album"
+        const val BROWSER = "browser"
+        const val GAME = "game"
+        const val IM = "im"
+        const val MUSIC = "music"
+        const val NEWS = "news"
+        const val READER = "reader"
+        const val VIDEO = "video"
     }
 }

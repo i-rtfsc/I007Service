@@ -85,11 +85,14 @@ public class DebugActivity extends AppCompatActivity {
     private void test() {
         I007Core.getCore().startup(mContext);
         I007Manager i007m = I007Manager.getInstance(mContext);
-        i007m.subscribeObserver(I007Manager.SCENE_FACTOR_APP, new I007Observer() {
-            @Override
-            public void onSceneChanged(I007Result result) throws RemoteException {
-                Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
-            }
-        });
+        i007m.subscribeObserver(I007Manager.SCENE_FACTOR_APP
+                        | I007Manager.SCENE_FACTOR_LCD
+                        | I007Manager.SCENE_FACTOR_BATTERY,
+                new I007Observer() {
+                    @Override
+                    public void onSceneChanged(I007Result result) throws RemoteException {
+                        Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
+                    }
+                });
     }
 }

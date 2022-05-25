@@ -16,4 +16,4 @@
 
 package com.journeyOS.i007manager;
 
-parcelable Battery;
+parcelable I007App;

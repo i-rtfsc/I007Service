@@ -86,11 +86,8 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-    implementation project(':sdk')
-    implementation project(':base')
-    implementation project(':database')
-
+    implementation project(':framework')
+    implementation project(':monitor')
 }
 
 defaultTasks 'clean', 'assembleRelease'
