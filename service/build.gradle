@@ -88,6 +88,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':framework')
     implementation project(':monitor')
+    implementation project(':machinelearning')
 }
 
 defaultTasks 'clean', 'assembleRelease'

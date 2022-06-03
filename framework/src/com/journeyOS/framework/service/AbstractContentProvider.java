@@ -29,37 +29,58 @@ import androidx.annotation.NonNull;
  *
  * @author solo
  */
-public abstract class BaseContentProvider extends ContentProvider {
+public abstract class AbstractContentProvider extends ContentProvider {
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onCreate() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getType(@NonNull Uri uri) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Bundle call(@NonNull String method, String arg, Bundle extras) {
         return super.call(method, arg, extras);

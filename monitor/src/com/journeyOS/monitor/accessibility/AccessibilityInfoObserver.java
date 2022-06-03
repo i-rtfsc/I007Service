@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author solo
  */
-public class AccessibilityInfoObserver implements ActivityListener, AccessibilityDelegate {
+public final class AccessibilityInfoObserver implements ActivityListener, AccessibilityDelegate {
     private volatile String mLatestPackage = "";
     private volatile String mLatestActivity = "";
     private Context mContext;
@@ -40,18 +40,39 @@ public class AccessibilityInfoObserver implements ActivityListener, Accessibilit
         mPackageManager = mContext.getPackageManager();
     }
 
+    /**
+     * 注册监听
+     *
+     * @param listener 回调方
+     */
     public void addListener(ActivityListener listener) {
         mListeners.add(listener);
     }
 
+    /**
+     * 注销监听
+     *
+     * @param listener 回调方
+     * @return 是否成功
+     */
     public boolean removeListener(ActivityListener listener) {
         return mListeners.remove(listener);
     }
 
+    /**
+     * 获取最后运行的包名
+     *
+     * @return 最后运行的包名
+     */
     public String getLatestPackage() {
         return mLatestPackage;
     }
 
+    /**
+     * 获取最后运行的activity
+     *
+     * @return 最后运行的activity
+     */
     public String getLatestActivity() {
         return mLatestActivity;
     }
@@ -70,12 +91,16 @@ public class AccessibilityInfoObserver implements ActivityListener, Accessibilit
     }
 
     private void setLatestComponent(CharSequence latestPackage, CharSequence latestClass) {
-        if (latestPackage == null || latestClass == null)
+        if (latestPackage == null || latestClass == null) {
             return;
+        }
+
         String latestPackageStr = latestPackage.toString();
         String latestClassStr = latestClass.toString();
-        if (latestClassStr.startsWith("android.view.") || latestClassStr.startsWith("android.widget."))
+        if (latestClassStr.startsWith("android.view.") || latestClassStr.startsWith("android.widget.")) {
             return;
+        }
+
         try {
             ComponentName componentName = new ComponentName(latestPackageStr, latestClassStr);
             mLatestActivity = mPackageManager.getActivityInfo(componentName, 0).name;
@@ -90,11 +115,7 @@ public class AccessibilityInfoObserver implements ActivityListener, Accessibilit
     @Override
     public void activityResumed(String packageName, String activity) {
         for (ActivityListener listener : mListeners) {
-            try {
-                listener.activityResumed(packageName, activity);
-            } catch (Exception e) {
-                //
-            }
+            listener.activityResumed(packageName, activity);
         }
     }
 }

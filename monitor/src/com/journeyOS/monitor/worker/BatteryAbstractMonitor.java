@@ -26,7 +26,7 @@ import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Battery;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.Monitor;
+import com.journeyOS.monitor.AbstractMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -34,13 +34,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public class BatteryMonitor extends Monitor {
-    private static final String TAG = BatteryMonitor.class.getSimpleName();
-    private volatile static BatteryMonitor INSTANCE = null;
+public final class BatteryAbstractMonitor extends AbstractMonitor {
+    private static final String TAG = BatteryAbstractMonitor.class.getSimpleName();
+    private static volatile BatteryAbstractMonitor sInstance = null;
     private Context mContext;
     private BatteryBroadcastReceiver mReceiver;
 
-    private BatteryMonitor() {
+    private BatteryAbstractMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -49,15 +49,15 @@ public class BatteryMonitor extends Monitor {
      *
      * @return BatteryMonitor
      */
-    public static BatteryMonitor getInstance() {
-        if (INSTANCE == null) {
-            synchronized (BatteryMonitor.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new BatteryMonitor();
+    public static BatteryAbstractMonitor getInstance() {
+        if (sInstance == null) {
+            synchronized (BatteryAbstractMonitor.class) {
+                if (sInstance == null) {
+                    sInstance = new BatteryAbstractMonitor();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     @Override
@@ -84,9 +84,7 @@ public class BatteryMonitor extends Monitor {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
-                int level = (int) (100f
-                        * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
-                        / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100));
+                int level = (int) (100f * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0) / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100));
                 int pluggedIn = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
 
                 int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,

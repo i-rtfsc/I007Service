@@ -32,12 +32,12 @@ import java.util.Map;
  *
  * @author solo
  */
-public class DBHelper {
+public final class DBHelper {
     private static final String TAG = DBHelper.class.getSimpleName();
 
-    private volatile static DBHelper INSTANCE = null;
+    private static volatile DBHelper sInstance = null;
     private final Map<String, Object> mDatabaseMap = new HashMap<>();
-    private final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    private final Migration migration1To2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             //upgrade
@@ -48,20 +48,20 @@ public class DBHelper {
     }
 
     /**
-     * 获取DBHelper实例
+     * 获取DBHelper单例
      *
-     * @return DBHelper
+     * @return DBHelper实例
      */
-    public static DBHelper getInstance() {
-        if (INSTANCE == null) {
+    public static DBHelper getsInstance() {
+        if (sInstance == null) {
             synchronized (DBHelper.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new DBHelper();
+                if (sInstance == null) {
+                    sInstance = new DBHelper();
 
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     /**
@@ -87,7 +87,7 @@ public class DBHelper {
 
     private <T extends RoomDatabase> T provider(Context context, Class<T> dbCls, String dbName) {
         return Room.databaseBuilder(context, dbCls, dbName)
-//                .addMigrations(MIGRATION_1_2)
+//                .addMigrations(migration1To2)
 //                .allowMainThreadQueries()
                 .setJournalMode(RoomDatabase.JournalMode.AUTOMATIC)
                 .fallbackToDestructiveMigration().build();

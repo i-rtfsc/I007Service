@@ -28,11 +28,12 @@ import com.journeyOS.i007manager.II007Observer;
 /**
  * @author solo
  */
-public class ClientSession {
-    private volatile static ClientSession INSTANCE = null;
+public final class ClientSession {
+    private static volatile ClientSession sInstance = null;
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;
     private final Clients mClisnts;
+
     private ClientSession() {
         mHandlerThread = new HandlerThread("ClientSession");
         mHandlerThread.start();
@@ -41,14 +42,14 @@ public class ClientSession {
     }
 
     public static ClientSession getInstance() {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (ClientSession.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new ClientSession();
+                if (sInstance == null) {
+                    sInstance = new ClientSession();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     /**
@@ -140,6 +141,8 @@ public class ClientSession {
             switch (msg.what) {
                 case MSG_OBJ:
                     mClisnts.dispatchFactorEvent((I007Result) msg.obj);
+                    break;
+                default:
                     break;
             }
         }

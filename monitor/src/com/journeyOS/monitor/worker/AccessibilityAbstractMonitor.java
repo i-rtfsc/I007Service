@@ -26,7 +26,7 @@ import com.journeyOS.database.source.local.base.DBConfigs;
 import com.journeyOS.i007manager.I007App;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.Monitor;
+import com.journeyOS.monitor.AbstractMonitor;
 import com.journeyOS.monitor.MonitorManager;
 import com.journeyOS.monitor.accessibility.AccessibilityInfoObserver;
 import com.journeyOS.monitor.accessibility.AccessibilityService;
@@ -37,15 +37,15 @@ import com.journeyOS.monitor.accessibility.ActivityListener;
  *
  * @author solo
  */
-public class AccessibilityMonitor extends Monitor implements ActivityListener {
-    private static final String TAG = AccessibilityMonitor.class.getSimpleName();
-    private volatile static AccessibilityMonitor INSTANCE = null;
+public final class AccessibilityAbstractMonitor extends AbstractMonitor implements ActivityListener {
+    private static final String TAG = AccessibilityAbstractMonitor.class.getSimpleName();
+    private static volatile AccessibilityAbstractMonitor sInstance = null;
     private AccessibilityInfoObserver mAccessibilityInfoObserver;
     private Context mContext = null;
     private String mPackageName = null;
     private String mActivity = null;
 
-    private AccessibilityMonitor() {
+    private AccessibilityAbstractMonitor() {
         SmartLog.d(TAG, "init");
         mContext = I007Core.getCore().getContext();
     }
@@ -55,15 +55,15 @@ public class AccessibilityMonitor extends Monitor implements ActivityListener {
      *
      * @return AccessibilityMonitor实例
      */
-    public static AccessibilityMonitor getInstance() {
-        if (INSTANCE == null) {
-            synchronized (AccessibilityMonitor.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new AccessibilityMonitor();
+    public static AccessibilityAbstractMonitor getInstance() {
+        if (sInstance == null) {
+            synchronized (AccessibilityAbstractMonitor.class) {
+                if (sInstance == null) {
+                    sInstance = new AccessibilityAbstractMonitor();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     @Override
@@ -134,26 +134,38 @@ public class AccessibilityMonitor extends Monitor implements ActivityListener {
     }
 
     private int parseType(String type) {
+        int appType = I007App.Type.DEFAULT;
         switch (type) {
             case DBConfigs.AppType.ALBUM:
-                return I007App.Type.ALBUM;
+                appType = I007App.Type.ALBUM;
+                break;
             case DBConfigs.AppType.BROWSER:
-                return I007App.Type.BROWSER;
+                appType = I007App.Type.BROWSER;
+                break;
             case DBConfigs.AppType.GAME:
-                return I007App.Type.GAME;
+                appType = I007App.Type.GAME;
+                break;
             case DBConfigs.AppType.IM:
-                return I007App.Type.IM;
+                appType = I007App.Type.IM;
+                break;
             case DBConfigs.AppType.MUSIC:
-                return I007App.Type.MUSIC;
+                appType = I007App.Type.MUSIC;
+                break;
             case DBConfigs.AppType.NEWS:
-                return I007App.Type.NEWS;
+                appType = I007App.Type.NEWS;
+                break;
             case DBConfigs.AppType.READER:
-                return I007App.Type.READER;
+                appType = I007App.Type.READER;
+                break;
             case DBConfigs.AppType.VIDEO:
-                return I007App.Type.VIDEO;
+                appType = I007App.Type.VIDEO;
+                break;
             default:
-                return I007App.Type.DEFAULT;
+                appType = I007App.Type.DEFAULT;
+                break;
         }
+
+        return appType;
     }
 
 }

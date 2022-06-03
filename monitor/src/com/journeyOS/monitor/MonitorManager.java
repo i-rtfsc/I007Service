@@ -18,12 +18,13 @@ package com.journeyOS.monitor;
 
 import android.util.Log;
 
+import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.worker.AccessibilityMonitor;
-import com.journeyOS.monitor.worker.BatteryMonitor;
-import com.journeyOS.monitor.worker.LCDMonitor;
-import com.journeyOS.monitor.worker.NetworkMonitor;
+import com.journeyOS.monitor.worker.AccessibilityAbstractMonitor;
+import com.journeyOS.monitor.worker.BatteryAbstractMonitor;
+import com.journeyOS.monitor.worker.LcdAbstractMonitor;
+import com.journeyOS.monitor.worker.NetworkAbstractMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author solo
  */
-public class MonitorManager {
+public final class MonitorManager {
     private static final String TAG = MonitorManager.class.getSimpleName();
-    private volatile static MonitorManager INSTANCE = null;
+    private static volatile MonitorManager sInstance = null;
     private I007Result.Builder mBuilder = new I007Result.Builder();
-    private ConcurrentHashMap<Long, Monitor> mMonitors = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, AbstractMonitor> mMonitors = new ConcurrentHashMap<>();
     private List<OnSceneListener> mListeners = new ArrayList<OnSceneListener>();
 
     private MonitorManager() {
@@ -48,14 +49,14 @@ public class MonitorManager {
      * @return MonitorManager实例
      */
     public static MonitorManager getInstance() {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (MonitorManager.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new MonitorManager();
+                if (sInstance == null) {
+                    sInstance = new MonitorManager();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     /**
@@ -79,27 +80,27 @@ public class MonitorManager {
      */
     protected boolean init(long factors) {
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             if (monitor == null) {
-                monitor = AccessibilityMonitor.getInstance();
+                monitor = AccessibilityAbstractMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_APP);
                 mMonitors.put(I007Manager.SCENE_FACTOR_APP, monitor);
             }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             if (monitor == null) {
-                monitor = LCDMonitor.getInstance();
+                monitor = LcdAbstractMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_LCD);
                 mMonitors.put(I007Manager.SCENE_FACTOR_LCD, monitor);
             }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             if (monitor == null) {
-                monitor = NetworkMonitor.getInstance();
+                monitor = NetworkAbstractMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_NET);
                 mMonitors.put(I007Manager.SCENE_FACTOR_NET, monitor);
             }
@@ -107,12 +108,13 @@ public class MonitorManager {
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
             //TODO
+            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             if (monitor == null) {
-                monitor = BatteryMonitor.getInstance();
+                monitor = BatteryAbstractMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_BATTERY);
                 mMonitors.put(I007Manager.SCENE_FACTOR_BATTERY, monitor);
             }
@@ -130,26 +132,27 @@ public class MonitorManager {
         init(factors);
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
             //TODO
+            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             result = monitor.start();
         }
         return result;
@@ -164,26 +167,27 @@ public class MonitorManager {
     public boolean stop(long factors) {
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
             //TODO
+            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            Monitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             result = monitor.stop();
         }
         return result;

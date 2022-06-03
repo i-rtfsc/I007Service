@@ -29,9 +29,16 @@ import java.util.Map;
  *
  * @author solo
  */
-public class ServiceCache {
+public final class ServiceCache {
     private static final String TAG = ServiceCache.class.getSimpleName();
-    private static final Map<String, IBinder> sCache = new HashMap<>(10);
+    private static final int MAX_SERVICE = 10;
+    private static Map<String, IBinder> sCache = new HashMap<>(MAX_SERVICE);
+
+    /**
+     * 构造方法
+     */
+    private ServiceCache() {
+    }
 
     /**
      * 添加服务

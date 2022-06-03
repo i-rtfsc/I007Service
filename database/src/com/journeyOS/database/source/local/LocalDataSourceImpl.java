@@ -39,22 +39,23 @@ import com.journeyOS.database.source.local.setting.SettingDao;
 
 import java.util.List;
 
+
 /**
  * data from database
  *
  * @author solo
  */
-public class LocalDataSourceImpl implements LocalDataSource {
+public final class LocalDataSourceImpl implements LocalDataSource {
     private static final String TAG = LocalDataSourceImpl.class.getSimpleName();
-    private volatile static LocalDataSourceImpl INSTANCE = null;
+    private static volatile LocalDataSourceImpl sInstance = null;
 
-    private Context mContext;
-    private AppDao mAppDao;
-    private SettingDao mSettingDao;
+    private final Context mContext;
+    private final AppDao mAppDao;
+    private final SettingDao mSettingDao;
 
     private LocalDataSourceImpl(Context context) {
         mContext = context;
-        I007Database database = DBHelper.getInstance().getRoomDatabaseBuilder(context,
+        I007Database database = DBHelper.getsInstance().getRoomDatabaseBuilder(context,
                 I007Database.class, DBConfigs.DB_NAME);
         mAppDao = database.appDao();
         mSettingDao = database.settingDao();
@@ -74,22 +75,21 @@ public class LocalDataSourceImpl implements LocalDataSource {
      * @return LocalDataSourceImpl实例
      */
     public static LocalDataSourceImpl getInstance(Context context) {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (LocalDataSourceImpl.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new LocalDataSourceImpl(context);
-
+                if (sInstance == null) {
+                    sInstance = new LocalDataSourceImpl(context);
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     /**
      * 注销LocalDataSourceImpl单例
      */
     public static void destroyInstance() {
-        INSTANCE = null;
+        sInstance = null;
     }
 
     private void initApp() {
@@ -103,8 +103,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String game = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.GAME));
         if (game != null) {
             Apps appInfo = JsonHelper.fromJson(game, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -112,8 +112,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String album = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.ALBUM));
         if (album != null) {
             Apps appInfo = JsonHelper.fromJson(album, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -121,8 +121,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String browser = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.BROWSER));
         if (browser != null) {
             Apps appInfo = JsonHelper.fromJson(browser, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -130,8 +130,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String im = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.IM));
         if (im != null) {
             Apps appInfo = JsonHelper.fromJson(im, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -139,8 +139,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String music = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.MUSIC));
         if (music != null) {
             Apps appInfo = JsonHelper.fromJson(music, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -148,8 +148,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String news = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.NEWS));
         if (news != null) {
             Apps appInfo = JsonHelper.fromJson(news, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -157,8 +157,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String reader = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.READER));
         if (reader != null) {
             Apps appInfo = JsonHelper.fromJson(reader, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -166,8 +166,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
         String video = AESUtils.decrypt(FileUtils.readFileFromAsset(mContext, FileConfigConstant.VIDEO));
         if (video != null) {
             Apps appInfo = JsonHelper.fromJson(video, Apps.class);
-            if (appInfo != null && !appInfo.apps.isEmpty()) {
-                mAppDao.insertApps(appInfo.apps);
+            if (appInfo != null && !appInfo.getApps().isEmpty()) {
+                mAppDao.insertApps(appInfo.getApps());
                 init = true;
             }
         }
@@ -196,12 +196,11 @@ public class LocalDataSourceImpl implements LocalDataSource {
         Setting setting = mSettingDao.getSetting(key);
         if (setting == null) {
             Class<?> clazz = defaultValue.getClass();
-            final String object = clazz.getName();
-
+            String object = clazz.getName();
             setting = new Setting();
-            setting.key = key;
-            setting.value = defaultValue.toString();
-            setting.object = object;
+            setting.setKey(key);
+            setting.setValue(defaultValue.toString());
+            setting.setObject(object);
         }
 
         return setting;
@@ -212,11 +211,11 @@ public class LocalDataSourceImpl implements LocalDataSource {
         Setting setting = mSettingDao.getSetting(key);
         if (setting == null) {
             setting = new Setting();
-            setting.key = key;
+            setting.setKey(key);
         }
         Class<?> clazz = defaultValue.getClass();
-        setting.object = clazz.getName();
-        setting.value = defaultValue.toString();
+        setting.setObject(clazz.getName());
+        setting.setValue(defaultValue.toString());
         mSettingDao.saveSetting(setting);
     }
 
@@ -273,8 +272,44 @@ public class LocalDataSourceImpl implements LocalDataSource {
     /**
      * 用来解析asset目录的json字符串
      */
-    public class Apps {
-        public String version;
-        public List<App> apps;
+    public static class Apps {
+        private String version = null;
+        private List<App> apps = null;
+
+        /**
+         * 获取版本号
+         *
+         * @return 版本号
+         */
+        public String getVersion() {
+            return version;
+        }
+
+        /**
+         * 获取版本号
+         *
+         * @param version 版本号
+         */
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        /**
+         * 获取app列表
+         *
+         * @return app列表
+         */
+        public List<App> getApps() {
+            return apps;
+        }
+
+        /**
+         * 设置app列表
+         *
+         * @param apps app列表
+         */
+        public void setApps(List<App> apps) {
+            this.apps = apps;
+        }
     }
 }

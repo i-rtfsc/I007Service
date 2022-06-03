@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package com.journeyOS.monitor.accessibility;
+package com.journeyOS.machinelearning.tasks;
 
 /**
- * 回调
- *
+ * IMLTaskResultHandler
  * @author solo
  */
-public interface ActivityListener {
-    /**
-     * 回调方法
-     *
-     * @param packageName 包名
-     * @param activity    activity名字
-     */
-    void activityResumed(String packageName, String activity);
+public interface IMLTaskResultHandler {
+    void handleResult(TaskResult result);
 }

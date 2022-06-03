@@ -50,7 +50,5 @@
 -keep class * implements androidx.databinding.Observable {*;}
 
 #实体类不参与混淆
--keep class com.journeyOS.database.entity.** { *; }
-
--keep class com.journeyOS.database.source.local.app.Setting { *; }
--keep class com.journeyOS.database.source.local.weather.Weather { *; }
+-keep class com.journeyOS.database.source.local.app.App { *; }
+-keep class com.journeyOS.database.source.local.setting.Setting { *; }

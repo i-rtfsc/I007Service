@@ -197,6 +197,12 @@ public class ClientsImpl<TListener extends IInterface> {
         return exist;
     }
 
+    /**
+     * 遍历所有的客户端
+     *
+     * @param operation 回调方
+     * @param factors   场景因子
+     */
     protected void foreach(ListenerOperation<TListener> operation, long factors) {
         synchronized (mListenerMap) {
             foreachUnsafe(operation, factors);
@@ -217,6 +223,10 @@ public class ClientsImpl<TListener extends IInterface> {
         }
     }
 
+    /**
+     * to string
+     * @return 组合之后的字符串
+     */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -233,6 +243,11 @@ public class ClientsImpl<TListener extends IInterface> {
         return str.toString();
     }
 
+    /**
+     * 回调
+     *
+     * @param <TListener> 回调方
+     */
     protected interface ListenerOperation<TListener extends IInterface> {
         void execute(TListener listener, int pid) throws RemoteException;
     }

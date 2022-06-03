@@ -1,0 +1,8 @@
+apply from: "../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly project(':framework')
+    //ai support
+    rootProject.ext.aiDependencies.each { dependence -> api dependence.value }
+}

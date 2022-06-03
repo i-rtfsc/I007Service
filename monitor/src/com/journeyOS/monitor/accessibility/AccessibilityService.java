@@ -31,24 +31,24 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author solo
  */
-public class AccessibilityService extends android.accessibilityservice.AccessibilityService {
+public final class AccessibilityService extends android.accessibilityservice.AccessibilityService {
     private static final String TAG = AccessibilityService.class.getSimpleName();
 
-    private static final SortedMap<Integer, AccessibilityDelegate> mDelegates = new TreeMap<>();
+    private static SortedMap<Integer, AccessibilityDelegate> sDelegates = new TreeMap<>();
     private static final ReentrantLock LOCK = new ReentrantLock();
     private static final Condition ENABLED = LOCK.newCondition();
-    private static final Set<Integer> eventTypes = new HashSet<>();
+    private static Set<Integer> sEventTypes = new HashSet<>();
     private static AccessibilityService instance;
-    private static boolean containsAllEventTypes = false;
+    private static boolean sContainsAllEventTypes = false;
     private AccessibilityNodeInfo mFastRootInActiveWindow;
 
     public static void addDelegate(int uniquePriority, AccessibilityDelegate delegate) {
-        mDelegates.put(uniquePriority, delegate);
+        sDelegates.put(uniquePriority, delegate);
         Set<Integer> set = delegate.getEventTypes();
         if (set == null) {
-            containsAllEventTypes = true;
+            sContainsAllEventTypes = true;
         } else {
-            eventTypes.addAll(set);
+            sEventTypes.addAll(set);
         }
     }
 
@@ -81,7 +81,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
     @Override
     public void onAccessibilityEvent(final AccessibilityEvent event) {
         instance = this;
-        if (!containsAllEventTypes && !eventTypes.contains(event.getEventType())) {
+        if (!sContainsAllEventTypes && !sEventTypes.contains(event.getEventType())) {
             return;
         }
         int type = event.getEventType();
@@ -93,7 +93,7 @@ public class AccessibilityService extends android.accessibilityservice.Accessibi
             }
         }
 
-        for (Map.Entry<Integer, AccessibilityDelegate> entry : mDelegates.entrySet()) {
+        for (Map.Entry<Integer, AccessibilityDelegate> entry : sDelegates.entrySet()) {
             AccessibilityDelegate delegate = entry.getValue();
             Set<Integer> types = delegate.getEventTypes();
             if (types != null && !delegate.getEventTypes().contains(event.getEventType())) {

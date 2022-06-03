@@ -14,19 +14,41 @@
  * limitations under the License.
  */
 
-package com.journeyOS.monitor.accessibility;
+package com.journeyOS.machinelearning.common;
 
 /**
- * 回调
+ * Text
  *
  * @author solo
  */
-public interface ActivityListener {
+public class Text {
+    protected String word;
+
     /**
-     * 回调方法
+     * Text
      *
-     * @param packageName 包名
-     * @param activity    activity名字
+     * @param word String
      */
-    void activityResumed(String packageName, String activity);
+    public Text(String word) {
+        this.word = word;
+    }
+
+    /**
+     * getWord
+     *
+     * @return word
+     */
+    public String getWord() {
+        return word;
+    }
+
+    /**
+     * setWord
+     *
+     * @param word word
+     */
+    public void setWord(String word) {
+        this.word = word;
+    }
+
 }

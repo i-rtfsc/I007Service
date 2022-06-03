@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.journeyOS.monitor.accessibility;
+package com.journeyOS.common;
 
 /**
- * 回调
+ * 版本信息
  *
  * @author solo
  */
-public interface ActivityListener {
-    /**
-     * 回调方法
-     *
-     * @param packageName 包名
-     * @param activity    activity名字
-     */
-    void activityResumed(String packageName, String activity);
+public class VersionConstant {
+    public static final int BUILD_VERSION_CODE = BuildConfig.BUILD_VERSION_CODE;
+
+    public static final String BUILD_VERSION_NAME = BuildConfig.BUILD_VERSION_NAME;
+
+    public static final String BUILD_VERSION_BRANCH = BuildConfig.BUILD_VERSION_BRANCH;
+
 }

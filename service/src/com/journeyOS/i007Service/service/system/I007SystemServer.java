@@ -23,7 +23,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.framework.service.BaseContentProvider;
+import com.journeyOS.framework.service.AbstractContentProvider;
 import com.journeyOS.framework.service.ServiceCache;
 import com.journeyOS.framework.service.ServiceFetcher;
 import com.journeyOS.i007Service.service.DaemonService;
@@ -34,7 +34,7 @@ import com.journeyOS.i007manager.base.ServiceManagerNative;
 /**
  * @author solo
  */
-public class I007SystemServer extends BaseContentProvider {
+public class I007SystemServer extends AbstractContentProvider {
 
     private static final String TAG = I007SystemServer.class.getSimpleName();
 

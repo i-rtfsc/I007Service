@@ -33,9 +33,9 @@ import java.util.List;
 /**
  * @author solo
  */
-public class DataRepository implements HttpDataSource, LocalDataSource {
+public final class DataRepository implements HttpDataSource, LocalDataSource {
     private static final String TAG = DataRepository.class.getSimpleName();
-    private volatile static DataRepository INSTANCE = null;
+    private static volatile DataRepository sInstance = null;
     private final HttpDataSource mHttpDataSource;
     private final LocalDataSource mLocalDataSource;
 
@@ -52,14 +52,14 @@ public class DataRepository implements HttpDataSource, LocalDataSource {
      * @return DataRepository
      */
     public static DataRepository getInstance(Context context) {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (DataRepository.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new DataRepository(context);
+                if (sInstance == null) {
+                    sInstance = new DataRepository(context);
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     @Override

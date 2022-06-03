@@ -25,7 +25,7 @@ import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.I007Screen;
-import com.journeyOS.monitor.Monitor;
+import com.journeyOS.monitor.AbstractMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -33,13 +33,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public class LCDMonitor extends Monitor {
-    private static final String TAG = LCDMonitor.class.getSimpleName();
-    private volatile static LCDMonitor INSTANCE = null;
+public final class LcdAbstractMonitor extends AbstractMonitor {
+    private static final String TAG = LcdAbstractMonitor.class.getSimpleName();
+    private static volatile LcdAbstractMonitor sInstance = null;
     private Context mContext;
     private ScreenBroadcastReceiver mReceiver;
 
-    private LCDMonitor() {
+    private LcdAbstractMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -48,15 +48,15 @@ public class LCDMonitor extends Monitor {
      *
      * @return LCDMonitor实例
      */
-    public static LCDMonitor getInstance() {
-        if (INSTANCE == null) {
-            synchronized (LCDMonitor.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new LCDMonitor();
+    public static LcdAbstractMonitor getInstance() {
+        if (sInstance == null) {
+            synchronized (LcdAbstractMonitor.class) {
+                if (sInstance == null) {
+                    sInstance = new LcdAbstractMonitor();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     @Override

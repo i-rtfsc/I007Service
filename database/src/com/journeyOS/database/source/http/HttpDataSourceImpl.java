@@ -25,9 +25,9 @@ import com.journeyOS.database.source.api.HttpDataSource;
  *
  * @author solo
  */
-public class HttpDataSourceImpl implements HttpDataSource {
+public final class HttpDataSourceImpl implements HttpDataSource {
     private static final String TAG = HttpDataSourceImpl.class.getSimpleName();
-    private volatile static HttpDataSourceImpl INSTANCE = null;
+    private static volatile HttpDataSourceImpl sInstance = null;
 
     private Context mContext;
 
@@ -42,14 +42,14 @@ public class HttpDataSourceImpl implements HttpDataSource {
      * @return HttpDataSourceImpl
      */
     public static HttpDataSourceImpl getInstance(Context context) {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (HttpDataSourceImpl.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new HttpDataSourceImpl(context);
+                if (sInstance == null) {
+                    sInstance = new HttpDataSourceImpl(context);
 
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 }

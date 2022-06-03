@@ -28,7 +28,7 @@ import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Net;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.Monitor;
+import com.journeyOS.monitor.AbstractMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -36,12 +36,12 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public class NetworkMonitor extends Monitor {
-    private static final String TAG = NetworkMonitor.class.getSimpleName();
-    private volatile static NetworkMonitor INSTANCE = null;
+public final class NetworkAbstractMonitor extends AbstractMonitor {
+    private static final String TAG = NetworkAbstractMonitor.class.getSimpleName();
+    private static volatile NetworkAbstractMonitor sInstance = null;
     private NetworkBroadcastReceiver mReceiver;
 
-    private NetworkMonitor() {
+    private NetworkAbstractMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -50,11 +50,11 @@ public class NetworkMonitor extends Monitor {
      *
      * @return NetworkMonitor
      */
-    public static NetworkMonitor getInstance() {
-        if (INSTANCE == null) {
-            synchronized (NetworkMonitor.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new NetworkMonitor();
+    public static NetworkAbstractMonitor getInstance() {
+        if (sInstance == null) {
+            synchronized (NetworkAbstractMonitor.class) {
+                if (sInstance == null) {
+                    sInstance = new NetworkAbstractMonitor();
                 }
             }
         }
@@ -85,11 +85,7 @@ public class NetworkMonitor extends Monitor {
         private boolean isAvailable(Context context) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo net = cm.getActiveNetworkInfo();
-            if (net != null && net.isAvailable()) {
-                return true;
-            } else {
-                return false;
-            }
+            return net != null && net.isAvailable();
         }
 
         private int getNetworkType(Context context) {
@@ -101,6 +97,7 @@ public class NetworkMonitor extends Monitor {
                     type = net.getType();
                 }
             }
+            int netType = I007Net.Type.NET_UNKNOWN;
 
             switch (type) {
                 case ConnectivityManager.TYPE_WIFI:
@@ -115,7 +112,8 @@ public class NetworkMonitor extends Monitor {
                         case TelephonyManager.NETWORK_TYPE_CDMA:
                         case TelephonyManager.NETWORK_TYPE_1xRTT:
                         case TelephonyManager.NETWORK_TYPE_IDEN:
-                            return I007Net.Type.NET_2G;
+                            netType = I007Net.Type.NET_2G;
+                            break;
                         case TelephonyManager.NETWORK_TYPE_UMTS:
                         case TelephonyManager.NETWORK_TYPE_EVDO_0:
                         case TelephonyManager.NETWORK_TYPE_EVDO_A:
@@ -125,17 +123,25 @@ public class NetworkMonitor extends Monitor {
                         case TelephonyManager.NETWORK_TYPE_EVDO_B:
                         case TelephonyManager.NETWORK_TYPE_EHRPD:
                         case TelephonyManager.NETWORK_TYPE_HSPAP:
-                            return I007Net.Type.NET_3G;
+                            netType = I007Net.Type.NET_3G;
+                            break;
                         case TelephonyManager.NETWORK_TYPE_LTE:
-                            return I007Net.Type.NET_4G;
+                            netType = I007Net.Type.NET_4G;
+                            break;
                         case TelephonyManager.NETWORK_TYPE_NR:
-                            return I007Net.Type.NET_5G;
+                            netType = I007Net.Type.NET_5G;
+                            break;
                         default:
-                            return I007Net.Type.NET_UNKNOWN;
+                            netType = I007Net.Type.NET_UNKNOWN;
+                            break;
                     }
+                    break;
                 default:
-                    return I007Net.Type.NET_UNKNOWN;
+                    netType = I007Net.Type.NET_UNKNOWN;
+                    break;
             }
+
+            return netType;
         }
 
         @Override

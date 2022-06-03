@@ -21,8 +21,8 @@ import com.journeyOS.common.SmartLog;
 /**
  * @author solo
  */
-public abstract class Monitor {
-    private final String TAG = Monitor.class.getSimpleName();
+public abstract class AbstractMonitor {
+    private static final String TAG = AbstractMonitor.class.getSimpleName();
 
     protected long mFactoryId;
     protected boolean mInit = false;
