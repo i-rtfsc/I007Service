@@ -58,7 +58,7 @@ public final class NetworkAbstractMonitor extends AbstractMonitor {
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     @Override
