@@ -83,15 +83,9 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def flavors = variant.productFlavors.name
-            def apkName = "I007Service-unknown.apk"
-            if (flavors[0] == "ml") {
-                apkName = "I007Service-ml.apk"
-            } else if (flavors[0] == "standard") {
-                apkName = "I007Service-standard.apk"
-            }
-            //logger.log(LogLevel.WARN, "----------> apkName = ${apkName}")
-            variant.packageApplicationProvider.get().outputDirectory = new File("${project.rootDir.absolutePath}/out/${variant.buildType.name}")
-            output.outputFileName = apkName
+            def apkName = "I007Service-${flavors[0]}.apk"
+            outputFileName = new File("./../../../../../../out/${variant.buildType.name}/", apkName)
+            //logger.log(LogLevel.WARN, "----------> output apk = ${outputFileName}")
         }
     }
 }
