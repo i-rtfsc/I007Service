@@ -43,10 +43,14 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+task clean(type: Delete) { delete rootProject.buildDir }
+//task appClean(type: Delete) { delete project(':app').buildDir }
+task apkClean(type: Delete) {
+    delete project(':service').buildDir
+    delete 'out'
 }
 
-subprojects {
-    task allDeps(type: DependencyReportTask) {}
-}
+task standardRelease(dependsOn: ['apkClean', ':service:assembleStandardRelease'])
+task mlRelease(dependsOn: ['apkClean', ':service:assembleMlRelease'])
+
+defaultTasks 'assembleStandardRelease'

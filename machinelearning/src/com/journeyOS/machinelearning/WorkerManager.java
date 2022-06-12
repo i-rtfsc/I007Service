@@ -26,13 +26,12 @@ import com.journeyOS.machinelearning.tflite.TFLiteTextDetector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
  * @author solo
  */
-public class WorkerFactory {
-    private static final String TAG = WorkerFactory.class.getSimpleName();
+public class WorkerManager {
+    private static final String TAG = WorkerManager.class.getSimpleName();
 
-    private static WorkerFactory mInstance = null;
+    private static WorkerManager mInstance = null;
     private ConcurrentHashMap<String, Worker> mWorkers = new ConcurrentHashMap<>();
     private Application mContext;
 
@@ -41,11 +40,11 @@ public class WorkerFactory {
      *
      * @return WorkerFactory
      */
-    public static WorkerFactory getInstance() {
+    public static WorkerManager getInstance() {
         if (mInstance == null) {
-            synchronized (WorkerFactory.class) {
+            synchronized (WorkerManager.class) {
                 if (mInstance == null) {
-                    mInstance = new WorkerFactory();
+                    mInstance = new WorkerManager();
                 }
             }
         }
@@ -58,7 +57,7 @@ public class WorkerFactory {
      * @param application Application
      * @return WorkerFactory
      */
-    public WorkerFactory init(Application application) {
+    public WorkerManager init(Application application) {
         mContext = application;
         return this;
     }
@@ -136,8 +135,7 @@ public class WorkerFactory {
         String workerName = modelInfo.getWorkerName();
         String graph = modelInfo.getGraph();
         AbstractClassifier classifier = null;
-        SmartLog.d(TAG, "find Classifier = " + modelInfo.getName() + ", workerName = "
-                + workerName + ", graph = " + graph);
+        SmartLog.d(TAG, "find Classifier = " + modelInfo.getName() + ", workerName = " + workerName + ", graph = " + graph);
         switch (graph) {
             case ModelInfo.Graph.TF_LITE:
                 classifier = selectTfLiteClassifier(workerName);

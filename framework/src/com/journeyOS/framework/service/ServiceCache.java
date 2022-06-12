@@ -23,7 +23,6 @@ import com.journeyOS.common.SmartLog;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * 服务缓存
  *
@@ -59,7 +58,6 @@ public final class ServiceCache {
     public static IBinder getService(String name) {
         return sCache.get(name);
     }
-
 
     /**
      * 删除服务

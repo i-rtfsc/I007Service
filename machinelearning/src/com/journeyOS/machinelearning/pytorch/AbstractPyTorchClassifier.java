@@ -48,42 +48,6 @@ public abstract class AbstractPyTorchClassifier<T> extends AbstractClassifier<T>
     private boolean debug = false;
     private boolean isLoad = false;
 
-    @Override
-    public void enableLog(boolean debug) {
-        debug = debug;
-    }
-
-    @Override
-    protected boolean onApplyModelInfo(Application application, ModelInfo modelInfo) {
-        if (isLoad) {
-            SmartLog.v(TAG, "model has been loaded");
-            return false;
-        }
-
-        mModelName = modelInfo.getFileName();
-        mVocabName = modelInfo.getVocabName();
-
-        model = LiteModuleLoader.loadModuleFromAsset(application.getAssets(), mModelName, Device.CPU);
-
-        //TODO
-
-        return isLoad;
-    }
-
-    @Override
-    protected boolean onReleaseModelInfo() {
-        if (!isLoad) {
-            SmartLog.v(TAG, "model hasn't load");
-            return false;
-        }
-
-        //TODO
-        model.destroy();
-
-        isLoad = false;
-        return true;
-    }
-
     private static String assetFilePath(Context context, String assetName) throws IOException {
         SmartLog.d(TAG, "assetName = [" + assetName + "]");
         File file = new File(context.getFilesDir(), assetName);
@@ -102,6 +66,51 @@ public abstract class AbstractPyTorchClassifier<T> extends AbstractClassifier<T>
             }
             return file.getAbsolutePath();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void enableLog(boolean debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean onApplyModelInfo(Application application, ModelInfo modelInfo) {
+        if (isLoad) {
+            SmartLog.v(TAG, "model has been loaded");
+            return false;
+        }
+
+        mModelName = modelInfo.getFileName();
+        mVocabName = modelInfo.getVocabName();
+
+        model = LiteModuleLoader.loadModuleFromAsset(application.getAssets(), mModelName, Device.CPU);
+
+        //TODO
+
+        return isLoad;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean onReleaseModelInfo() {
+        if (!isLoad) {
+            SmartLog.v(TAG, "model hasn't load");
+            return false;
+        }
+
+        //TODO
+        model.destroy();
+
+        isLoad = false;
+        return true;
     }
 
 }

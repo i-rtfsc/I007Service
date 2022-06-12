@@ -239,6 +239,9 @@ public final class MonitorManager {
         }
     }
 
+    /**
+     * 场景回调
+     */
     public interface OnSceneListener {
         /**
          * 结果回调函数

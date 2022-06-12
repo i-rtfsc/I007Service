@@ -61,10 +61,16 @@ public final class NetworkAbstractMonitor extends AbstractMonitor {
         return sInstance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInit(long factoryId) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStart() {
         Context context = I007Core.getCore().getContext();
@@ -74,6 +80,9 @@ public final class NetworkAbstractMonitor extends AbstractMonitor {
         context.registerReceiver(mReceiver, filter);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         Context context = I007Core.getCore().getContext();
@@ -144,6 +153,9 @@ public final class NetworkAbstractMonitor extends AbstractMonitor {
             return netType;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();

@@ -34,6 +34,9 @@ public class SecretCodeReceiver extends BroadcastReceiver {
     private static final String SECRET_CODE_DEBUG_FOR_TESTER = "001007";
     private static final String TAG = SecretCodeReceiver.class.getSimpleName();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getData() == null || intent.getData().getHost().isEmpty()) {
@@ -51,8 +54,7 @@ public class SecretCodeReceiver extends BroadcastReceiver {
                 context.startActivity(intentDft);
                 break;
             default:
-                Toast.makeText(context, "undefined secret code = "
-                        + intent.getData().getHost(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "undefined secret code = " + intent.getData().getHost(), Toast.LENGTH_SHORT).show();
         }
     }
 }

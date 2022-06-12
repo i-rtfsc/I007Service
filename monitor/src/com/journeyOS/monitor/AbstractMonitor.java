@@ -28,6 +28,12 @@ public abstract class AbstractMonitor {
     protected boolean mInit = false;
     protected boolean mStart = false;
 
+    /**
+     * 同步初始化
+     *
+     * @param factoryId 场景因子
+     * @return 初始化是否成功
+     */
     public final synchronized boolean init(long factoryId) {
         mFactoryId = factoryId;
         if (mInit) {
@@ -40,6 +46,11 @@ public abstract class AbstractMonitor {
         return mInit;
     }
 
+    /**
+     * 同步启动
+     *
+     * @return 启动是否成功
+     */
     public final synchronized boolean start() {
         if (mStart) {
             SmartLog.d(TAG, this.getClass().getSimpleName() + " is already started");
@@ -51,6 +62,11 @@ public abstract class AbstractMonitor {
         return mStart;
     }
 
+    /**
+     * 同步关闭
+     *
+     * @return 关闭是否成功
+     */
     public final synchronized boolean stop() {
         boolean ret = false;
         if (!mStart) {
@@ -64,6 +80,11 @@ public abstract class AbstractMonitor {
         return ret;
     }
 
+    /**
+     * 是否已经开始
+     *
+     * @return 是否已经开始
+     */
     public final synchronized boolean isStarted() {
         return mStart;
     }

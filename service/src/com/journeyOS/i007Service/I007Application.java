@@ -25,6 +25,9 @@ import com.journeyOS.i007manager.I007Core;
  */
 public class I007Application extends Application {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate() {
         super.onCreate();

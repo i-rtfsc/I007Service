@@ -42,13 +42,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TFLiteClassifier
+ * TFLite Classifier
  *
  * @param <T> class
  * @author solo
  */
 public abstract class AbstractTFLiteClassifier<T> extends AbstractClassifier<T> {
     private static final String TAG = AbstractTFLiteClassifier.class.getSimpleName();
+    private static final int MINI_LINE = 2;
     protected final Map<String, Integer> dic = new HashMap<>();
     protected final List<String> labels = new ArrayList<>();
     protected Interpreter tflite;
@@ -150,7 +151,7 @@ public abstract class AbstractTFLiteClassifier<T> extends AbstractClassifier<T> 
         // First column is a word, and the second is the index of this word.
         while (reader.ready()) {
             List<String> line = Arrays.asList(reader.readLine().split(" "));
-            if (line.size() < 2) {
+            if (line.size() < MINI_LINE) {
                 continue;
             }
             dic.put(line.get(0), Integer.parseInt(line.get(1)));

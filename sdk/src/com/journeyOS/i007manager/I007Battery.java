@@ -20,15 +20,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * 电池相关
+ *
  * @author solo
  */
 public class I007Battery implements Parcelable {
+    /**
+     * Creator
+     */
     public static final Creator<I007Battery> CREATOR = new Creator<I007Battery>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Battery createFromParcel(Parcel in) {
             return new I007Battery(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Battery[] newArray(int size) {
             return new I007Battery[size];
@@ -40,6 +51,15 @@ public class I007Battery implements Parcelable {
     private int health;
     private int pluggedIn;
 
+    /**
+     * 构造函数
+     *
+     * @param level       电池等级（0-100）
+     * @param status      电池状态
+     * @param temperature 电池温度
+     * @param health      电池状态状况
+     * @param pluggedIn   电池充电状态
+     */
     public I007Battery(int level, int status, int temperature, int health, int pluggedIn) {
         this.level = level;
         this.status = status;
@@ -48,6 +68,11 @@ public class I007Battery implements Parcelable {
         this.pluggedIn = pluggedIn;
     }
 
+    /**
+     * Parcel
+     *
+     * @param in Parcel
+     */
     protected I007Battery(Parcel in) {
         level = in.readInt();
         status = in.readInt();
@@ -56,6 +81,9 @@ public class I007Battery implements Parcelable {
         pluggedIn = in.readInt();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(level);
@@ -65,11 +93,17 @@ public class I007Battery implements Parcelable {
         dest.writeInt(pluggedIn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "I007Battery{" +
@@ -81,26 +115,54 @@ public class I007Battery implements Parcelable {
                 '}';
     }
 
+    /**
+     * 获取电池等级
+     *
+     * @return 电池等级
+     */
     public int getLevel() {
         return level;
     }
 
+    /**
+     * 获取电池状态
+     *
+     * @return 电池状态
+     */
     public int getStatus() {
         return status;
     }
 
+    /**
+     * 获取电池温度
+     *
+     * @return 电池温度
+     */
     public int getTemperature() {
         return temperature;
     }
 
+    /**
+     * 获取电池健康状况
+     *
+     * @return 电池健康状况
+     */
     public int getHealth() {
         return health;
     }
 
+    /**
+     * 获取电池充电状态
+     *
+     * @return 电池充电状态
+     */
     public int getPluggedIn() {
         return pluggedIn;
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
         private int level;
         private int status;
@@ -108,31 +170,66 @@ public class I007Battery implements Parcelable {
         private int health;
         private int pluggedIn;
 
+        /**
+         * 设置电池等级
+         *
+         * @param level 电池等级
+         * @return Builder
+         */
         public Builder setLevel(int level) {
             this.level = level;
             return this;
         }
 
+        /**
+         * 设置电池状态
+         *
+         * @param status 电池状态
+         * @return Builder
+         */
         public Builder setStatus(int status) {
             this.status = status;
             return this;
         }
 
+        /**
+         * 设置电池温度
+         *
+         * @param temperature 电池温度
+         * @return Builder
+         */
         public Builder setTemperature(int temperature) {
             this.temperature = temperature;
             return this;
         }
 
+        /**
+         * 设置电池健康状况
+         *
+         * @param health 电池健康状况
+         * @return Builder
+         */
         public Builder setHealth(int health) {
             this.health = health;
             return this;
         }
 
+        /**
+         * 设置电池充电状态
+         *
+         * @param pluggedIn 电池充电状态
+         * @return Builder
+         */
         public Builder setPluggedIn(int pluggedIn) {
             this.pluggedIn = pluggedIn;
             return this;
         }
 
+        /**
+         * build
+         *
+         * @return I007Battery
+         */
         public I007Battery build() {
             return new I007Battery(level, status, temperature, health, pluggedIn);
         }

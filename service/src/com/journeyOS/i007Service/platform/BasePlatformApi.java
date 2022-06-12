@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007manager.base;
+package com.journeyOS.i007Service.platform;
+
+import com.journeyOS.i007Service.BuildConfig;
 
 /**
  * @author solo
  */
-public class ServiceConstants {
-    /**
-     * i007服务名称
-     */
-    public static final String SERVICE_I007 = "i007";
+public class BasePlatformApi {
+    protected static final String PRODUCT_STANDARD = "standard";
+    protected static final String PRODUCT_ML = "ml";
+
+    protected final String getProduct() {
+        return BuildConfig.BUILD_PRODUCT;
+    }
 }

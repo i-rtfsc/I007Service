@@ -13,6 +13,7 @@ android {
         targetSdkVersion androidSdk.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+        flavorDimensions "default"
     }
 
     sourceSets {
@@ -69,26 +70,39 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == 'release') {
-            variant.outputs.all {
-                outputFileName = new File("./../../../../../out/release/", "I007Service.apk")
-            }
+    productFlavors {
+        standard {
+            buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
         }
-        if (variant.buildType.name == 'debug') {
-            variant.outputs.all {
-                outputFileName = new File("./../../../../../out/debug/", "I007Service.apk")
-            }
+        //machine learning
+        ml {
+            buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
         }
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def flavors = variant.productFlavors.name
+            def apkName = "I007Service-unknown.apk"
+            if (flavors[0] == "ml") {
+                apkName = "I007Service-ml.apk"
+            } else if (flavors[0] == "standard") {
+                apkName = "I007Service-standard.apk"
+            }
+            //logger.log(LogLevel.WARN, "----------> apkName = ${apkName}")
+            variant.packageApplicationProvider.get().outputDirectory = new File("${project.rootDir.absolutePath}/out/${variant.buildType.name}")
+            output.outputFileName = apkName
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':framework')
     implementation project(':monitor')
-    implementation project(':machinelearning')
+    //标准版本不需要 machine learning 模块。
+    //但service中用调用 machine learning 模块代码，需要用 compileOnly 确保编译不报错。
+    //service中用到 machine learning 模块是是通过宏 BUILD_PRODUCT 来控制，无需担心运行时报错的问题。
+    standardCompileOnly project(':machinelearning')
+    mlImplementation project(':machinelearning')
 }
-
-defaultTasks 'clean', 'assembleRelease'

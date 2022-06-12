@@ -174,7 +174,6 @@ public class ModelInfo implements Cloneable {
         public static final String PY_TORCH_VOCAB = "py_torch_vocab.txt";
     }
 
-
     /**
      * Graph
      */
@@ -250,6 +249,9 @@ public class ModelInfo implements Cloneable {
         public static final int LOCAL = 3;
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
         private String name;
         private String fileName;

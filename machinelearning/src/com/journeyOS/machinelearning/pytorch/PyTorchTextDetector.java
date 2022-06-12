@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * PyTorchTextDetector
+ *
  * @author solo
  */
 public class PyTorchTextDetector extends AbstractPyTorchClassifier<Text> {

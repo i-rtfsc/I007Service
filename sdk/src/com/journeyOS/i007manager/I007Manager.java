@@ -26,7 +26,6 @@ import com.journeyOS.i007manager.base.ServiceManagerNative;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-
 /**
  * @author solo
  */

@@ -28,11 +28,11 @@ import javax.crypto.spec.SecretKeySpec;
  * @author solo
  */
 public class AESUtils {
-    private static String KEY = "AD42F6697B035B7580E4FEF93BE20BAD";
-    private static String CHARSET = "utf-8";
-    private static int OFFSET = 16;
-    private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private static String ALGORITHM = "AES";
+    private static final String KEY = "AD42F6697B035B7580E4FEF93BE20BAD";
+    private static final String CHARSET = "utf-8";
+    private static final int OFFSET = 16;
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    private static final String ALGORITHM = "AES";
 
     /**
      * 加密

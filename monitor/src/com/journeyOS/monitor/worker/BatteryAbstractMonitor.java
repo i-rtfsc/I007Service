@@ -60,11 +60,17 @@ public final class BatteryAbstractMonitor extends AbstractMonitor {
         return sInstance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInit(long factoryId) {
         mContext = I007Core.getCore().getContext();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStart() {
         IntentFilter filter = new IntentFilter();
@@ -73,6 +79,9 @@ public final class BatteryAbstractMonitor extends AbstractMonitor {
         mContext.registerReceiver(mReceiver, filter);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         mContext.unregisterReceiver(mReceiver);
@@ -80,6 +89,9 @@ public final class BatteryAbstractMonitor extends AbstractMonitor {
 
     private class BatteryBroadcastReceiver extends BroadcastReceiver {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();

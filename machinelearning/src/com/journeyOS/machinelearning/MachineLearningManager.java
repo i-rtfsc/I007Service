@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.machinelearning.common.MLConstant;
 import com.journeyOS.machinelearning.datas.ModelInfo;
-import com.journeyOS.machinelearning.tasks.IMLTaskResultHandler;
 import com.journeyOS.machinelearning.tasks.AbstractMLTask;
-import com.journeyOS.machinelearning.tasks.MLTaskFactory;
+import com.journeyOS.machinelearning.tasks.IMLTaskResultHandler;
+import com.journeyOS.machinelearning.tasks.MLTaskManager;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 import java.lang.ref.WeakReference;
@@ -84,7 +84,7 @@ public final class MachineLearningManager {
         }
         mInit = true;
         this.mHandler = new MLHandle(Looper.getMainLooper());
-        WorkerFactory.getInstance().init(application);
+        WorkerManager.getInstance().init(application);
     }
 
     /**
@@ -93,7 +93,7 @@ public final class MachineLearningManager {
      * @param modelInfo model info
      */
     public void initWorker(ModelInfo modelInfo) {
-        WorkerFactory.getInstance().initWorker(modelInfo);
+        WorkerManager.getInstance().initWorker(modelInfo);
     }
 
     /**
@@ -102,7 +102,7 @@ public final class MachineLearningManager {
      * @param modelInfo model info
      */
     public void loadModel(ModelInfo modelInfo) {
-        WorkerFactory.getInstance().applyModel(modelInfo);
+        WorkerManager.getInstance().applyModel(modelInfo);
     }
 
     /**
@@ -111,7 +111,7 @@ public final class MachineLearningManager {
      * @param modelInfo model info
      */
     public void releaseModel(ModelInfo modelInfo) {
-        WorkerFactory.getInstance().releaseModel(modelInfo);
+        WorkerManager.getInstance().releaseModel(modelInfo);
     }
 
     /**
@@ -142,7 +142,7 @@ public final class MachineLearningManager {
      * @return TaskResult
      */
     public TaskResult executeTask(String taskName, int clientId, Bundle params, IMLTaskResultHandler handler) {
-        AbstractMLTask task = MLTaskFactory.get(taskName, clientId, params);
+        AbstractMLTask task = MLTaskManager.get(taskName, clientId, params);
         if (task == null) {
             SmartLog.w(TAG, "can not find task for " + taskName);
             return null;

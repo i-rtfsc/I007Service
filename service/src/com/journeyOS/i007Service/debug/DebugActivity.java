@@ -19,7 +19,6 @@ package com.journeyOS.i007Service.debug;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -29,10 +28,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007Service.platform.PlatformManager;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Observer;
 import com.journeyOS.i007manager.I007Result;
+import com.journeyOS.machinelearning.MachineLearningManager;
 
 /**
  * @author solo
@@ -42,6 +43,9 @@ public class DebugActivity extends AppCompatActivity {
     private LinearLayout mLayout;
     private Context mContext;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,9 @@ public class DebugActivity extends AppCompatActivity {
         initView();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -66,6 +73,7 @@ public class DebugActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
             SmartLog.d(TAG, "set button click");
             init();
+            test();
         });
         mLayout.addView(button);
 
@@ -96,12 +104,11 @@ public class DebugActivity extends AppCompatActivity {
         i007m.subscribeObserver(new I007Observer() {
             @Override
             public void onSceneChanged(I007Result result) throws RemoteException {
-                Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
+                SmartLog.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
             }
         });
 
-        i007m.setFactor(I007Manager.SCENE_FACTOR_APP
-                | I007Manager.SCENE_FACTOR_LCD);
+        i007m.setFactor(I007Manager.SCENE_FACTOR_APP | I007Manager.SCENE_FACTOR_LCD);
     }
 
     private void update() {
@@ -112,6 +119,14 @@ public class DebugActivity extends AppCompatActivity {
     private void remove() {
         I007Manager i007m = I007Manager.getInstance(mContext);
         i007m.removeFactor(I007Manager.SCENE_FACTOR_BATTERY);
+    }
+
+    private void test() {
+        boolean supportML = PlatformManager.getInstance().supportMachineLearning();
+        SmartLog.d(TAG, "supportMachineLearning = [" + supportML + "]");
+        if (supportML) {
+            MachineLearningManager.getInstance().init(getApplication());
+        }
     }
 
 }

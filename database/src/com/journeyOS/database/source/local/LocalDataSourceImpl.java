@@ -39,7 +39,6 @@ import com.journeyOS.database.source.local.setting.SettingDao;
 
 import java.util.List;
 
-
 /**
  * data from database
  *

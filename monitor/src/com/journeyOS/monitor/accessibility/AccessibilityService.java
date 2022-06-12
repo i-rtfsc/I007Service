@@ -33,10 +33,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class AccessibilityService extends android.accessibilityservice.AccessibilityService {
     private static final String TAG = AccessibilityService.class.getSimpleName();
-
-    private static SortedMap<Integer, AccessibilityDelegate> sDelegates = new TreeMap<>();
     private static final ReentrantLock LOCK = new ReentrantLock();
     private static final Condition ENABLED = LOCK.newCondition();
+    private static SortedMap<Integer, AccessibilityDelegate> sDelegates = new TreeMap<>();
     private static Set<Integer> sEventTypes = new HashSet<>();
     private static AccessibilityService instance;
     private static boolean sContainsAllEventTypes = false;
@@ -85,8 +84,7 @@ public final class AccessibilityService extends android.accessibilityservice.Acc
             return;
         }
         int type = event.getEventType();
-        if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
-                type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+        if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
             AccessibilityNodeInfo root = super.getRootInActiveWindow();
             if (root != null) {
                 mFastRootInActiveWindow = root;

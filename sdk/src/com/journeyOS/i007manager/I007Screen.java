@@ -23,12 +23,21 @@ import android.os.Parcelable;
  * @author solo
  */
 public class I007Screen implements Parcelable {
+    /**
+     * Creator
+     */
     public static final Creator<I007Screen> CREATOR = new Creator<I007Screen>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Screen createFromParcel(Parcel in) {
             return new I007Screen(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Screen[] newArray(int size) {
             return new I007Screen[size];
@@ -37,24 +46,43 @@ public class I007Screen implements Parcelable {
 
     private int status;
 
+    /**
+     * 构造函数
+     *
+     * @param status 屏幕状态
+     */
     public I007Screen(int status) {
         this.status = status;
     }
 
+    /**
+     * Parcel
+     *
+     * @param in Parcel
+     */
     protected I007Screen(Parcel in) {
         status = in.readInt();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(status);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "I007Screen{" +
@@ -62,24 +90,57 @@ public class I007Screen implements Parcelable {
                 '}';
     }
 
+    /**
+     * 获取屏幕状态
+     *
+     * @return 屏幕状态
+     */
     public int getStatus() {
         return status;
     }
 
+    /**
+     * 屏幕状态
+     */
     public static class Status {
+        /**
+         * 未知状态
+         */
         public static final int UNKNOWN = -1;
+
+        /**
+         * 亮屏
+         */
         public static final int ON = 1;
+
+        /**
+         * 灭屏
+         */
         public static final int OFF = 0;
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
         private int status = Status.UNKNOWN;
 
+        /**
+         * 设置屏幕状态
+         *
+         * @param status 屏幕状态
+         * @return Builder
+         */
         public Builder setStatus(int status) {
             this.status = status;
             return this;
         }
 
+        /**
+         * build
+         *
+         * @return I007Screen
+         */
         public I007Screen build() {
             return new I007Screen(status);
         }

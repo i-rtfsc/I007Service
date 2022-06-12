@@ -19,7 +19,7 @@ package com.journeyOS.machinelearning.tasks;
 import android.os.Bundle;
 
 import com.journeyOS.machinelearning.Worker;
-import com.journeyOS.machinelearning.WorkerFactory;
+import com.journeyOS.machinelearning.WorkerManager;
 import com.journeyOS.machinelearning.common.MLConstant;
 
 /**
@@ -27,11 +27,8 @@ import com.journeyOS.machinelearning.common.MLConstant;
  *
  * @author solo
  */
-public final class MLTaskFactory {
-    private static final String TAG = MLTaskFactory.class.getSimpleName();
-
-    private MLTaskFactory() {
-    }
+public final class MLTaskManager {
+    private static final String TAG = MLTaskManager.class.getSimpleName();
 
     /**
      * get MLTask
@@ -43,7 +40,7 @@ public final class MLTaskFactory {
      */
     public static AbstractMLTask get(String taskName, int clientId, Bundle params) {
         String workerName = params.getString(MLConstant.ML_TASK_BUNDLE_KEY_WORKER);
-        Worker worker = WorkerFactory.getInstance().getWorker(workerName);
+        Worker worker = WorkerManager.getInstance().getWorker(workerName);
         AbstractMLTask mlTask = null;
         if (MLConstant.Task.TASK_TEXT_DETECTION.equals(taskName)) {
             mlTask = new TextDetectionTask(clientId, worker, params);

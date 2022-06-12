@@ -18,6 +18,7 @@ package com.journeyOS.machinelearning.tasks;
 
 /**
  * IMLTaskResultHandler
+ *
  * @author solo
  */
 public interface IMLTaskResultHandler {

@@ -23,24 +23,36 @@ import android.os.StrictMode;
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.database.DataRepository;
 
-public class AppConfig {
+/**
+ * @author solo
+ */
+public final class AppConfig {
     private static final String TAG = AppConfig.class.getSimpleName();
-    private volatile static AppConfig INSTANCE = null;
+    private static volatile AppConfig sInstance = null;
 
     private AppConfig() {
     }
 
+    /**
+     * 获取 AppConfig 单例
+     *
+     * @return AppConfig 实例
+     */
     public static AppConfig getInstance() {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (AppConfig.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new AppConfig();
+                if (sInstance == null) {
+                    sInstance = new AppConfig();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
+    /**
+     * 初始化
+     * @param context 上下文
+     */
     public void initialize(Context context) {
         initStrictMode();
         initDatabase(context);

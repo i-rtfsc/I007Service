@@ -26,12 +26,21 @@ import android.os.Parcelable;
  */
 public class I007Net implements Parcelable {
 
+    /**
+     * Creator
+     */
     public static final Creator<I007Net> CREATOR = new Creator<I007Net>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Net createFromParcel(Parcel in) {
             return new I007Net(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Net[] newArray(int size) {
             return new I007Net[size];
@@ -40,35 +49,47 @@ public class I007Net implements Parcelable {
     private boolean available;
     private int type;
 
+    /**
+     * 构造函数
+     *
+     * @param available 网络是否可用
+     * @param type      网络类型
+     */
     public I007Net(boolean available, int type) {
         this.available = available;
         this.type = type;
     }
 
+    /**
+     * Parcel
+     *
+     * @param in Parcel
+     */
     protected I007Net(Parcel in) {
         available = in.readByte() != 0;
         type = in.readInt();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (available ? 1 : 0));
         dest.writeInt(type);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public int getType() {
-        return type;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "I007Net{" +
@@ -77,29 +98,93 @@ public class I007Net implements Parcelable {
                 '}';
     }
 
+    /**
+     * 获取网络是否可用
+     *
+     * @return 网络是否可用
+     */
+    public boolean isAvailable() {
+        return available;
+    }
+
+    /**
+     * 获取网络类型
+     *
+     * @return 网络类型
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * 网络类型
+     */
     public static class Type {
+        /**
+         * 未知网络
+         */
         public static final int NET_UNKNOWN = -1;
+
+        /**
+         * Wi-Fi网络
+         */
         public static final int NET_WIFI = 0;
+
+        /**
+         * 5G网络
+         */
         public static final int NET_5G = 1;
+
+        /**
+         * 4G网络
+         */
         public static final int NET_4G = 2;
+
+        /**
+         * 3G网络
+         */
         public static final int NET_3G = 3;
+
+        /**
+         * 2G网络
+         */
         public static final int NET_2G = 4;
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
         private boolean available;
         private int type = Type.NET_UNKNOWN;
 
+        /**
+         * 设置网络可用状态
+         *
+         * @param available 网络可用状态
+         * @return Builder
+         */
         public Builder setAvailable(boolean available) {
             this.available = available;
             return this;
         }
 
+        /**
+         * 设置网络类型
+         *
+         * @param type 网络类型
+         * @return Builder
+         */
         public Builder setType(int type) {
             this.type = type;
             return this;
         }
 
+        /**
+         * build
+         *
+         * @return I007Net
+         */
         public I007Net build() {
             return new I007Net(available, type);
         }

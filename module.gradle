@@ -45,9 +45,7 @@ android {
         }
     }
 
-//    aaptOptions {
-//        noCompress "tflite"
-//    }
+    //aaptOptions
     androidResources {
         noCompress 'tflite'
     }

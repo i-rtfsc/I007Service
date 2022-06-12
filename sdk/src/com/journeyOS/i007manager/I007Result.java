@@ -24,12 +24,21 @@ import android.os.Parcelable;
  */
 public class I007Result implements Parcelable {
 
+    /**
+     * Creator
+     */
     public static final Creator<I007Result> CREATOR = new Creator<I007Result>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Result createFromParcel(Parcel in) {
             return new I007Result(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public I007Result[] newArray(int size) {
             return new I007Result[size];
@@ -41,6 +50,15 @@ public class I007Result implements Parcelable {
     private I007Battery battery;
     private I007Screen screen;
 
+    /**
+     * 构造函数
+     *
+     * @param factoryId 场景因子
+     * @param app       app
+     * @param net       网络
+     * @param battery   电池
+     * @param screen    屏幕
+     */
     public I007Result(long factoryId, I007App app, I007Net net, I007Battery battery, I007Screen screen) {
         this.factoryId = factoryId;
         this.app = app;
@@ -49,6 +67,11 @@ public class I007Result implements Parcelable {
         this.screen = screen;
     }
 
+    /**
+     * Parcel
+     *
+     * @param in Parcel
+     */
     protected I007Result(Parcel in) {
         factoryId = in.readLong();
         app = in.readParcelable(I007App.class.getClassLoader());
@@ -57,6 +80,9 @@ public class I007Result implements Parcelable {
         screen = in.readParcelable(I007Screen.class.getClassLoader());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(factoryId);
@@ -66,31 +92,17 @@ public class I007Result implements Parcelable {
         dest.writeParcelable(screen, flags);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public long getFactoryId() {
-        return factoryId;
-    }
-
-    public I007App getApp() {
-        return app;
-    }
-
-    public I007Net getNet() {
-        return net;
-    }
-
-    public I007Battery getBattery() {
-        return battery;
-    }
-
-    public I007Screen getScreen() {
-        return screen;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "I007Result{" +
@@ -102,6 +114,54 @@ public class I007Result implements Parcelable {
                 '}';
     }
 
+    /**
+     * 获取场景因子
+     *
+     * @return 场景因子
+     */
+    public long getFactoryId() {
+        return factoryId;
+    }
+
+    /**
+     * 获取app
+     *
+     * @return app
+     */
+    public I007App getApp() {
+        return app;
+    }
+
+    /**
+     * 获取网络
+     *
+     * @return 网络
+     */
+    public I007Net getNet() {
+        return net;
+    }
+
+    /**
+     * 获取电池
+     *
+     * @return 电池
+     */
+    public I007Battery getBattery() {
+        return battery;
+    }
+
+    /**
+     * 获取屏幕
+     *
+     * @return 屏幕
+     */
+    public I007Screen getScreen() {
+        return screen;
+    }
+
+    /**
+     * Builder
+     */
     public static class Builder {
         private long factoryId;
         private I007App app;
@@ -109,31 +169,66 @@ public class I007Result implements Parcelable {
         private I007Battery battery;
         private I007Screen screen;
 
+        /**
+         * 设置场景因子
+         *
+         * @param factoryId 场景因子
+         * @return Builder
+         */
         public Builder setFactoryId(long factoryId) {
             this.factoryId = factoryId;
             return this;
         }
 
+        /**
+         * 设置app
+         *
+         * @param app app
+         * @return Builder
+         */
         public Builder setApp(I007App app) {
             this.app = app;
             return this;
         }
 
+        /**
+         * 设置网络
+         *
+         * @param net 网络
+         * @return Builder
+         */
         public Builder setNet(I007Net net) {
             this.net = net;
             return this;
         }
 
+        /**
+         * 设置电池
+         *
+         * @param battery 电池
+         * @return Builder
+         */
         public Builder setBattery(I007Battery battery) {
             this.battery = battery;
             return this;
         }
 
+        /**
+         * 设置屏幕
+         *
+         * @param screen 屏幕
+         * @return Builder
+         */
         public Builder setScreen(I007Screen screen) {
             this.screen = screen;
             return this;
         }
 
+        /**
+         * build
+         *
+         * @return I007Result
+         */
         public I007Result build() {
             return new I007Result(factoryId, app, net, battery, screen);
         }

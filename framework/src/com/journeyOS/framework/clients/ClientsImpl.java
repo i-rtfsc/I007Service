@@ -26,7 +26,6 @@ import com.journeyOS.common.SmartLog;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * 客户端Helper
  *
@@ -40,7 +39,6 @@ public class ClientsImpl<TListener extends IInterface> {
      * binder对象跟II007Observer对应起来
      */
     private final Map<IBinder, LinkedListener> mListenerMap = new HashMap<>();
-
 
     /**
      * 构造函数
@@ -225,6 +223,7 @@ public class ClientsImpl<TListener extends IInterface> {
 
     /**
      * to string
+     *
      * @return 组合之后的字符串
      */
     @Override

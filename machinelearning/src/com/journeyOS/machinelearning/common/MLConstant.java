@@ -21,10 +21,7 @@ package com.journeyOS.machinelearning.common;
  *
  * @author solo
  */
-public class MLConstant {
-
-    private MLConstant() {
-    }
+public final class MLConstant {
 
     /**
      * task_name

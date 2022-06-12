@@ -31,51 +31,76 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author solo
  */
-public class I007ManagerService extends II007Manager.Stub implements MonitorManager.OnSceneListener {
+public final class I007ManagerService extends II007Manager.Stub implements MonitorManager.OnSceneListener {
     private static final String TAG = I007ManagerService.class.getSimpleName();
 
-    private static final AtomicReference<I007ManagerService> sService = new AtomicReference<>();
+    private static final AtomicReference<I007ManagerService> SERVICE = new AtomicReference<>();
 
     public static I007ManagerService getService() {
-        return sService.get();
+        return SERVICE.get();
     }
 
+    /**
+     * 启动I007 manager service
+     *
+     * @param context 上下文
+     */
     public static void systemReady(Context context) {
         SmartLog.d(TAG, "I007 manager service system ready.");
-        if (sService.get() == null) {
+        if (SERVICE.get() == null) {
             new I007ManagerService().onCreate(context);
         }
     }
 
+    /**
+     * 启动I007 manager service
+     *
+     * @param context 上下文
+     */
     public void onCreate(Context context) {
         SmartLog.d(TAG, "I007 manager service running...");
-        sService.set(this);
+        SERVICE.set(this);
         MonitorManager.getInstance().registerListener(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean registerListener(II007Observer listener) throws RemoteException {
         return ClientSession.getInstance().insertToCategory(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean unregisterListener(II007Observer listener) throws RemoteException {
         ClientSession.getInstance().removeFromCategory(listener);
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean setFactor(long factors) throws RemoteException {
         MonitorManager.getInstance().start(factors);
         return ClientSession.getInstance().setFactorToCategory(factors);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean updateFactor(long factors) throws RemoteException {
         MonitorManager.getInstance().start(factors);
         return ClientSession.getInstance().updateFactorToCategory(factors);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removeFactor(long factors) throws RemoteException {
         if (ClientSession.getInstance().checkFactorFromCategory(factors)) {
@@ -85,6 +110,9 @@ public class I007ManagerService extends II007Manager.Stub implements MonitorMana
         return ClientSession.getInstance().removeFactorFromCategory(factors);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onChanged(I007Result result) {
         ClientSession.getInstance().dispatchFactorEvent(result);

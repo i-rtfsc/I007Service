@@ -66,17 +66,26 @@ public final class AccessibilityAbstractMonitor extends AbstractMonitor implemen
         return sInstance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onInit(long factoryId) {
         Context context = I007Core.getCore().getContext();
         mAccessibilityInfoObserver = new AccessibilityInfoObserver(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onStart() {
         addAccessibilityServiceDelegates();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onStop() {
         //TODO
@@ -87,6 +96,9 @@ public final class AccessibilityAbstractMonitor extends AbstractMonitor implemen
         mAccessibilityInfoObserver.addListener(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void activityResumed(String packageName, String activity) {
         SmartLog.d(TAG, "on activity changed, packageName = [" + packageName + "], activity = [" + activity + "]");

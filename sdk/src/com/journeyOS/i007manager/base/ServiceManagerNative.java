@@ -34,7 +34,12 @@ public class ServiceManagerNative {
     private static final String SERVICE_SYNC_AUTHORITY = "com.journeyOS.i007manager.syncprovider";
     private static IServiceFetcher sFetcher;
 
-    public synchronized static IServiceFetcher getServiceFetcher() {
+    /**
+     * 获取服务
+     *
+     * @return IServiceFetcher
+     */
+    public static synchronized IServiceFetcher getServiceFetcher() {
         if (sFetcher == null) {
             Context context = I007Core.getCore().getContext();
             Bundle response = new ProviderCaller.Builder(context)

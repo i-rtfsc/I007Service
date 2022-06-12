@@ -30,6 +30,8 @@ public interface AccessibilityDelegate {
 
     /**
      * 返回调用onAccessibilityEvent时的EventType的集合。如果需要对所有EventType都有效，返回null。
+     *
+     * @return 事件类型
      */
     Set<Integer> getEventTypes();
 }

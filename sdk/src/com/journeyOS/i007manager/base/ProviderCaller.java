@@ -28,15 +28,30 @@ import java.io.Serializable;
 /**
  * @author solo
  */
-final public class ProviderCaller {
+public final class ProviderCaller {
     private static final String TAG = ProviderCaller.class.getSimpleName();
 
+    /**
+     * Call a provider-defined method.
+     * This can be used to implement read or write interfaces which are cheaper
+     * than using a Cursor and/or do not fit into the traditional table model.
+     *
+     * @param authority  the authority of the ContentProvider to which this batch should be applied
+     * @param context    上下文
+     * @param methodName 方法名
+     * @param arg        arg
+     * @param bundle     bundle
+     * @return Bundle
+     */
     public static Bundle call(String authority, Context context, String methodName, String arg, Bundle bundle) {
         Uri uri = Uri.parse("content://" + authority);
         ContentResolver contentResolver = context.getContentResolver();
         return contentResolver.call(uri, methodName, arg, bundle);
     }
 
+    /**
+     * Builder
+     */
     public static final class Builder {
         private static final String TAG = Builder.class.getSimpleName();
         private Context context;
@@ -46,26 +61,56 @@ final public class ProviderCaller {
         private String auth;
         private String arg;
 
+        /**
+         * 设置上下文
+         *
+         * @param context 上下文
+         */
         public Builder(Context context) {
             this.context = context;
             this.auth = auth;
         }
 
+        /**
+         * 设置authority
+         *
+         * @param auth authority
+         * @return Builder
+         */
         public Builder authority(String auth) {
             this.auth = auth;
             return this;
         }
 
+        /**
+         * 设置方法名
+         *
+         * @param name 方法名
+         * @return Builder
+         */
         public Builder methodName(String name) {
             this.methodName = name;
             return this;
         }
 
+        /**
+         * 设置arg
+         *
+         * @param arg arg
+         * @return Builder
+         */
         public Builder arg(String arg) {
             this.arg = arg;
             return this;
         }
 
+        /**
+         * 设置arg
+         *
+         * @param key   key
+         * @param value value
+         * @return Builder
+         */
         public Builder addArg(String key, Object value) {
             if (value != null) {
                 if (value instanceof IBinder) {
@@ -89,6 +134,11 @@ final public class ProviderCaller {
             return this;
         }
 
+        /**
+         * call
+         *
+         * @return Bundle
+         */
         public Bundle call() {
             return ProviderCaller.call(auth, context, methodName, arg, bundle);
         }

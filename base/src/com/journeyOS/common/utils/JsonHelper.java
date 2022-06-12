@@ -71,7 +71,7 @@ public class JsonHelper {
      * @param string json字符串
      * @param type   需要转成的对象类型
      * @param <T>    T
-     * @return
+     * @return 对象类型
      */
     public static <T> T fromJson(String string, Type type) {
         return GSON.fromJson(string, type);

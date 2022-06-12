@@ -26,6 +26,7 @@ import android.util.Log;
  */
 public class SmartLog {
     private static final String TAG = "I007Service";
+    private static final int METHOD_NAME = 4;
 
     /**
      * 通过命令 adb shell setprop log.tag.I007Service D 打开log
@@ -37,23 +38,48 @@ public class SmartLog {
     }
 
     private static String getMethodName() {
-        final StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[METHOD_NAME];
         return stackTraceElement.getMethodName() + "()";
     }
 
     //e > w > i > d > v
+
+    /**
+     * error log
+     *
+     * @param tag     tag
+     * @param message log信息
+     */
     public static void e(String tag, String message) {
         Log.e(replaceTag(tag), getMethodName() + " " + message);
     }
 
+    /**
+     * warning log
+     *
+     * @param tag     tag
+     * @param message log信息
+     */
     public static void w(String tag, String message) {
         Log.w(replaceTag(tag), getMethodName() + " " + message);
     }
 
+    /**
+     * info log
+     *
+     * @param tag     tag
+     * @param message log信息
+     */
     public static void i(String tag, String message) {
         Log.i(replaceTag(tag), getMethodName() + " " + message);
     }
 
+    /**
+     * debug log
+     *
+     * @param tag     tag
+     * @param message log信息
+     */
     public static void d(String tag, String message) {
         if (isDebug()) {
             Log.d(replaceTag(tag), getMethodName() + " " + message);
@@ -62,6 +88,12 @@ public class SmartLog {
         }
     }
 
+    /**
+     * verbose log
+     *
+     * @param tag     tag
+     * @param message log信息
+     */
     public static void v(String tag, String message) {
         if (isDebug()) {
             Log.v(replaceTag(tag), getMethodName() + " " + message);
@@ -70,7 +102,7 @@ public class SmartLog {
         }
     }
 
-    public static String replaceTag(String src) {
+    private static String replaceTag(String src) {
         if (TextUtils.isEmpty(TAG)) {
             return src;
         } else {

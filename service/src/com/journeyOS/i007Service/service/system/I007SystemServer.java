@@ -40,6 +40,9 @@ public class I007SystemServer extends AbstractContentProvider {
 
     private final ServiceFetcher mServiceFetcher = new ServiceFetcher();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onCreate() {
         Context context = getContext();
@@ -55,6 +58,9 @@ public class I007SystemServer extends AbstractContentProvider {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Bundle call(@NonNull String method, String arg, Bundle extras) {
         SmartLog.d(TAG, ", method = [" + method + "], arg = [" + arg + "], extras = [" + extras + "]");

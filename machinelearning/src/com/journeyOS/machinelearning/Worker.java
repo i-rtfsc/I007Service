@@ -63,6 +63,9 @@ public class Worker {
         return classifier;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         int hashCode = this.classifier == null ? 0 : this.classifier.hashCode();

@@ -28,11 +28,11 @@ import java.lang.ref.WeakReference;
  *
  * @author solo
  */
-public class I007Core {
+public final class I007Core {
     private static final String TAG = I007Core.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    private volatile static I007Core INSTANCE = null;
+    private static volatile I007Core sInstance = null;
 
     private WeakReference<Context> mReference;
     private boolean isRunning = false;
@@ -41,14 +41,14 @@ public class I007Core {
     }
 
     public static I007Core getCore() {
-        if (INSTANCE == null) {
+        if (sInstance == null) {
             synchronized (I007Core.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new I007Core();
+                if (sInstance == null) {
+                    sInstance = new I007Core();
                 }
             }
         }
-        return INSTANCE;
+        return sInstance;
     }
 
     public void startup(Context context) {

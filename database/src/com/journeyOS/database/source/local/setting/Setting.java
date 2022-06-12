@@ -1,5 +1,20 @@
-package com.journeyOS.database.source.local.setting;
+/*
+ * Copyright (c) 2022 anqi.huang@outlook.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+package com.journeyOS.database.source.local.setting;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -30,15 +45,6 @@ public class Setting {
     private String object;
 
     /**
-     * 设置key
-     *
-     * @param key key值
-     */
-    public void setKey(@NonNull String key) {
-        this.key = key;
-    }
-
-    /**
      * 获取key值
      *
      * @return key值
@@ -49,12 +55,12 @@ public class Setting {
     }
 
     /**
-     * 设置value值
+     * 设置key
      *
-     * @param value value值
+     * @param key key值
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setKey(@NonNull String key) {
+        this.key = key;
     }
 
     /**
@@ -64,6 +70,15 @@ public class Setting {
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * 设置value值
+     *
+     * @param value value值
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**
