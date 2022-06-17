@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.platform;
+package com.journeyOS.platform;
 
 /**
  * 平台或者 feature 相关管理

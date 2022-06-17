@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.journeyOS.i007Service.platform;
+package com.journeyOS.platform;
 
-import com.journeyOS.i007Service.BuildConfig;
+import com.journeyOS.platform.BuildConfig;
 
 /**
  * @author solo

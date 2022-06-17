@@ -1,8 +1,13 @@
 include ':sdk'
+
+include ':platform'
 include ':base'
 include ':database'
+
 include ':framework'
+
 include ':monitor'
 include ':machinelearning'
 include ':service'
+
 //include ':test'

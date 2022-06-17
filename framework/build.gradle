@@ -2,6 +2,7 @@ apply from: "../module.gradle"
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    api project(':platform')
     api project(':base')
     api project(':database')
 }

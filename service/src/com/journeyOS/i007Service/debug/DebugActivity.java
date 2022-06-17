@@ -28,12 +28,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.i007Service.platform.PlatformManager;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Observer;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.machinelearning.MachineLearningManager;
+import com.journeyOS.platform.PlatformManager;
 
 /**
  * @author solo
@@ -73,7 +73,6 @@ public class DebugActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
             SmartLog.d(TAG, "set button click");
             init();
-            test();
         });
         mLayout.addView(button);
 
@@ -90,6 +89,14 @@ public class DebugActivity extends AppCompatActivity {
         button.setOnClickListener(v -> {
             SmartLog.d(TAG, "remove button click");
             remove();
+        });
+        mLayout.addView(button);
+
+        button = new Button(this);
+        button.setText("Test");
+        button.setOnClickListener(v -> {
+            SmartLog.d(TAG, "test button click");
+            test();
         });
         mLayout.addView(button);
 
