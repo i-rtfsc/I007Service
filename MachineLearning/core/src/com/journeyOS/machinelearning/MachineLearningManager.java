@@ -123,6 +123,15 @@ public final class MachineLearningManager {
         return WorkerManager.getInstance().releaseModel(aiModel);
     }
 
+    /**
+     * 执行任务
+     *
+     * @param aiModel  模型信息
+     * @param aiData   需要识别的信息
+     * @param clientId 客户端id
+     * @param handler  Handler
+     * @return 任务结果
+     */
     public TaskResult executeTask(AiModel aiModel, AiData aiData, int clientId, ITaskResultHandler handler) {
         String workerName = aiModel.getName();
         BaseTask task = TaskManager.get(workerName, clientId, aiData);
@@ -145,7 +154,6 @@ public final class MachineLearningManager {
         }
         return finalResult;
     }
-
 
     /**
      * MLHandle

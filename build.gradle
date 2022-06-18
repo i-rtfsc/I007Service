@@ -55,4 +55,4 @@ task mlRelease(dependsOn: ['apkClean', ':service:assembleMlRelease'])
 task tfRelease(dependsOn: ['apkClean', ':service:assembleTfRelease'])
 task torchRelease(dependsOn: ['apkClean', ':service:assembleTorchRelease'])
 
-defaultTasks 'assembleStandardRelease'
+defaultTasks 'assembleStandardRelease', 'assembleMlRelease', 'assembleTfRelease', 'assembleTorchRelease'

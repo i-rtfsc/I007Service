@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2022 anqi.huang@outlook.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.journeyOS.i007Service.debug;
 
 import android.os.Bundle;
@@ -11,29 +27,25 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.journeyOS.common.SmartLog;
-import com.journeyOS.common.utils.FileUtils;
-import com.journeyOS.common.utils.JsonHelper;
 import com.journeyOS.i007Service.R;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiManager;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.AiModelMaker;
 import com.journeyOS.i007manager.AiObserver;
 import com.journeyOS.i007manager.AiResult;
 import com.journeyOS.platform.PlatformManager;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author solo
+ */
 public class AiTextActivity extends AppCompatActivity {
     private static final String TAG = "AiTextActivity";
     boolean supportML = false;
     AiManager mAm = null;
-    AiModel mModel = new AiModel.Builder()
-            .setName(AiModel.Model.TEXT_CLASSIFICATION)
-            .setGraph(AiModel.Graph.TF_LITE)
-            .setRuntime(AiModel.Runtime.GPU)
-            .build();
+    AiModel mModel = AiModelMaker.getInstance().makePytorchImageClassification();
     private TextView resultTextView;
     private EditText inputEditText;
     private ScrollView scrollView;
@@ -59,7 +71,6 @@ public class AiTextActivity extends AppCompatActivity {
                 (View v) -> {
                     classify(inputEditText.getText().toString());
                 });
-        test();
     }
 
     @Override
@@ -77,8 +88,7 @@ public class AiTextActivity extends AppCompatActivity {
     private void classify(final String text) {
         AiData aiData = new AiData.Builder()
                 .setChannel(11)
-                .setType(AiData.TEXT)
-                .setWord(text)
+                .setText(text)
                 .build();
         mAm.recognize(mModel, aiData, new AiObserver() {
             @Override
@@ -112,16 +122,5 @@ public class AiTextActivity extends AppCompatActivity {
                     // Scroll to the bottom to show latest entry's classification result.
                     scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
                 });
-    }
-
-    private void test() {
-        Bean bean = new Bean();
-        bean.labels = Arrays.asList(ImageNetClasses.IMAGENET_CLASSES);
-        bean.version = 1;
-        String json = JsonHelper.toJson(bean);
-
-        File file = new File(getApplicationContext().getFilesDir(), "labels.json");
-        SmartLog.d(TAG, "test() called" + file.getAbsolutePath());
-        FileUtils.write2File(file, json);
     }
 }

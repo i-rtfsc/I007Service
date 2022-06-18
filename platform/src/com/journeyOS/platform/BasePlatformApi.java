@@ -16,8 +16,6 @@
 
 package com.journeyOS.platform;
 
-import com.journeyOS.platform.BuildConfig;
-
 /**
  * @author solo
  */

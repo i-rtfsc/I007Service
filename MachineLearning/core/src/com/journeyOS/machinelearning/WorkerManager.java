@@ -163,6 +163,8 @@ public class WorkerManager {
         switch (workerName) {
             case AiModel.Model.TEXT_CLASSIFICATION:
                 return reflectClassifier("com.journeyOS.tflite.TextDetector");
+            case AiModel.Model.IMAGE_CLASSIFICATION:
+                return reflectClassifier("com.journeyOS.tflite.ImageClassifier");
             default:
                 break;
         }

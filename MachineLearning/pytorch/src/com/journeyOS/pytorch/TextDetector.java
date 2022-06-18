@@ -18,7 +18,6 @@ package com.journeyOS.pytorch;
 
 import android.content.Context;
 
-import com.journeyOS.i007manager.AiData;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 /**
@@ -26,7 +25,7 @@ import com.journeyOS.machinelearning.tasks.TaskResult;
  *
  * @author solo
  */
-public class TextDetector extends BaseClassifier<AiData> {
+public class TextDetector extends BaseClassifier<String> {
     private static final String TAG = TextDetector.class.getSimpleName();
 
     /**
@@ -41,9 +40,8 @@ public class TextDetector extends BaseClassifier<AiData> {
      * {@inheritDoc}
      */
     @Override
-    public TaskResult doRecognize(AiData aiData) {
-        String text = aiData.getWord();
-        String textResults = classify(text);
+    public TaskResult doRecognize(String data) {
+        String textResults = classify(data);
         return new TaskResult(textResults);
     }
 

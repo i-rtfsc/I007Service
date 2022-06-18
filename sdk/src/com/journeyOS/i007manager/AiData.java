@@ -25,15 +25,7 @@ import android.os.Parcelable;
  * @author solo
  */
 public class AiData implements Parcelable {
-    /**
-     * 文字
-     */
-    public static final int TEXT = 0x1;
 
-    /**
-     * 图像
-     */
-    public static final int IMAGE = 0x2;
     public static final Creator<AiData> CREATOR = new Creator<AiData>() {
         @Override
         public AiData createFromParcel(Parcel in) {
@@ -45,18 +37,17 @@ public class AiData implements Parcelable {
             return new AiData[size];
         }
     };
+
     /**
      * 用channel id来区分是哪一条信息
      */
     private int channel;
-    /**
-     * 识别的类型（文字、图像）
-     */
-    private int type;
+
     /**
      * 需要识别的文字（对应的类型必须text）
      */
-    private String word;
+    private String text;
+
     /**
      * 需要识别的图像（对应的类型必须image）
      */
@@ -66,29 +57,25 @@ public class AiData implements Parcelable {
      * 构造函数
      *
      * @param channel 区分是哪一条信息
-     * @param type    识别的类型
-     * @param word    需要识别的文字（对应的类型必须text）
+     * @param text    需要识别的文字（对应的类型必须text）
      * @param image   需要识别的图像（对应的类型必须image）
      */
-    public AiData(int channel, int type, String word, AiImage image) {
+    public AiData(int channel, String text, AiImage image) {
         this.channel = channel;
-        this.type = type;
-        this.word = word;
+        this.text = text;
         this.image = image;
     }
 
     protected AiData(Parcel in) {
         channel = in.readInt();
-        type = in.readInt();
-        word = in.readString();
+        text = in.readString();
         image = in.readParcelable(AiImage.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(channel);
-        dest.writeInt(type);
-        dest.writeString(word);
+        dest.writeString(text);
         dest.writeParcelable(image, flags);
     }
 
@@ -107,25 +94,16 @@ public class AiData implements Parcelable {
     }
 
     /**
-     * 识别的类型（文字、图像）
-     *
-     * @return 类型
-     */
-    public int getType() {
-        return type;
-    }
-
-    /**
-     * 需要识别的文字（对应的类型必须text）
+     * 需要识别的文字
      *
      * @return 文字
      */
-    public String getWord() {
-        return word;
+    public String getText() {
+        return text;
     }
 
     /**
-     * 需要识别的图像（对应的类型必须image）
+     * 需要识别的图像
      *
      * @return 图像
      */
@@ -144,35 +122,43 @@ public class AiData implements Parcelable {
         private int channel;
 
         /**
-         * 识别的类型（文字、图像）
+         * 需要识别的文字
          */
-        private int type;
+        private String text;
 
         /**
-         * 需要识别的文字（对应的类型必须text）
-         */
-        private String word;
-
-        /**
-         * 需要识别的图像（对应的类型必须image）
+         * 需要识别的图像
          */
         private AiImage image;
 
+        /**
+         * 设置 channel id
+         *
+         * @param channel channel id
+         * @return Builder
+         */
         public Builder setChannel(int channel) {
             this.channel = channel;
             return this;
         }
 
-        public Builder setType(int type) {
-            this.type = type;
+        /**
+         * 设置需要识别的文字
+         *
+         * @param text 需要识别的文字
+         * @return Builder
+         */
+        public Builder setText(String text) {
+            this.text = text;
             return this;
         }
 
-        public Builder setWord(String word) {
-            this.word = word;
-            return this;
-        }
-
+        /**
+         * 设置需要识别的图像
+         *
+         * @param image 需要识别的图像
+         * @return Builder
+         */
         public Builder setImage(AiImage image) {
             this.image = image;
             return this;
@@ -181,10 +167,10 @@ public class AiData implements Parcelable {
         /**
          * build
          *
-         * @return I007App
+         * @return AiData
          */
         public AiData build() {
-            return new AiData(channel, type, word, image);
+            return new AiData(channel, text, image);
         }
     }
 

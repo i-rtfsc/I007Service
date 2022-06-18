@@ -47,7 +47,10 @@ ext {
             //"tensorflow-lite"         : "org.tensorflow:tensorflow-lite:2.7.0",
             //"tensorflow-lite-metadata": "org.tensorflow:tensorflow-lite-metadata:0.3.0",
             //https://search.maven.org/artifact/org.tensorflow
-            "tensorflow-lite-task-text": "org.tensorflow:tensorflow-lite-task-text:0.4.1",
+            "tensorflow-lite-task-text"          : "org.tensorflow:tensorflow-lite-task-text:0.4.1",
+            "tensorflow-lite-task-vision"        : "org.tensorflow:tensorflow-lite-task-vision:0.3.0",
+            "tensorflow-lite-metadata"           : "org.tensorflow:tensorflow-lite-metadata:0.3.0",
+            "tensorflow-lite-gpu-delegate-plugin": "org.tensorflow:tensorflow-lite-gpu-delegate-plugin:0.3.0",
     ]
 
     pytorchVersion = '1.9.0'

@@ -16,7 +16,6 @@
 
 package com.journeyOS.tflite;
 
-import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiResult;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
@@ -30,17 +29,24 @@ import java.util.List;
  *
  * @author solo
  */
-public class TextDetector extends BaseClassifier<AiData> {
+public class TextDetector extends BaseClassifier<String> {
     private static final String TAG = TextDetector.class.getSimpleName();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public TaskResult doRecognize(AiData aiData) {
-        String word = aiData.getWord();
-        List<AiResult> textResults = classify(word);
+    public TaskResult doRecognize(String data) {
+        List<AiResult> textResults = classify(data);
         return new TaskResult(textResults);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int getTopN() {
+        return -1;
     }
 
     /**
@@ -50,7 +56,7 @@ public class TextDetector extends BaseClassifier<AiData> {
      * @return 推演的结果
      */
     private List<AiResult> classify(String text) {
-        List<Category> apiResults = classifier.classify(text);
+        List<Category> apiResults = textClassifier.classify(text);
         int size = apiResults.size();
         List<AiResult> results = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {

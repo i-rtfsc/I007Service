@@ -275,6 +275,11 @@ public class AiModel implements Parcelable {
          */
         public static final String DSP = "dsp";
 
+        /**
+         * nnapi
+         */
+        public static final String NNAPI = "nnapi";
+
     }
 
     /**

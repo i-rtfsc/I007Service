@@ -16,6 +16,8 @@
 
 package com.journeyOS.machinelearning.tasks;
 
+import android.graphics.Bitmap;
+
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.machinelearning.Worker;
 
@@ -47,7 +49,8 @@ public class ImageClassifierTask extends BaseTask {
      */
     @Override
     public TaskResult execute() {
-        TaskResult taskResults = mWorker.getClassifier().recognize(mAiData);
+        Bitmap bitmap = mAiData.getImage().dumpToBitmap();
+        TaskResult taskResults = mWorker.getClassifier().recognize(bitmap);
 
         // convert and pack result
         if (taskResults == null) {

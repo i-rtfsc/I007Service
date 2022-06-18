@@ -101,7 +101,7 @@ public class AiImage implements Parcelable {
     public AiImage resizeTo(int width, int height) {
         Bitmap bm = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
         Bitmap bmScaled = Bitmap.createScaledBitmap(bm, width, height, false);
-        int intValues[] = new int[width * height];
+        int[] intValues = new int[width * height];
         bmScaled.getPixels(intValues, 0, width, 0, 0, width, height);
         AiImage ret = new AiImage(intValues, height, width);
         bm.recycle();

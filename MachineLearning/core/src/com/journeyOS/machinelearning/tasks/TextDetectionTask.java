@@ -47,7 +47,8 @@ public class TextDetectionTask extends BaseTask {
      */
     @Override
     public TaskResult execute() {
-        TaskResult taskResults = mWorker.getClassifier().recognize(mAiData);
+        String word = mAiData.getText();
+        TaskResult taskResults = mWorker.getClassifier().recognize(word);
 
         // convert and pack result
         if (taskResults == null) {

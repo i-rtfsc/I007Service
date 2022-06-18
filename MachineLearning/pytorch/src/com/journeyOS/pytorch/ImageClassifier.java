@@ -18,10 +18,12 @@ package com.journeyOS.pytorch;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.SystemClock;
+import android.os.Trace;
 
+import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.utils.FileUtils;
 import com.journeyOS.common.utils.JsonHelper;
-import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiResult;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
@@ -38,7 +40,7 @@ import java.util.List;
  *
  * @author solo
  */
-public class ImageClassifier extends BaseClassifier<AiData> {
+public class ImageClassifier extends BaseClassifier<Bitmap> {
     private static final String TAG = ImageClassifier.class.getSimpleName();
     private List<String> mImageClasses = new ArrayList<>();
 
@@ -57,9 +59,8 @@ public class ImageClassifier extends BaseClassifier<AiData> {
      * {@inheritDoc}
      */
     @Override
-    protected TaskResult doRecognize(AiData data) {
-        Bitmap bitmap = data.getImage().dumpToBitmap();
-        List<AiResult> results = classify(bitmap);
+    protected TaskResult doRecognize(Bitmap data) {
+        List<AiResult> results = classify(data);
         return new TaskResult(results);
     }
 
@@ -67,8 +68,14 @@ public class ImageClassifier extends BaseClassifier<AiData> {
         // preparing input tensor
         final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap, TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB, MemoryFormat.CHANNELS_LAST);
+
+        Trace.beginSection("runInference");
+        long startTimeForReference = SystemClock.uptimeMillis();
         // running the model
         final Tensor outputTensor = mModel.forward(IValue.from(inputTensor)).toTensor();
+        long endTimeForReference = SystemClock.uptimeMillis();
+        Trace.endSection();
+        SmartLog.v(TAG, "Run pytorch-model inference, time = " + (endTimeForReference - startTimeForReference));
 
         // getting tensor content as java array of floats
         final float[] scores = outputTensor.getDataAsFloatArray();
