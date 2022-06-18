@@ -16,7 +16,9 @@
 
 package com.journeyOS.i007Service.debug;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.widget.Button;
@@ -32,8 +34,6 @@ import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Observer;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.machinelearning.MachineLearningManager;
-import com.journeyOS.platform.PlatformManager;
 
 /**
  * @author solo
@@ -93,10 +93,18 @@ public class DebugActivity extends AppCompatActivity {
         mLayout.addView(button);
 
         button = new Button(this);
-        button.setText("Test");
+        button.setText("Ai-Text");
         button.setOnClickListener(v -> {
-            SmartLog.d(TAG, "test button click");
-            test();
+            SmartLog.d(TAG, "ai-text button click");
+            startActivityImpl(AiTextActivity.class);
+        });
+        mLayout.addView(button);
+
+        button = new Button(this);
+        button.setText("Ai-Image");
+        button.setOnClickListener(v -> {
+            SmartLog.d(TAG, "ai-image button click");
+            startActivityImpl(AiImageActivity.class);
         });
         mLayout.addView(button);
 
@@ -128,11 +136,13 @@ public class DebugActivity extends AppCompatActivity {
         i007m.removeFactor(I007Manager.SCENE_FACTOR_BATTERY);
     }
 
-    private void test() {
-        boolean supportML = PlatformManager.getInstance().supportMachineLearning();
-        SmartLog.d(TAG, "supportMachineLearning = [" + supportML + "]");
-        if (supportML) {
-            MachineLearningManager.getInstance().init(getApplication());
+    private void startActivityImpl(Class<?> cls) {
+        try {
+            Intent intent = new Intent(this, cls);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
         }
     }
 

@@ -21,7 +21,12 @@ package com.journeyOS.i007manager.base;
  */
 public class ServiceConstants {
     /**
-     * i007服务名称
+     * i007 服务名称
      */
     public static final String SERVICE_I007 = "i007";
+
+    /**
+     * ai 服务名称
+     */
+    public static final String SERVICE_AI = "ai";
 }

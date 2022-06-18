@@ -51,9 +51,17 @@ android {
         standard {
             buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
         }
-        //machine learning
+        //machine learning(all)
         ml {
             buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
+        }
+        //machine learning(only tf)
+        tf {
+            buildConfigField "String", "BUILD_PRODUCT", "\"tflite\""
+        }
+        //machine learning(only pytorch)
+        torch {
+            buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
         }
     }
 

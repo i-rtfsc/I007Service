@@ -52,5 +52,7 @@ task apkClean(type: Delete) {
 
 task standardRelease(dependsOn: ['apkClean', ':service:assembleStandardRelease'])
 task mlRelease(dependsOn: ['apkClean', ':service:assembleMlRelease'])
+task tfRelease(dependsOn: ['apkClean', ':service:assembleTfRelease'])
+task torchRelease(dependsOn: ['apkClean', ':service:assembleTorchRelease'])
 
 defaultTasks 'assembleStandardRelease'

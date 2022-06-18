@@ -1,0 +1,9 @@
+apply from: "../../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly project(':framework')
+    compileOnly project(':machinelearning')
+    //tf support
+    rootProject.ext.tfDependencies.each { dependence -> api dependence.value }
+}

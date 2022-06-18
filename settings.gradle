@@ -7,7 +7,15 @@ include ':database'
 include ':framework'
 
 include ':monitor'
+//ai
 include ':machinelearning'
+include ':tflite'
+include ':pytorch'
+
 include ':service'
 
 //include ':test'
+
+project(':machinelearning').projectDir = new File('./MachineLearning/core')
+project(':tflite').projectDir = new File('./MachineLearning/tflite')
+project(':pytorch').projectDir = new File('./MachineLearning/pytorch')

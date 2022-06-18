@@ -74,9 +74,17 @@ android {
         standard {
             buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
         }
-        //machine learning
+        //machine learning(all)
         ml {
             buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
+        }
+        //machine learning(only tf)
+        tf {
+            buildConfigField "String", "BUILD_PRODUCT", "\"tflite\""
+        }
+        //machine learning(only pytorch)
+        torch {
+            buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
         }
     }
 
@@ -98,5 +106,17 @@ dependencies {
     //但service中用调用 machine learning 模块代码，需要用 compileOnly 确保编译不报错。
     //service中用到 machine learning 模块是是通过宏 BUILD_PRODUCT 来控制，无需担心运行时报错的问题。
     standardCompileOnly project(':machinelearning')
+
+    //所有模型都打包
     mlImplementation project(':machinelearning')
+    mlImplementation project(':tflite')
+    mlImplementation project(':pytorch')
+
+    //只打包tflite模型
+    tfImplementation project(':machinelearning')
+    tfImplementation project(':tflite')
+
+    //只打包pytorch模型
+    torchImplementation project(':machinelearning')
+    torchImplementation project(':pytorch')
 }

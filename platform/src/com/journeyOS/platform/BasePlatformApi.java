@@ -24,6 +24,8 @@ import com.journeyOS.platform.BuildConfig;
 public class BasePlatformApi {
     protected static final String PRODUCT_STANDARD = "standard";
     protected static final String PRODUCT_ML = "ml";
+    protected static final String PRODUCT_ML_TFLITE = "tflite";
+    protected static final String PRODUCT_ML_PYTORCH = "pytorch";
 
     protected final String getProduct() {
         return BuildConfig.BUILD_PRODUCT;

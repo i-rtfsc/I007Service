@@ -51,10 +51,11 @@ public final class AppConfig {
 
     /**
      * 初始化
+     *
      * @param context 上下文
      */
     public void initialize(Context context) {
-        initStrictMode();
+        //initStrictMode();
         initDatabase(context);
     }
 

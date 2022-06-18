@@ -42,12 +42,19 @@ ext {
     ]
 
     //ai库
-    aiDependencies = [
-            //tensorflow
-            "tensorflow-lite"         : "org.tensorflow:tensorflow-lite:2.7.0",
-            "tensorflow-lite-metadata": "org.tensorflow:tensorflow-lite-metadata:0.3.0",
+    tfDependencies = [
+            //tensorflow-lite
+            //"tensorflow-lite"         : "org.tensorflow:tensorflow-lite:2.7.0",
+            //"tensorflow-lite-metadata": "org.tensorflow:tensorflow-lite-metadata:0.3.0",
+            //https://search.maven.org/artifact/org.tensorflow
+            "tensorflow-lite-task-text": "org.tensorflow:tensorflow-lite-task-text:0.4.1",
+    ]
+
+    pytorchVersion = '1.9.0'
+    pytorchDependencies = [
             //pytorch
-            "pytorch-android-lite"    : "org.pytorch:pytorch_android_lite:1.12",
+            "pytorch-android-lite"       : "org.pytorch:pytorch_android_lite:$pytorchVersion",
+            "pytorch_android_torchvision": "org.pytorch:pytorch_android_torchvision:$pytorchVersion",
     ]
 
     //rx和网络库

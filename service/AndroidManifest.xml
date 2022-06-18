@@ -58,6 +58,27 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".debug.AiTextActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".debug.AiImageActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".receiver.SecretCodeReceiver"
             android:exported="true">

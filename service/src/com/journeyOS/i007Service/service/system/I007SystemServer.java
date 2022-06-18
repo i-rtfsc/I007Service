@@ -26,6 +26,7 @@ import com.journeyOS.common.SmartLog;
 import com.journeyOS.framework.service.AbstractContentProvider;
 import com.journeyOS.framework.service.ServiceCache;
 import com.journeyOS.framework.service.ServiceFetcher;
+import com.journeyOS.i007Service.service.AiManagerService;
 import com.journeyOS.i007Service.service.DaemonService;
 import com.journeyOS.i007Service.service.I007ManagerService;
 import com.journeyOS.i007manager.base.ServiceConstants;
@@ -51,6 +52,11 @@ public class I007SystemServer extends AbstractContentProvider {
         I007ManagerService.systemReady(context);
         I007ManagerService ims = I007ManagerService.getService();
         ServiceCache.addService(ServiceConstants.SERVICE_I007, ims);
+
+        // AiManagerService
+        AiManagerService.systemReady(context);
+        AiManagerService ams = AiManagerService.getService();
+        ServiceCache.addService(ServiceConstants.SERVICE_AI, ams);
 
         Intent intent = new Intent(getContext(), DaemonService.class);
         context.startForegroundService(intent);

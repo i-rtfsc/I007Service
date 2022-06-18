@@ -43,7 +43,41 @@ public final class PlatformManager extends BasePlatformApi {
         return sInstance;
     }
 
+    /**
+     * 是否支持 ai
+     *
+     * @return 是否支持
+     */
     public boolean supportMachineLearning() {
+        return !PRODUCT_STANDARD.equals(getProduct());
+    }
+
+    /**
+     * 是否支持 所有模型
+     *
+     * @return 是否支持
+     */
+    @Deprecated
+    public boolean supportAllModel() {
         return PRODUCT_ML.equals(getProduct());
     }
+
+    /**
+     * 是否支持 tflite
+     *
+     * @return 是否支持
+     */
+    public boolean supportTflite() {
+        return !PRODUCT_ML_TFLITE.equals(getProduct());
+    }
+
+    /**
+     * 是否支持 pytorch
+     *
+     * @return 是否支持
+     */
+    public boolean supportPytorch() {
+        return !PRODUCT_ML_PYTORCH.equals(getProduct());
+    }
+
 }
