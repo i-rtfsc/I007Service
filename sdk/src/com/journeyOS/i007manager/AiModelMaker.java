@@ -42,7 +42,6 @@ public class AiModelMaker {
         return sInstance;
     }
 
-
     /**
      * 生成 tflite 文字分类模型
      *
@@ -51,6 +50,7 @@ public class AiModelMaker {
     public AiModel makeTFLiteTextClassification() {
         return new AiModel.Builder()
                 .setName(AiModel.Model.TEXT_CLASSIFICATION)
+                .setFileName("text_classification.tflite")
                 .setGraph(AiModel.Graph.TF_LITE)
                 .setRuntime(AiModel.Runtime.NNAPI)
                 .build();
@@ -65,7 +65,7 @@ public class AiModelMaker {
     public AiModel makeTFLiteImageClassification() {
         return new AiModel.Builder()
                 .setName(AiModel.Model.IMAGE_CLASSIFICATION)
-                .setFileName("mobilenet_v1_1.0_224")
+                .setFileName("mobilenet_v1_1.0_224.tflite")
                 .setGraph(AiModel.Graph.TF_LITE)
                 .setRuntime(AiModel.Runtime.GPU)
                 .build();
@@ -80,7 +80,7 @@ public class AiModelMaker {
     public AiModel makeTFLiteImageClassificationQuantized() {
         return new AiModel.Builder()
                 .setName(AiModel.Model.IMAGE_CLASSIFICATION)
-                .setFileName("mobilenet_v1_1.0_224_quant")
+                .setFileName("mobilenet_v1_1.0_224_quant.tflite")
                 .setGraph(AiModel.Graph.TF_LITE)
                 .setRuntime(AiModel.Runtime.NNAPI)
                 .build();
@@ -95,11 +95,26 @@ public class AiModelMaker {
     public AiModel makePytorchImageClassification() {
         return new AiModel.Builder()
                 .setName(AiModel.Model.IMAGE_CLASSIFICATION)
-                .setFileName("mobilenet_v3_small")
+                .setFileName("mobilenet_v3_small.pt")
                 .setConfigName("mobilenet_v3_small.json")
                 .setGraph(AiModel.Graph.PY_TORCH)
                 .setRuntime(AiModel.Runtime.CPU)
                 .build();
-
     }
+
+    /**
+     * 生成 snpe 图像分类模型
+     *
+     * @return 图像分类模型
+     */
+    public AiModel makeSnpeImageClassification() {
+        return new AiModel.Builder()
+                .setName(AiModel.Model.IMAGE_CLASSIFICATION)
+                .setFileName("inception_v3_quantized.dlc")
+                .setConfigName("inception_v3_quantized.json")
+                .setGraph(AiModel.Graph.SNPE)
+                .setRuntime(AiModel.Runtime.GPU)
+                .build();
+    }
+
 }

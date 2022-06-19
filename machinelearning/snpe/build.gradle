@@ -1,0 +1,8 @@
+apply from: "../../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly files('libs/snpe-release.aar')
+    compileOnly project(':framework')
+    compileOnly project(':machinelearning')
+}

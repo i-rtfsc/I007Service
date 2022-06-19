@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007Service.AppConfig;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.AiResult;
@@ -68,9 +69,6 @@ public final class AiManagerService extends IAiManager.Stub {
         SERVICE.set(this);
         supportMachineLearning = PlatformManager.getInstance().supportMachineLearning();
         SmartLog.d(TAG, "support machine learning = " + supportMachineLearning);
-        if (supportMachineLearning) {
-            MachineLearningManager.getInstance().init(context);
-        }
     }
 
     /**
@@ -79,6 +77,7 @@ public final class AiManagerService extends IAiManager.Stub {
     @Override
     public boolean initModel(AiModel aiModel) throws RemoteException {
         if (supportMachineLearning) {
+            MachineLearningManager.getInstance().init(AppConfig.getInstance().getApplication());
             return MachineLearningManager.getInstance().initWorker(aiModel);
         }
 

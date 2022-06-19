@@ -11,11 +11,13 @@ include ':monitor'
 include ':machinelearning'
 include ':tflite'
 include ':pytorch'
+include ':snpe'
 
 include ':service'
 
 //include ':test'
 
-project(':machinelearning').projectDir = new File('./MachineLearning/core')
-project(':tflite').projectDir = new File('./MachineLearning/tflite')
-project(':pytorch').projectDir = new File('./MachineLearning/pytorch')
+project(':machinelearning').projectDir = new File('./machinelearning/core')
+project(':tflite').projectDir = new File('./machinelearning/tflite')
+project(':pytorch').projectDir = new File('./machinelearning/pytorch')
+project(':snpe').projectDir = new File('./machinelearning/snpe')

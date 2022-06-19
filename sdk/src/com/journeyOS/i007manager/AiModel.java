@@ -26,7 +26,6 @@ import android.text.TextUtils;
  * @author solo
  */
 public class AiModel implements Parcelable {
-
     public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
         @Override
         public AiModel createFromParcel(Parcel in) {
@@ -38,6 +37,7 @@ public class AiModel implements Parcelable {
             return new AiModel[size];
         }
     };
+    private static final String TAG = AiModel.class.getSimpleName();
     /**
      * 模型名字
      * 如"text_classifier"
@@ -235,7 +235,7 @@ public class AiModel implements Parcelable {
         /**
          * snpe
          */
-        public static final String SNPE = "dlc";
+        public static final String SNPE = "snpe";
         /**
          * mace
          */
@@ -247,7 +247,7 @@ public class AiModel implements Parcelable {
         /**
          * ptl
          */
-        public static final String PY_TORCH = "pt";
+        public static final String PY_TORCH = "pytorch";
     }
 
     /**
@@ -387,10 +387,28 @@ public class AiModel implements Parcelable {
          * @return ModelInfo
          */
         public AiModel build() {
-            if (TextUtils.isEmpty(fileName)) {
-                fileName = name;
+            /**
+             * 模型名称不能为空
+             */
+            if (TextUtils.isEmpty(name)) {
+                throw new IllegalStateException("model name was not null");
             }
-            return new AiModel(name, fileName + "." + graph, configName, graph, runtime, storage);
+
+            /**
+             * 模型文件名字不能为空
+             */
+            if (TextUtils.isEmpty(fileName)) {
+                throw new IllegalStateException("model file name was not null");
+            }
+
+            /**
+             * 模型类型不能为空
+             */
+            if (TextUtils.isEmpty(graph)) {
+                throw new IllegalStateException("graph  was not null");
+            }
+
+            return new AiModel(name, fileName, configName, graph, runtime, storage);
         }
     }
 

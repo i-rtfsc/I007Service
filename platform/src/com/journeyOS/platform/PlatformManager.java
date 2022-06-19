@@ -80,4 +80,13 @@ public final class PlatformManager extends BasePlatformApi {
         return PRODUCT_ML_PYTORCH.equals(getProduct());
     }
 
+    /**
+     * 是否支持 snpe
+     *
+     * @return 是否支持
+     */
+    public boolean supportSnpe() {
+        return PRODUCT_ML_SNPE.equals(getProduct());
+    }
+
 }

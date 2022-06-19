@@ -23,7 +23,6 @@ import android.os.RemoteException;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,10 +49,9 @@ public class AiImageActivity extends AppCompatActivity {
     Bitmap bitmap = null;
     boolean supportML = false;
     AiManager mAm = null;
-    AiModel mModel = AiModelMaker.getInstance().makePytorchImageClassification();
+    AiModel mModel = AiModelMaker.getInstance().makeSnpeImageClassification();
     private TextView mResultTextView;
     private ImageView mImageView;
-    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +68,7 @@ public class AiImageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        supportML = PlatformManager.getInstance().supportPytorch();
+        supportML = PlatformManager.getInstance().supportSnpe();
         SmartLog.d(TAG, "supportMachineLearning = [" + supportML + "]");
         if (supportML) {
             mAm = AiManager.getInstance(getApplicationContext());

@@ -86,6 +86,14 @@ android {
         torch {
             buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
         }
+        //machine learning(only snpe)
+        snpe {
+            buildConfigField "String", "BUILD_PRODUCT", "\"snpe\""
+        }
+    }
+
+    packagingOptions {
+        pickFirst '**/*.so'
     }
 
     applicationVariants.all { variant ->
@@ -111,6 +119,8 @@ dependencies {
     mlImplementation project(':machinelearning')
     mlImplementation project(':tflite')
     mlImplementation project(':pytorch')
+    mlImplementation files('../machinelearning/snpe/libs/snpe-release.aar')
+    mlImplementation project(':snpe')
 
     //只打包tflite模型
     tfImplementation project(':machinelearning')
@@ -119,4 +129,11 @@ dependencies {
     //只打包pytorch模型
     torchImplementation project(':machinelearning')
     torchImplementation project(':pytorch')
+
+    //只打包snpe模型
+    snpeImplementation project(':machinelearning')
+    //gradle升级之后在module引入aar，编译报错
+    //改成在module里compileOnly，在主模块里implementation才不会导致编译报错
+    snpeImplementation files('../machinelearning/snpe/libs/snpe-release.aar')
+    snpeImplementation project(':snpe')
 }

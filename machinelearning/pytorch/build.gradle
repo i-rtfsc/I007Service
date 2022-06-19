@@ -1,0 +1,9 @@
+apply from: "../../module.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly project(':framework')
+    compileOnly project(':machinelearning')
+    //pytorch support
+    rootProject.ext.pytorchDependencies.each { dependence -> api dependence.value }
+}

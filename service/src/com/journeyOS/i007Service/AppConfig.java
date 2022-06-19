@@ -16,6 +16,7 @@
 
 package com.journeyOS.i007Service;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
@@ -23,12 +24,16 @@ import android.os.StrictMode;
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.database.DataRepository;
 
+import java.lang.ref.WeakReference;
+
 /**
  * @author solo
  */
 public final class AppConfig {
     private static final String TAG = AppConfig.class.getSimpleName();
     private static volatile AppConfig sInstance = null;
+
+    private WeakReference<Application> mReference;
 
     private AppConfig() {
     }
@@ -52,11 +57,22 @@ public final class AppConfig {
     /**
      * 初始化
      *
-     * @param context 上下文
+     * @param application 上下文
      */
-    public void initialize(Context context) {
+    public void initialize(Application application) {
+        mReference = new WeakReference<>(application);
         //initStrictMode();
-        initDatabase(context);
+        initDatabase(application);
+    }
+
+
+    /**
+     * 获取上下文
+     *
+     * @return Application
+     */
+    public Application getApplication() {
+        return mReference.get();
     }
 
     private void initStrictMode() {

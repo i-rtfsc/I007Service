@@ -24,6 +24,7 @@ public class BasePlatformApi {
     protected static final String PRODUCT_ML = "ml";
     protected static final String PRODUCT_ML_TFLITE = "tflite";
     protected static final String PRODUCT_ML_PYTORCH = "pytorch";
+    protected static final String PRODUCT_ML_SNPE = "snpe";
 
     protected final String getProduct() {
         return BuildConfig.BUILD_PRODUCT;
