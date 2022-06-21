@@ -16,8 +16,10 @@
 
 package com.journeyOS.i007manager.base;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.os.Bundle;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -27,49 +29,78 @@ import com.journeyOS.i007manager.I007Core;
 /**
  * @author solo
  */
-public class ServiceManagerNative {
-    public static final String INIT_SERVICE = "i007_init";
-    public static final String EXTRA_BINDER = "i007_binder";
+public class ServiceManagerNative implements ServiceConnection {
     private static final String TAG = ServiceManagerNative.class.getSimpleName();
-    private static final String SERVICE_SYNC_AUTHORITY = "com.journeyOS.i007manager.syncprovider";
-    private static IServiceFetcher sFetcher;
+
+    public static final String I007_SERVICE_PACKAGE = "com.journeyOS.i007Service";
+    private static final String I007_SERVICE_SERVICE_AIDL = "com.journeyOS.i007Service.I007SystemServer";
+
+    private IServiceFetcher sFetcher;
+    private boolean isRunning = false;
+
+    private static volatile ServiceManagerNative sInstance = null;
+
+    private ServiceManagerNative() {
+    }
+
+    public static ServiceManagerNative getInstance() {
+        if (sInstance == null) {
+            synchronized (ServiceManagerNative.class) {
+                if (sInstance == null) {
+                    sInstance = new ServiceManagerNative();
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.d(TAG, "onServiceConnected");
+        try {
+            sFetcher = IServiceFetcher.Stub.asInterface(service);
+            isRunning = true;
+            I007Core.getCore().setRunning(true);
+            linkBinderDied(service);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "start service error = ", e);
+        }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        Log.d(TAG, "onServiceDisconnected");
+        isRunning = false;
+        sFetcher = null;
+        I007Core.getCore().setRunning(false);
+    }
+
+    /**
+     * 启动服务init服务
+     *
+     * @param context
+     */
+    public void startup(Context context) {
+        Log.d(TAG, "startup, call from = [" + context.getPackageName() + "], isRunning = [" + isRunning + "]");
+        if (!isRunning) {
+            Intent intentService = new Intent();
+            intentService.setPackage(I007_SERVICE_PACKAGE);
+            intentService.setAction(I007_SERVICE_SERVICE_AIDL);
+            boolean result = context.bindService(intentService, this, Context.BIND_AUTO_CREATE);
+            Log.d(TAG, "bind service result = [" + result + "]");
+        }
+    }
 
     /**
      * 获取服务
      *
      * @return IServiceFetcher
      */
-    public static synchronized IServiceFetcher getServiceFetcher() {
+    private IServiceFetcher getServiceFetcher() {
         if (sFetcher == null) {
-            Context context = I007Core.getCore().getContext();
-            Bundle response = new ProviderCaller.Builder(context)
-                    .authority(SERVICE_SYNC_AUTHORITY)
-                    .methodName("@")
-                    .call();
-            if (response != null) {
-                IBinder binder = response.getBinder(EXTRA_BINDER);
-                linkBinderDied(binder);
-                sFetcher = IServiceFetcher.Stub.asInterface(binder);
-            }
+            //TODO
         }
         return sFetcher;
-    }
-
-    private static void linkBinderDied(final IBinder binder) {
-        IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
-            @Override
-            public void binderDied() {
-                binder.unlinkToDeath(this, 0);
-                Log.e(TAG, "oops, the server has crashed.");
-                I007Core.getCore().setRunning(false);
-                sFetcher = null;
-            }
-        };
-        try {
-            binder.linkToDeath(deathRecipient, 0);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -78,7 +109,7 @@ public class ServiceManagerNative {
      * @param name 服务名称
      * @return binder对象
      */
-    public static IBinder getService(String name) {
+    public IBinder getService(String name) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
             try {
@@ -97,7 +128,7 @@ public class ServiceManagerNative {
      * @param name    服务名称
      * @param service binder对象
      */
-    public static void addService(String name, IBinder service) {
+    public void addService(String name, IBinder service) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
             try {
@@ -114,7 +145,7 @@ public class ServiceManagerNative {
      *
      * @param name 服务名称
      */
-    public static void removeService(String name) {
+    public void removeService(String name) {
         IServiceFetcher fetcher = getServiceFetcher();
         if (fetcher != null) {
             try {
@@ -125,15 +156,20 @@ public class ServiceManagerNative {
         }
     }
 
-    /**
-     * 启动服务init服务
-     *
-     * @param context
-     */
-    public static void startup(Context context) {
-        new ProviderCaller.Builder(context)
-                .authority(SERVICE_SYNC_AUTHORITY)
-                .methodName(INIT_SERVICE)
-                .call();
+    private void linkBinderDied(final IBinder binder) {
+        IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
+            @Override
+            public void binderDied() {
+                binder.unlinkToDeath(this, 0);
+                Log.e(TAG, "oops, the server has crashed.");
+                I007Core.getCore().setRunning(false);
+                sFetcher = null;
+            }
+        };
+        try {
+            binder.linkToDeath(deathRecipient, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

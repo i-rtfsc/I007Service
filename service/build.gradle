@@ -1,6 +1,8 @@
 ext {
     BUILD_APPLICATION = true
     BUILD_NATIVE = false
+    BUILD_TEST = false
+    BUILD_FLAVORS = true
 }
 
 apply from: "${rootDir}/scripts/android-build.gradle"

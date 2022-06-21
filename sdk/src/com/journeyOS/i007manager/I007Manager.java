@@ -91,7 +91,7 @@ public class I007Manager {
                 if (I007Core.getCore().isRunning()) {
                     try {
                         II007Manager remote = II007Manager.Stub.asInterface(
-                                ServiceManagerNative.getService(ServiceConstants.SERVICE_I007));
+                                ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_I007));
                         if (remote == null) {
                             Log.e(TAG, "i007 manager service wan null, please check I007Core.getCore().startup");
                             return null;

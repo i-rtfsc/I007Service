@@ -22,6 +22,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!--<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>-->
+    <queries>
+        <package android:name="com.journeyOS.i007Service" />
+    </queries>
+
     <application
         android:name=".I007TestApplication"
         android:allowBackup="true"

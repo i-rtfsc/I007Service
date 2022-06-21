@@ -68,7 +68,7 @@ public class AiManager {
                 if (I007Core.getCore().isRunning()) {
                     try {
                         IAiManager remote = IAiManager.Stub.asInterface(
-                                ServiceManagerNative.getService(ServiceConstants.SERVICE_AI));
+                                ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_AI));
                         if (remote == null) {
                             Log.e(TAG, "ai manager service wan null, please check I007Core.getCore().startup");
                             return null;

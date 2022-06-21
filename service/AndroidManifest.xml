@@ -31,17 +31,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <provider
-            android:name=".service.system.I007SystemServer"
-            android:authorities="com.journeyOS.i007manager.syncprovider"
-            android:exported="true" />
-
         <service
-            android:name=".service.DaemonService"
+            android:name=".service.system.I007SystemServer"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.blackshark.i007Service.DaemonService" />
+                <action android:name="com.journeyOS.i007Service.I007SystemServer" />
             </intent-filter>
         </service>
 

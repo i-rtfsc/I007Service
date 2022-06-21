@@ -56,5 +56,6 @@ task tfRelease(dependsOn: ['apkClean', ':service:assembleTfRelease'])
 task torchRelease(dependsOn: ['apkClean', ':service:assembleTorchRelease'])
 task snpeRelease(dependsOn: ['apkClean', ':service:assembleSnpeRelease'])
 task maceRelease(dependsOn: ['apkClean', ':service:assembleMaceRelease'])
+task testRelease(dependsOn: ['apkClean', ':test:assembleRelease'])
 
-defaultTasks 'assembleStandardRelease', 'assembleMlRelease', 'assembleTfRelease', 'assembleTorchRelease', 'assembleSnpeRelease', 'assembleMaceRelease'
+defaultTasks 'assembleStandardRelease', 'assembleMlRelease', 'assembleTfRelease', 'assembleTorchRelease', 'assembleSnpeRelease', 'assembleMaceRelease', 'assembleRelease'

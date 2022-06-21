@@ -15,7 +15,11 @@ android {
     buildToolsVersion androidSdk.buildToolsVersion
     defaultConfig {
         if (BUILD_APPLICATION.toBoolean()) {
-            applicationId androidSdk.applicationId
+            if (BUILD_TEST.toBoolean()) {
+                applicationId androidSdk.testApplicationId
+            } else {
+                applicationId androidSdk.applicationId
+            }
         }
         minSdkVersion androidSdk.minSdkVersion
         targetSdkVersion androidSdk.targetSdkVersion
@@ -34,7 +38,9 @@ android {
         //支持svg图片
         vectorDrawables.useSupportLibrary = true
 
-        flavorDimensions "default"
+        if (BUILD_FLAVORS.toBoolean()) {
+            flavorDimensions "default"
+        }
 
         //使用buildConfigField向BuildConfig类中写入常量
         buildConfigField("int", "BUILD_VERSION_CODE", rootProject.ext.versionCode + "")
@@ -111,29 +117,31 @@ android {
         }
     }
 
-    productFlavors {
-        standard {
-            buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
-        }
-        //machine learning(all)
-        ml {
-            buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
-        }
-        //machine learning(only tf)
-        tf {
-            buildConfigField "String", "BUILD_PRODUCT", "\"tflite\""
-        }
-        //machine learning(only pytorch)
-        torch {
-            buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
-        }
-        //machine learning(only snpe)
-        snpe {
-            buildConfigField "String", "BUILD_PRODUCT", "\"snpe\""
-        }
-        //machine learning(only mace)
-        mace {
-            buildConfigField "String", "BUILD_PRODUCT", "\"mace\""
+    if (BUILD_FLAVORS.toBoolean()) {
+        productFlavors {
+            standard {
+                buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
+            }
+            //machine learning(all)
+            ml {
+                buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
+            }
+            //machine learning(only tf)
+            tf {
+                buildConfigField "String", "BUILD_PRODUCT", "\"tflite\""
+            }
+            //machine learning(only pytorch)
+            torch {
+                buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
+            }
+            //machine learning(only snpe)
+            snpe {
+                buildConfigField "String", "BUILD_PRODUCT", "\"snpe\""
+            }
+            //machine learning(only mace)
+            mace {
+                buildConfigField "String", "BUILD_PRODUCT", "\"mace\""
+            }
         }
     }
 
@@ -146,13 +154,17 @@ android {
     if (BUILD_APPLICATION.toBoolean()) {
         applicationVariants.all { variant ->
             variant.outputs.all { output ->
-                def flavors = variant.productFlavors.name
-                def apkName = "I007Service-${flavors[0]}.apk"
-                outputFileName = new File("./../../../../../../out/${variant.buildType.name}/", apkName)
-                //logger.log(LogLevel.WARN, "----------> output apk = ${outputFileName}")
+                if (BUILD_TEST.toBoolean()) {
+                    def apkName = "I007Test.apk"
+                    outputFileName = new File("./../../../../../out/${variant.buildType.name}/", apkName)
+                    //logger.log(LogLevel.WARN, "----------> output apk = ${outputFileName}")
+                } else {
+                    def flavors = variant.productFlavors.name
+                    def apkName = "I007Service-${flavors[0]}.apk"
+                    outputFileName = new File("./../../../../../../out/${variant.buildType.name}/", apkName)
+                    //logger.log(LogLevel.WARN, "----------> output apk = ${outputFileName}")
+                }
             }
         }
     }
 }
-
-

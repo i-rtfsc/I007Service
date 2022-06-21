@@ -1,9 +1,15 @@
 ext {
     BUILD_APPLICATION = false
     BUILD_NATIVE = false
+    BUILD_TEST = false
+    BUILD_FLAVORS = false
 }
 
-apply from: "${rootDir}/scripts/android-build.gradle"
+if (BUILD_TEST.toBoolean()) {
+    apply from: "${rootDir}/scripts/android-test.gradle"
+} else {
+    apply from: "${rootDir}/scripts/android-build.gradle"
+}
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])

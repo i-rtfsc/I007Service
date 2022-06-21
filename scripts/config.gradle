@@ -14,6 +14,7 @@ ext {
             compileSdkVersion: 30,
             buildToolsVersion: "30.0.3",
             applicationId    : "com.journeyOS.i007Service",
+            testApplicationId: "com.journeyOS.i007test",
             minSdkVersion    : 29,
             targetSdkVersion : 30,
     ]

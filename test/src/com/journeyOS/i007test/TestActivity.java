@@ -17,6 +17,7 @@
 package com.journeyOS.i007test;
 
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
+import com.journeyOS.i007manager.I007Observer;
+import com.journeyOS.i007manager.I007Result;
 
 /**
  * @author solo
@@ -48,6 +51,8 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         mButton.setOnClickListener(this);
         resultTextView = findViewById(R.id.result_text_view);
         scrollView = findViewById(R.id.scroll_view);
+
+        I007Core.getCore().startup(this);
     }
 
     @Override
@@ -66,12 +71,23 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                I007Core.getCore().startup(this);
-                I007Manager im = I007Manager.getInstance(this);
-                //TODO
+                test();
                 break;
             default:
                 break;
         }
+    }
+
+    private void test() {
+        I007Manager i007m = I007Manager.getInstance(this);
+        Log.d(TAG, "I007Manager = [" + i007m + "]");
+        i007m.subscribeObserver(new I007Observer() {
+            @Override
+            public void onSceneChanged(I007Result result) throws RemoteException {
+                Log.d(TAG, "onSceneChanged() called with: result = [" + result.toString() + "]");
+            }
+        });
+
+        i007m.setFactor(I007Manager.SCENE_FACTOR_BATTERY | I007Manager.SCENE_FACTOR_LCD);
     }
 }

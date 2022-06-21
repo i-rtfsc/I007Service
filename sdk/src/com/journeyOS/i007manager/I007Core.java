@@ -58,7 +58,7 @@ public final class I007Core {
 
         if (!isRunning) {
             mReference = new WeakReference<>(context);
-            ServiceManagerNative.startup(context);
+            ServiceManagerNative.getInstance().startup(context);
             isRunning = true;
         }
     }
