@@ -1,5 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: 'config.gradle'
+apply from: 'scripts/config.gradle'
 
 buildscript {
     repositories {
@@ -44,7 +44,7 @@ allprojects {
 }
 
 task clean(type: Delete) { delete rootProject.buildDir }
-//task appClean(type: Delete) { delete project(':app').buildDir }
+
 task apkClean(type: Delete) {
     delete project(':service').buildDir
     delete 'out'
@@ -55,5 +55,6 @@ task mlRelease(dependsOn: ['apkClean', ':service:assembleMlRelease'])
 task tfRelease(dependsOn: ['apkClean', ':service:assembleTfRelease'])
 task torchRelease(dependsOn: ['apkClean', ':service:assembleTorchRelease'])
 task snpeRelease(dependsOn: ['apkClean', ':service:assembleSnpeRelease'])
+task maceRelease(dependsOn: ['apkClean', ':service:assembleMaceRelease'])
 
-defaultTasks 'assembleStandardRelease', 'assembleMlRelease', 'assembleTfRelease', 'assembleTorchRelease', 'assembleSnpeRelease'
+defaultTasks 'assembleStandardRelease', 'assembleMlRelease', 'assembleTfRelease', 'assembleTorchRelease', 'assembleSnpeRelease', 'assembleMaceRelease'

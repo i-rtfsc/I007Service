@@ -12,6 +12,7 @@ include ':machinelearning'
 include ':tflite'
 include ':pytorch'
 include ':snpe'
+include ':mace'
 
 include ':service'
 
@@ -21,3 +22,4 @@ project(':machinelearning').projectDir = new File('./machinelearning/core')
 project(':tflite').projectDir = new File('./machinelearning/tflite')
 project(':pytorch').projectDir = new File('./machinelearning/pytorch')
 project(':snpe').projectDir = new File('./machinelearning/snpe')
+project(':mace').projectDir = new File('./machinelearning/mace')

@@ -16,6 +16,9 @@
 
 package com.journeyOS.i007Service.debug;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.R;
@@ -46,10 +50,11 @@ import java.util.List;
  */
 public class AiImageActivity extends AppCompatActivity {
     private static final String TAG = "AiTextActivity";
+    Context mContext;
     Bitmap bitmap = null;
     boolean supportML = false;
     AiManager mAm = null;
-    AiModel mModel = AiModelMaker.getInstance().makeSnpeImageClassification();
+    AiModel mModel = AiModelMaker.getInstance().makeMaceImageClassification();
     private TextView mResultTextView;
     private ImageView mImageView;
 
@@ -57,7 +62,7 @@ public class AiImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ai_image_activity);
-
+        mContext = getApplicationContext();
         mResultTextView = findViewById(R.id.tv_result);
         mImageView = findViewById(R.id.image);
 
@@ -68,9 +73,11 @@ public class AiImageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        supportML = PlatformManager.getInstance().supportSnpe();
+        supportML = PlatformManager.getInstance().supportMace();
         SmartLog.d(TAG, "supportMachineLearning = [" + supportML + "]");
         if (supportML) {
+            checkCameraPermission();
+
             mAm = AiManager.getInstance(getApplicationContext());
             mAm.initModel(mModel);
         }
@@ -127,5 +134,14 @@ public class AiImageActivity extends AppCompatActivity {
                     // Append the result to the UI.
                     mResultTextView.append(textToShow);
                 });
+    }
+
+    boolean checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            return false;
+        }
+        return true;
     }
 }

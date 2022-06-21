@@ -1,4 +1,9 @@
-apply from: "../../module.gradle"
+ext {
+    BUILD_APPLICATION = false
+    BUILD_NATIVE = false
+}
+
+apply from: "${rootDir}/scripts/android-build.gradle"
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')

@@ -1,110 +1,9 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-parcelize'
-
-android {
-    def androidSdk = rootProject.ext.androidSdk
-    compileSdkVersion androidSdk.compileSdkVersion
-    buildToolsVersion androidSdk.buildToolsVersion
-    defaultConfig {
-        applicationId androidSdk.applicationId
-        minSdkVersion androidSdk.minSdkVersion
-        targetSdkVersion androidSdk.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
-        flavorDimensions "default"
-    }
-
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            assets.srcDirs = ['assets']
-            res.srcDirs = ['res']
-            java.srcDirs = ['src']
-            aidl.srcDirs = ['aidl']
-            jniLibs.srcDirs = ['libs']
-        }
-    }
-
-    dataBinding {
-        enabled true
-    }
-
-    androidResources {
-        noCompress "tflite"
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    signingConfigs {
-        release {
-            storeFile file("../keystore/platform.jks")
-            storePassword 'android'
-            keyAlias 'platform'
-            keyPassword 'android'
-        }
-        debug {
-            storeFile file("../keystore/platform.jks")
-            storePassword 'android'
-            keyAlias 'platform'
-            keyPassword 'android'
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            zipAlignEnabled true
-            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
-            signingConfig signingConfigs.release
-        }
-        debug {
-            minifyEnabled false
-            zipAlignEnabled true
-            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
-            signingConfig signingConfigs.debug
-        }
-    }
-
-    productFlavors {
-        standard {
-            buildConfigField "String", "BUILD_PRODUCT", "\"standard\""
-        }
-        //machine learning(all)
-        ml {
-            buildConfigField "String", "BUILD_PRODUCT", "\"ml\""
-        }
-        //machine learning(only tf)
-        tf {
-            buildConfigField "String", "BUILD_PRODUCT", "\"tflite\""
-        }
-        //machine learning(only pytorch)
-        torch {
-            buildConfigField "String", "BUILD_PRODUCT", "\"pytorch\""
-        }
-        //machine learning(only snpe)
-        snpe {
-            buildConfigField "String", "BUILD_PRODUCT", "\"snpe\""
-        }
-    }
-
-    packagingOptions {
-        pickFirst '**/*.so'
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def flavors = variant.productFlavors.name
-            def apkName = "I007Service-${flavors[0]}.apk"
-            outputFileName = new File("./../../../../../../out/${variant.buildType.name}/", apkName)
-            //logger.log(LogLevel.WARN, "----------> output apk = ${outputFileName}")
-        }
-    }
+ext {
+    BUILD_APPLICATION = true
+    BUILD_NATIVE = false
 }
+
+apply from: "${rootDir}/scripts/android-build.gradle"
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -121,6 +20,7 @@ dependencies {
     mlImplementation project(':pytorch')
     mlImplementation files('../machinelearning/snpe/libs/snpe-release.aar')
     mlImplementation project(':snpe')
+    mlImplementation project(':mace')
 
     //只打包tflite模型
     tfImplementation project(':machinelearning')
@@ -136,4 +36,8 @@ dependencies {
     //改成在module里compileOnly，在主模块里implementation才不会导致编译报错
     snpeImplementation files('../machinelearning/snpe/libs/snpe-release.aar')
     snpeImplementation project(':snpe')
+
+    //只打包mace模型
+    maceImplementation project(':machinelearning')
+    maceImplementation project(':mace')
 }

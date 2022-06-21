@@ -89,4 +89,13 @@ public final class PlatformManager extends BasePlatformApi {
         return PRODUCT_ML_SNPE.equals(getProduct());
     }
 
+    /**
+     * 是否支持 mace
+     *
+     * @return 是否支持
+     */
+    public boolean supportMace() {
+        return PRODUCT_ML_MACE.equals(getProduct());
+    }
+
 }

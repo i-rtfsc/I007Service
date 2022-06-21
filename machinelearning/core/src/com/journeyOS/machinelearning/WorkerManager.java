@@ -150,6 +150,9 @@ public class WorkerManager {
             case AiModel.Graph.SNPE:
                 classifier = selectSnpeClassifier(workerName);
                 break;
+            case AiModel.Graph.MACE:
+                classifier = selectMaceClassifier(workerName);
+                break;
             default:
                 break;
         }
@@ -204,6 +207,23 @@ public class WorkerManager {
         switch (workerName) {
             case AiModel.Model.IMAGE_CLASSIFICATION:
                 return reflectClassifier("com.journeyOS.snpe.ImageClassifier");
+            default:
+                break;
+        }
+        SmartLog.e(TAG, "un-support workerName = " + workerName);
+        return null;
+    }
+
+    /**
+     * 根据 workerName 找到 mace classifier
+     *
+     * @param workerName worker 名称
+     * @return mace classifier
+     */
+    private Classifier selectMaceClassifier(final String workerName) {
+        switch (workerName) {
+            case AiModel.Model.IMAGE_CLASSIFICATION:
+                return reflectClassifier("com.journeyOS.mace.ImageClassifier");
             default:
                 break;
         }

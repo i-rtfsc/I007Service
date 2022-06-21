@@ -1,0 +1,12 @@
+ext {
+    BUILD_APPLICATION = false
+    BUILD_NATIVE = true
+}
+
+apply from: "${rootDir}/scripts/android-build.gradle"
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly project(':framework')
+    compileOnly project(':machinelearning')
+}

@@ -117,4 +117,19 @@ public class AiModelMaker {
                 .build();
     }
 
+    /**
+     * 生成 mace 图像分类模型
+     *
+     * @return 图像分类模型
+     */
+    public AiModel makeMaceImageClassification() {
+        return new AiModel.Builder()
+                .setName(AiModel.Model.IMAGE_CLASSIFICATION)
+                .setFileName("mobilenet_v1")
+                .setConfigName("mobilenet.json")
+                .setGraph(AiModel.Graph.MACE)
+                .setRuntime(AiModel.Runtime.GPU)
+                .build();
+    }
+
 }
