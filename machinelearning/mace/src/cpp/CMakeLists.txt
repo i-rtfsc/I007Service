@@ -21,11 +21,29 @@ include_directories(${CMAKE_SOURCE_DIR}/)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB LIBMACE "${CMAKE_SOURCE_DIR}/lib/arm64-v8a/*")
 set(mace_lib ${LIBMACE})
-set(mobilenet_lib ${CMAKE_SOURCE_DIR}/model/arm64-v8a/mobilenet.a)
-add_library (mace_lib SHARED IMPORTED)
+add_library(mace_lib SHARED IMPORTED)
 set_target_properties(mace_lib PROPERTIES IMPORTED_LOCATION ${mace_lib})
-add_library (mobilenet_lib STATIC IMPORTED)
-set_target_properties(mobilenet_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_lib})
+
+#file(GLOB LIBMODEL "${CMAKE_SOURCE_DIR}/model/arm64-v8a/*.a")
+#set(mobilenet_lib ${LIBMODEL})
+#add_library(mobilenet_lib STATIC IMPORTED)
+#set_target_properties(mobilenet_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_lib})
+
+set(mobilenet_v1_lib "${CMAKE_SOURCE_DIR}/model/arm64-v8a/mobilenet_v1.a")
+add_library(mobilenet_v1_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v1_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v1_lib})
+
+set(mobilenet_v1_quant_lib "${CMAKE_SOURCE_DIR}/model/arm64-v8a/mobilenet_v1_quant.a")
+add_library(mobilenet_v1_quant_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v1_quant_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v1_quant_lib})
+
+set(mobilenet_v2_lib "${CMAKE_SOURCE_DIR}/model/arm64-v8a/mobilenet_v2.a")
+add_library(mobilenet_v2_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v2_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_lib})
+
+set(mobilenet_v2_quant_lib "${CMAKE_SOURCE_DIR}/model/arm64-v8a/mobilenet_v2_quant.a")
+add_library(mobilenet_v2_quant_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v2_quant_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_quant_lib})
 
 add_library( # Sets the name of the library.
         mace_mobile_jni
@@ -34,7 +52,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        ${all_scrs} )
+        ${all_scrs})
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -47,7 +65,7 @@ find_library( # Sets the name of the path variable.
 
         # Specifies the name of the NDK library that
         # you want CMake to locate.
-        log )
+        log)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
@@ -55,7 +73,10 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
         mace_mobile_jni
-        mobilenet_lib
+        mobilenet_v1_lib
+        mobilenet_v1_quant_lib
+        mobilenet_v2_lib
+        mobilenet_v2_quant_lib
         mace_lib
         # Links the target library to the log library
         # included in the NDK.
