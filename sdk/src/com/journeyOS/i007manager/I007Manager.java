@@ -16,20 +16,17 @@
 
 package com.journeyOS.i007manager;
 
-import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
+import com.journeyOS.i007manager.base.ServerLifecycleManager;
 import com.journeyOS.i007manager.base.ServiceConstants;
 import com.journeyOS.i007manager.base.ServiceManagerNative;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author solo
  */
-public class I007Manager {
+public class I007Manager implements IBinder.DeathRecipient {
     /**
      * 未知场景
      */
@@ -54,69 +51,69 @@ public class I007Manager {
      * 电池电量、温度等变化场景
      */
     public static final long SCENE_FACTOR_BATTERY = 1 << 5;
-
     private static final String TAG = I007Manager.class.getSimpleName();
-    private static final AtomicReference<I007Manager> INSTANCE = new AtomicReference<>();
-    private II007Manager mRemote;
-    private IBinder.DeathRecipient mDeathRecipient = new IBinder.DeathRecipient() {
-        @Override
-        public void binderDied() {
-            Log.e(TAG, "remote binder died");
-            INSTANCE.set(null);
-            mRemote.asBinder().unlinkToDeath(this, 0);
-            mRemote = null;
-            //TODO
-        }
-    };
+    private static volatile I007Manager sInstance = null;
+    private II007Manager mService = null;
+    private ServerLifecycleManager mSlm = null;
 
-    private I007Manager(II007Manager remote) {
-        mRemote = remote;
+    private I007Manager() {
+        mSlm = new ServerLifecycleManager();
+        /**
+         * 初始化之后先获取服务，检查服务是否存在。
+         * 本来想在getService()之后判断服务存在就调 mSlm.notifyStarted() 通知客户端服务存在
+         * 但这里是构造函数，没办法回调给客户端，改成
+         */
+        getService();
     }
 
     /**
-     * 获取I007Manager单例.
+     * 获取 AiManager 单例
      *
-     * @param context 上下文
-     * @return I007Manager的单例
+     * @return AiManager 实例
      */
-    public static I007Manager getInstance(Context context) {
-        I007Manager manager = INSTANCE.get();
-        if (manager != null) {
-            return manager;
-        }
-
-        synchronized (I007Manager.class) {
-            manager = INSTANCE.get();
-            if (manager == null) {
-                if (I007Core.getCore().isRunning()) {
-                    try {
-                        II007Manager remote = II007Manager.Stub.asInterface(
-                                ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_I007));
-                        if (remote == null) {
-                            Log.e(TAG, "i007 manager service wan null, please check I007Core.getCore().startup");
-                            return null;
-                        }
-                        manager = new I007Manager(remote);
-                        manager.mRemote.asBinder().linkToDeath(manager.mDeathRecipient, 0);
-                        INSTANCE.set(manager);
-                    } catch (IllegalArgumentException | RemoteException e) {
-                        Log.e(TAG, "error = ", e);
-                    }
-                } else {
-                    Log.e(TAG, "i007 not ready");
+    public static I007Manager getInstance() {
+        if (sInstance == null) {
+            synchronized (I007Manager.class) {
+                if (sInstance == null) {
+                    sInstance = new I007Manager();
                 }
             }
         }
-        return manager;
+        return sInstance;
+    }
+
+    private II007Manager getService() {
+        if (mService != null) {
+            return mService;
+        }
+
+        if (I007Core.getCore().isRunning()) {
+            try {
+                IBinder binder = ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_I007);
+                mService = II007Manager.Stub.asInterface(binder);
+                if (mService == null) {
+                    SmartLog.e(TAG, "i007 manager service wan null, please check I007Core.getCore().startup");
+                    mSlm.notifyDied();
+                    return null;
+                }
+                mService.asBinder().linkToDeath(this, 0);
+            } catch (IllegalArgumentException | RemoteException e) {
+                SmartLog.e(TAG, "error = " + e);
+            }
+        } else {
+            SmartLog.e(TAG, "i007 not ready");
+        }
+        return mService;
     }
 
     /**
-     * 通过命令 adb shell setprop log.tag.I007Service D 打开log
-     *
-     * @return 是否打开log
+     * {@inheritDoc}
      */
-    public boolean isDebug() {
-        return Log.isLoggable("I007Service", android.util.Log.DEBUG);
+    @Override
+    public void binderDied() {
+        SmartLog.e(TAG, "remote binder died");
+        mService.asBinder().unlinkToDeath(this, 0);
+        mService = null;
     }
 
     /**
@@ -126,13 +123,17 @@ public class I007Manager {
      * @return 是否成功
      */
     public boolean subscribeObserver(I007Observer observer) {
-        boolean register;
-        try {
-            register = mRemote.registerListener(observer);
-        } catch (RemoteException | NullPointerException e) {
-            register = false;
-            Log.e(TAG, "registerListener fail: ", e);
+        II007Manager service = getService();
+        boolean register = (service != null);
+        if (register) {
+            try {
+                register = service.registerListener(observer);
+            } catch (RemoteException | NullPointerException e) {
+                register = false;
+                SmartLog.e(TAG, "subscribe observer fail = " + e);
+            }
         }
+
         return register;
     }
 
@@ -143,13 +144,17 @@ public class I007Manager {
      * @return 是否成功
      */
     public boolean unsubscribeObserver(I007Observer observer) {
-        boolean unregister;
-        try {
-            unregister = mRemote.unregisterListener(observer);
-        } catch (RemoteException | NullPointerException e) {
-            unregister = false;
-            Log.e(TAG, "unregisterListener fail: ", e);
+        II007Manager service = getService();
+        boolean unregister = (service != null);
+        if (unregister) {
+            try {
+                unregister = service.unregisterListener(observer);
+            } catch (RemoteException | NullPointerException e) {
+                unregister = false;
+                SmartLog.e(TAG, "unsubscribe observer fail = " + e);
+            }
         }
+
         return unregister;
     }
 
@@ -160,13 +165,17 @@ public class I007Manager {
      * @return 是否成功
      */
     public boolean setFactor(long factors) {
-        boolean result;
-        try {
-            result = mRemote.setFactor(factors);
-        } catch (RemoteException | NullPointerException e) {
-            result = false;
-            Log.e(TAG, "setFactor fail: ", e);
+        II007Manager service = getService();
+        boolean result = (service != null);
+        if (result) {
+            try {
+                result = service.setFactor(factors);
+            } catch (RemoteException | NullPointerException e) {
+                result = false;
+                SmartLog.e(TAG, "setFactor fail = " + e);
+            }
         }
+
         return result;
     }
 
@@ -177,13 +186,17 @@ public class I007Manager {
      * @return 是否成功
      */
     public boolean updateFactor(long factors) {
-        boolean result;
-        try {
-            result = mRemote.updateFactor(factors);
-        } catch (RemoteException | NullPointerException e) {
-            result = false;
-            Log.e(TAG, "setFactor fail: ", e);
+        II007Manager service = getService();
+        boolean result = (service != null);
+        if (result) {
+            try {
+                result = service.updateFactor(factors);
+            } catch (RemoteException | NullPointerException e) {
+                result = false;
+                SmartLog.e(TAG, "updateFactor fail = " + e);
+            }
         }
+
         return result;
     }
 
@@ -194,13 +207,42 @@ public class I007Manager {
      * @return 是否成功
      */
     public boolean removeFactor(long factors) {
-        boolean result;
-        try {
-            result = mRemote.removeFactor(factors);
-        } catch (RemoteException | NullPointerException e) {
-            result = false;
-            Log.e(TAG, "setFactor fail: ", e);
+        II007Manager service = getService();
+        boolean result = (service != null);
+        if (result) {
+            try {
+                result = service.removeFactor(factors);
+            } catch (RemoteException | NullPointerException e) {
+                result = false;
+                SmartLog.e(TAG, "removeFactor fail = " + e);
+            }
         }
+
         return result;
     }
+
+    /**
+     * Registers a callback to be invoked on voice command result.
+     *
+     * @param listener The callback that will run.
+     */
+    public void registerListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
+        if (getService() != null) {
+            mSlm.notifyStarted();
+        } else {
+            mSlm.notifyDied();
+        }
+    }
+
+    /**
+     * Unregisters a previous callback.
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerListener
+     */
+    public void unregisterListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
+    }
+
 }

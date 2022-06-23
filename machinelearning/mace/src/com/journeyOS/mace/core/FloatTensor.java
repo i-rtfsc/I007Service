@@ -16,7 +16,7 @@
 
 package com.journeyOS.mace.core;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.nio.FloatBuffer;
 

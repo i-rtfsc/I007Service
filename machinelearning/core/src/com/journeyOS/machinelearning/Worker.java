@@ -18,8 +18,8 @@ package com.journeyOS.machinelearning;
 
 import android.app.Application;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * Worker

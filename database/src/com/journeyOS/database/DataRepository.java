@@ -21,12 +21,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.database.source.api.HttpDataSource;
 import com.journeyOS.database.source.api.LocalDataSource;
 import com.journeyOS.database.source.http.HttpDataSourceImpl;
 import com.journeyOS.database.source.local.LocalDataSourceImpl;
 import com.journeyOS.database.source.local.app.App;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.util.List;
 

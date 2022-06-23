@@ -21,9 +21,9 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.journeyOS.common.SmartLog
 import com.journeyOS.common.notification.NotificationHelper
 import com.journeyOS.i007Service.R
+import com.journeyOS.i007manager.SmartLog
 
 open class I007BaseService : Service() {
     companion object {

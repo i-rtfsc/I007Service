@@ -22,8 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.debug.DebugActivity;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * SecretCodeReceiver

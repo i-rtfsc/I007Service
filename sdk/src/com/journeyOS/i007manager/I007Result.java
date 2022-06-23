@@ -233,4 +233,5 @@ public class I007Result implements Parcelable {
             return new I007Result(factoryId, app, net, battery, screen);
         }
     }
+
 }

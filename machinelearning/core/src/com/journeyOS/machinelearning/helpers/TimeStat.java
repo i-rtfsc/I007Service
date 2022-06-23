@@ -18,7 +18,7 @@ package com.journeyOS.machinelearning.helpers;
 
 import android.util.ArrayMap;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.util.ArrayList;
 import java.util.Map;

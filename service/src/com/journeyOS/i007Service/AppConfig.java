@@ -21,8 +21,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.database.DataRepository;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.lang.ref.WeakReference;
 
@@ -61,7 +61,7 @@ public final class AppConfig {
      */
     public void initialize(Application application) {
         mReference = new WeakReference<>(application);
-        //initStrictMode();
+        initStrictMode();
         initDatabase(application);
     }
 

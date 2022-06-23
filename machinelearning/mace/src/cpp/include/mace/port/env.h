@@ -31,120 +31,131 @@
 #include "mace/public/mace.h"
 
 namespace mace {
-namespace port {
+    namespace port {
 
-class MallocLogger {
- public:
-  MallocLogger() = default;
-  virtual ~MallocLogger() = default;
-};
+        class MallocLogger {
+        public:
+            MallocLogger() = default;
 
-class FileSystem;
-class LogWriter;
+            virtual ~MallocLogger() = default;
+        };
 
-class Env {
- public:
-  virtual int64_t NowMicros() = 0;
-  virtual uint32_t CalculateCRC32(const unsigned char *p, uint64_t n);
-  virtual bool CheckArrayCRC32(const unsigned char *data, uint64_t len);
-  virtual MaceStatus AdviseFree(void *addr, size_t length);
-  virtual MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs);
-  virtual MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids);
-  virtual FileSystem *GetFileSystem() = 0;
-  virtual LogWriter *GetLogWriter() = 0;
-  // Return the current backtrace, will allocate memory inside the call
-  // which may fail
-  virtual std::vector<std::string> GetBackTraceUnsafe(int max_steps) = 0;
-  virtual std::unique_ptr<MallocLogger> NewMallocLogger(
-      std::ostringstream *oss,
-      const std::string &name);
+        class FileSystem;
 
-  static Env *Default();
-};
+        class LogWriter;
 
-}  // namespace port
+        class Env {
+        public:
+            virtual int64_t NowMicros() = 0;
 
-inline int64_t NowMicros() {
-  return port::Env::Default()->NowMicros();
-}
+            virtual uint32_t CalculateCRC32(const unsigned char *p, uint64_t n);
 
-inline uint32_t CalculateCRC32(const unsigned char *p, uint64_t n) {
-  return port::Env::Default()->CalculateCRC32(p, n);
-}
+            virtual bool CheckArrayCRC32(const unsigned char *data, uint64_t len);
 
-inline bool CheckArrayCRC32(const unsigned char *data, uint64_t len) {
-  return port::Env::Default()->CheckArrayCRC32(data, len);
-}
+            virtual MaceStatus AdviseFree(void *addr, size_t length);
 
-inline MaceStatus AdviseFree(void *addr, size_t length) {
-  return port::Env::Default()->AdviseFree(addr, length);
-}
+            virtual MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs);
 
-inline MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs) {
-  return port::Env::Default()->GetCPUMaxFreq(max_freqs);
-}
+            virtual MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids);
 
-inline MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids) {
-  return port::Env::Default()->SchedSetAffinity(cpu_ids);
-}
+            virtual FileSystem *GetFileSystem() = 0;
 
-inline port::FileSystem *GetFileSystem() {
-  return port::Env::Default()->GetFileSystem();
-}
+            virtual LogWriter *GetLogWriter() = 0;
 
-inline MaceStatus Memalign(void **memptr, size_t alignment, size_t size) {
+            // Return the current backtrace, will allocate memory inside the call
+            // which may fail
+            virtual std::vector <std::string> GetBackTraceUnsafe(int max_steps) = 0;
+
+            virtual std::unique_ptr <MallocLogger> NewMallocLogger(
+                    std::ostringstream *oss,
+                    const std::string &name);
+
+            static Env *Default();
+        };
+
+    }  // namespace port
+
+    inline int64_t NowMicros() {
+        return port::Env::Default()->NowMicros();
+    }
+
+    inline uint32_t CalculateCRC32(const unsigned char *p, uint64_t n) {
+        return port::Env::Default()->CalculateCRC32(p, n);
+    }
+
+    inline bool CheckArrayCRC32(const unsigned char *data, uint64_t len) {
+        return port::Env::Default()->CheckArrayCRC32(data, len);
+    }
+
+    inline MaceStatus AdviseFree(void *addr, size_t length) {
+        return port::Env::Default()->AdviseFree(addr, length);
+    }
+
+    inline MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs) {
+        return port::Env::Default()->GetCPUMaxFreq(max_freqs);
+    }
+
+    inline MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids) {
+        return port::Env::Default()->SchedSetAffinity(cpu_ids);
+    }
+
+    inline port::FileSystem *GetFileSystem() {
+        return port::Env::Default()->GetFileSystem();
+    }
+
+    inline MaceStatus Memalign(void **memptr, size_t alignment, size_t size) {
 #ifdef _WIN32
-  *memptr = _aligned_malloc(size, alignment);
-  if (*memptr == nullptr) {
-    return MaceStatus::MACE_OUT_OF_RESOURCES;
-  } else {
-    return MaceStatus::MACE_SUCCESS;
-  }
+        *memptr = _aligned_malloc(size, alignment);
+        if (*memptr == nullptr) {
+          return MaceStatus::MACE_OUT_OF_RESOURCES;
+        } else {
+          return MaceStatus::MACE_SUCCESS;
+        }
 #else
 #if defined(__ANDROID__) || defined(__hexagon__)
-  *memptr = memalign(alignment, size);
-  if (*memptr == nullptr) {
-    return MaceStatus::MACE_OUT_OF_RESOURCES;
-  } else {
-    return MaceStatus::MACE_SUCCESS;
-  }
+        *memptr = memalign(alignment, size);
+        if (*memptr == nullptr) {
+          return MaceStatus::MACE_OUT_OF_RESOURCES;
+        } else {
+          return MaceStatus::MACE_SUCCESS;
+        }
 #else
-  int error = posix_memalign(memptr, alignment, size);
-  if (error != 0) {
-    if (*memptr != nullptr) {
-      free(*memptr);
-      *memptr = nullptr;
+        int error = posix_memalign(memptr, alignment, size);
+        if (error != 0) {
+            if (*memptr != nullptr) {
+                free(*memptr);
+                *memptr = nullptr;
+            }
+            return MaceStatus::MACE_OUT_OF_RESOURCES;
+        } else {
+            return MaceStatus::MACE_SUCCESS;
+        }
+#endif
+#endif
     }
-    return MaceStatus::MACE_OUT_OF_RESOURCES;
-  } else {
-    return MaceStatus::MACE_SUCCESS;
-  }
-#endif
-#endif
-}
 
-inline MaceStatus GetEnv(const char *name, std::string *value) {
+    inline MaceStatus GetEnv(const char *name, std::string *value) {
 #ifdef _WIN32
-  char *val;
-  size_t len;
-  errno_t error = _dupenv_s(&val, &len, name);
-  if (error != 0) {
-    return MaceStatus::MACE_RUNTIME_ERROR;
-  } else {
-    if (val != nullptr) {
-      *value = std::string(val);
-      free(val);
-    }
-    return MaceStatus::MACE_SUCCESS;
-  }
+        char *val;
+        size_t len;
+        errno_t error = _dupenv_s(&val, &len, name);
+        if (error != 0) {
+          return MaceStatus::MACE_RUNTIME_ERROR;
+        } else {
+          if (val != nullptr) {
+            *value = std::string(val);
+            free(val);
+          }
+          return MaceStatus::MACE_SUCCESS;
+        }
 #else
-  char *val = getenv(name);
-  if (val != nullptr) {
-    *value = std::string(val);
-  }
-  return MaceStatus::MACE_SUCCESS;
+        char *val = getenv(name);
+        if (val != nullptr) {
+            *value = std::string(val);
+        }
+        return MaceStatus::MACE_SUCCESS;
 #endif
-}
+    }
 
 #if defined(_WIN32) && !defined(S_ISREG)
 #define S_ISREG(m) (((m) & 0170000) == (0100000))

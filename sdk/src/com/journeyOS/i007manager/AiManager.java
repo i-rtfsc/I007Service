@@ -16,84 +16,80 @@
 
 package com.journeyOS.i007manager;
 
-import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
+import com.journeyOS.i007manager.base.ServerLifecycleManager;
 import com.journeyOS.i007manager.base.ServiceConstants;
 import com.journeyOS.i007manager.base.ServiceManagerNative;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author solo
  */
-public class AiManager {
+public class AiManager implements IBinder.DeathRecipient {
     private static final String TAG = AiManager.class.getSimpleName();
+    private static volatile AiManager sInstance = null;
+    private IAiManager mService = null;
+    private ServerLifecycleManager mSlm = null;
 
-    private static final AtomicReference<AiManager> INSTANCE = new AtomicReference<>();
-
-    private IAiManager mService;
-    private IBinder.DeathRecipient mDeathRecipient = new IBinder.DeathRecipient() {
-        @Override
-        public void binderDied() {
-            Log.e(TAG, "remote binder died");
-            INSTANCE.set(null);
-            mService.asBinder().unlinkToDeath(this, 0);
-            mService = null;
-            //TODO
-        }
-    };
-
-    private AiManager(IAiManager remote) {
-        mService = remote;
+    private AiManager() {
+        mSlm = new ServerLifecycleManager();
+        /**
+         * 初始化之后先获取服务，检查服务是否存在。
+         * 本来想在getService()之后判断服务存在就调 mSlm.notifyStarted() 通知客户端服务存在
+         * 但这里是构造函数，没办法回调给客户端，改成
+         */
+        getService();
     }
 
     /**
-     * 获取 AiManager 单例.
+     * 获取 AiManager 单例
      *
-     * @param context 上下文
-     * @return AiManager 的单例
+     * @return AiManager 实例
      */
-    public static AiManager getInstance(Context context) {
-        AiManager manager = INSTANCE.get();
-        if (manager != null) {
-            return manager;
-        }
-
-        synchronized (AiManager.class) {
-            manager = INSTANCE.get();
-            if (manager == null) {
-                if (I007Core.getCore().isRunning()) {
-                    try {
-                        IAiManager remote = IAiManager.Stub.asInterface(
-                                ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_AI));
-                        if (remote == null) {
-                            Log.e(TAG, "ai manager service wan null, please check I007Core.getCore().startup");
-                            return null;
-                        }
-                        manager = new AiManager(remote);
-                        manager.mService.asBinder().linkToDeath(manager.mDeathRecipient, 0);
-                        INSTANCE.set(manager);
-                    } catch (IllegalArgumentException | RemoteException e) {
-                        Log.e(TAG, "error = ", e);
-                    }
-                } else {
-                    Log.e(TAG, "ai not ready");
+    public static AiManager getInstance() {
+        if (sInstance == null) {
+            synchronized (AiManager.class) {
+                if (sInstance == null) {
+                    sInstance = new AiManager();
                 }
             }
         }
-        return manager;
+        return sInstance;
+    }
+
+    private IAiManager getService() {
+        if (mService != null) {
+            return mService;
+        }
+
+        if (I007Core.getCore().isRunning()) {
+            try {
+                IBinder binder = ServiceManagerNative.getInstance().getService(ServiceConstants.SERVICE_AI);
+                mService = IAiManager.Stub.asInterface(binder);
+                if (mService == null) {
+                    SmartLog.e(TAG, "ai manager service wan null, please check I007Core.getCore().startup");
+                    mSlm.notifyDied();
+                    return null;
+                }
+                mService.asBinder().linkToDeath(this, 0);
+            } catch (IllegalArgumentException | RemoteException e) {
+                SmartLog.e(TAG, "error = " + e);
+            }
+        } else {
+            SmartLog.e(TAG, "ai not ready");
+        }
+        return mService;
     }
 
     /**
-     * 通过命令 adb shell setprop log.tag.I007Service D 打开log
-     *
-     * @return 是否打开log
+     * {@inheritDoc}
      */
-    public boolean isDebug() {
-        return Log.isLoggable("I007Service", Log.DEBUG);
+    @Override
+    public void binderDied() {
+        SmartLog.e(TAG, "remote binder died");
+        mService.asBinder().unlinkToDeath(this, 0);
+        mService = null;
     }
 
     /**
@@ -103,13 +99,17 @@ public class AiManager {
      * @return 是否成功
      */
     public boolean initModel(AiModel aiModel) {
-        boolean success;
-        try {
-            success = mService.initModel(aiModel);
-        } catch (RemoteException | NullPointerException e) {
-            success = false;
-            Log.e(TAG, "init model fail: ", e);
+        IAiManager service = getService();
+        boolean success = (service != null);
+        if (success) {
+            try {
+                success = mService.initModel(aiModel);
+            } catch (RemoteException | NullPointerException e) {
+                success = false;
+                SmartLog.e(TAG, "init model fail = " + e);
+            }
         }
+
         return success;
     }
 
@@ -120,13 +120,17 @@ public class AiManager {
      * @return 是否成功
      */
     public boolean loadModel(AiModel aiModel) {
-        boolean success;
-        try {
-            success = mService.loadModel(aiModel);
-        } catch (RemoteException | NullPointerException e) {
-            success = false;
-            Log.e(TAG, "load model fail: ", e);
+        IAiManager service = getService();
+        boolean success = (service != null);
+        if (success) {
+            try {
+                success = mService.loadModel(aiModel);
+            } catch (RemoteException | NullPointerException e) {
+                success = false;
+                SmartLog.e(TAG, "load model fail = " + e);
+            }
         }
+
         return success;
     }
 
@@ -137,13 +141,17 @@ public class AiManager {
      * @return 是否成功
      */
     public boolean unloadModel(AiModel aiModel) {
-        boolean success;
-        try {
-            success = mService.unloadModel(aiModel);
-        } catch (RemoteException | NullPointerException e) {
-            success = false;
-            Log.e(TAG, "unload model fail: ", e);
+        IAiManager service = getService();
+        boolean success = (service != null);
+        if (success) {
+            try {
+                success = service.unloadModel(aiModel);
+            } catch (RemoteException | NullPointerException e) {
+                success = false;
+                SmartLog.e(TAG, "unload model fail = " + e);
+            }
         }
+
         return success;
     }
 
@@ -156,14 +164,42 @@ public class AiManager {
      * @return 是否成功
      */
     public boolean recognize(AiModel aiModel, AiData aiData, AiObserver observer) {
-        boolean success = true;
-        try {
-            mService.recognize(aiModel, aiData, observer);
-        } catch (RemoteException | NullPointerException e) {
-            success = false;
-            Log.e(TAG, "unload model fail: ", e);
+        IAiManager service = getService();
+        boolean success = (service != null);
+        if (success) {
+            try {
+                mService.recognize(aiModel, aiData, observer);
+            } catch (RemoteException | NullPointerException e) {
+                success = false;
+                SmartLog.e(TAG, "recognize fail = " + e);
+            }
         }
+
         return success;
+    }
+
+    /**
+     * Registers a callback to be invoked on voice command result.
+     *
+     * @param listener The callback that will run.
+     */
+    public void registerListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
+        if (getService() != null) {
+            mSlm.notifyStarted();
+        } else {
+            mSlm.notifyDied();
+        }
+    }
+
+    /**
+     * Unregisters a previous callback.
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerListener
+     */
+    public void unregisterListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
     }
 
 }

@@ -19,11 +19,11 @@ package com.journeyOS.i007Service.service;
 import android.content.Context;
 import android.os.RemoteException;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.framework.clients.ClientSession;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Manager;
 import com.journeyOS.i007manager.II007Observer;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.monitor.MonitorManager;
 
 import java.util.concurrent.atomic.AtomicReference;

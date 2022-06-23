@@ -18,8 +18,8 @@ package com.journeyOS.mace;
 
 import android.app.Application;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.FloatTensor;
 import com.journeyOS.mace.core.MACE;
 import com.journeyOS.mace.core.NeuralNetwork;

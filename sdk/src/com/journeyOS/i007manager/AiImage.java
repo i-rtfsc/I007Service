@@ -27,6 +27,9 @@ import android.os.Parcelable;
  */
 public class AiImage implements Parcelable {
 
+    /**
+     * CREATOR
+     */
     public static final Creator<AiImage> CREATOR
             = new Creator<AiImage>() {
         /**
@@ -34,6 +37,9 @@ public class AiImage implements Parcelable {
          *
          * @param p    Parcel object to read the bitmap from
          * @return a new bitmap created from the data in the parcel
+         */
+        /**
+         * {@inheritDoc}
          */
         @Override
         public AiImage createFromParcel(Parcel p) {
@@ -44,13 +50,18 @@ public class AiImage implements Parcelable {
             return image;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public AiImage[] newArray(int size) {
             return new AiImage[size];
         }
     };
-    protected int[] pixels;
-    protected int height;
-    protected int width;
+
+    private int[] pixels;
+    private int height;
+    private int width;
 
     private AiImage() {
     }
@@ -80,12 +91,20 @@ public class AiImage implements Parcelable {
         this.width = bitmap.getWidth();
     }
 
+    /**
+     * 构造函数
+     *
+     * @param in Parcel
+     */
     protected AiImage(Parcel in) {
         pixels = in.createIntArray();
         height = in.readInt();
         width = in.readInt();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeIntArray(pixels);
@@ -93,11 +112,21 @@ public class AiImage implements Parcelable {
         dest.writeInt(width);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * 缩放
+     *
+     * @param width  新的宽
+     * @param height 新的高
+     * @return 缩放后的图片
+     */
     public AiImage resizeTo(int width, int height) {
         Bitmap bm = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
         Bitmap bmScaled = Bitmap.createScaledBitmap(bm, width, height, false);
@@ -109,6 +138,11 @@ public class AiImage implements Parcelable {
         return ret;
     }
 
+    /**
+     * 转成图片
+     *
+     * @return 图片
+     */
     public Bitmap dumpToBitmap() {
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
     }
@@ -156,7 +190,6 @@ public class AiImage implements Parcelable {
             this.bitmap = bitmap;
             return this;
         }
-
 
         /**
          * 构建

@@ -19,13 +19,13 @@ package com.journeyOS.i007Service.service;
 import android.content.Context;
 import android.os.RemoteException;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.AppConfig;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.AiResult;
 import com.journeyOS.i007manager.IAiManager;
 import com.journeyOS.i007manager.IAiObserver;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.MachineLearningManager;
 import com.journeyOS.machinelearning.tasks.ITaskResultHandler;
 import com.journeyOS.machinelearning.tasks.TaskResult;

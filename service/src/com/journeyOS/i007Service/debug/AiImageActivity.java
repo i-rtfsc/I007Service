@@ -31,15 +31,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.R;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiImage;
 import com.journeyOS.i007manager.AiManager;
 import com.journeyOS.i007manager.AiModel;
-import com.journeyOS.i007manager.AiModelMaker;
+import com.journeyOS.i007manager.AiModelBuilder;
 import com.journeyOS.i007manager.AiObserver;
 import com.journeyOS.i007manager.AiResult;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.platform.PlatformManager;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class AiImageActivity extends AppCompatActivity {
     Bitmap bitmap = null;
     boolean supportML = false;
     AiManager mAm = null;
-    AiModel mModel = AiModelMaker.getInstance().makeMaceImageClassification();
+    AiModel mModel = null;
     private TextView mResultTextView;
     private ImageView mImageView;
 
@@ -66,8 +66,10 @@ public class AiImageActivity extends AppCompatActivity {
         mResultTextView = findViewById(R.id.tv_result);
         mImageView = findViewById(R.id.image);
 
+        mModel = AiModelBuilder.ImageClassification.getMace(AiModelBuilder.ImageClassification.MaceModel.MOBILENET_V1);
+        SmartLog.d(TAG, "model = [" + mModel.toString() + "]");
         try {
-            bitmap = BitmapFactory.decodeStream(getAssets().open("image.jpg"));
+            bitmap = BitmapFactory.decodeStream(getAssets().open("fan.jpg"));
             mImageView.setImageBitmap(bitmap);
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +80,7 @@ public class AiImageActivity extends AppCompatActivity {
         if (supportML) {
             checkCameraPermission();
 
-            mAm = AiManager.getInstance(getApplicationContext());
+            mAm = AiManager.getInstance();
             mAm.initModel(mModel);
         }
 
@@ -128,7 +130,7 @@ public class AiImageActivity extends AppCompatActivity {
                     String textToShow = "\n";
                     for (int i = 0; i < results.size(); i++) {
                         AiResult result = results.get(i);
-                        textToShow += String.format("    %s(%s)\n", result.getLabel(), result.getConfidence());
+                        textToShow += String.format("    %s(%s)\n", result.getLabel(), result.getProbability());
                     }
                     textToShow += "---------\n";
                     // Append the result to the UI.

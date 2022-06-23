@@ -22,12 +22,12 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.framework.service.ServiceCache;
 import com.journeyOS.framework.service.ServiceFetcher;
 import com.journeyOS.i007Service.service.AiManagerService;
 import com.journeyOS.i007Service.service.I007ManagerService;
 import com.journeyOS.i007Service.service.base.I007BaseService;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.i007manager.base.ServiceConstants;
 
 import java.util.UUID;

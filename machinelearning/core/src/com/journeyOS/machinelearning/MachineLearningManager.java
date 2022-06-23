@@ -23,9 +23,9 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.tasks.BaseTask;
 import com.journeyOS.machinelearning.tasks.ITaskResultHandler;
 import com.journeyOS.machinelearning.tasks.TaskManager;

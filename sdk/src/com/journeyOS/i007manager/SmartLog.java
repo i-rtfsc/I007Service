@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.journeyOS.common;
+package com.journeyOS.i007manager;
 
 import android.text.TextUtils;
 import android.util.Log;

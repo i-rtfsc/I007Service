@@ -22,27 +22,36 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.journeyOS.i007manager.I007Core;
+import com.journeyOS.i007manager.ServerLifecycle;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * @author solo
  */
 public class ServiceManagerNative implements ServiceConnection {
-    private static final String TAG = ServiceManagerNative.class.getSimpleName();
-
+    /**
+     * i007 服务包名
+     */
     public static final String I007_SERVICE_PACKAGE = "com.journeyOS.i007Service";
+    private static final String TAG = ServiceManagerNative.class.getSimpleName();
     private static final String I007_SERVICE_SERVICE_AIDL = "com.journeyOS.i007Service.I007SystemServer";
-
+    private static volatile ServiceManagerNative sInstance = null;
     private IServiceFetcher sFetcher;
     private boolean isRunning = false;
 
-    private static volatile ServiceManagerNative sInstance = null;
+    private ServerLifecycleManager mSlm = null;
 
     private ServiceManagerNative() {
+        mSlm = new ServerLifecycleManager();
     }
 
+    /**
+     * 获取 ServiceManagerNative 单例
+     *
+     * @return ServiceManagerNative 实例
+     */
     public static ServiceManagerNative getInstance() {
         if (sInstance == null) {
             synchronized (ServiceManagerNative.class) {
@@ -56,23 +65,25 @@ public class ServiceManagerNative implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(TAG, "onServiceConnected");
+        SmartLog.d(TAG, "I007 System Server running...");
         try {
             sFetcher = IServiceFetcher.Stub.asInterface(service);
             isRunning = true;
             I007Core.getCore().setRunning(true);
             linkBinderDied(service);
+            mSlm.notifyStarted();
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "start service error = ", e);
+            SmartLog.e(TAG, "start I007 System Server error = " + e);
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Log.d(TAG, "onServiceDisconnected");
+        SmartLog.d(TAG, "I007 System Server has crashed...");
         isRunning = false;
         sFetcher = null;
         I007Core.getCore().setRunning(false);
+        mSlm.notifyDied();
     }
 
     /**
@@ -81,13 +92,12 @@ public class ServiceManagerNative implements ServiceConnection {
      * @param context
      */
     public void startup(Context context) {
-        Log.d(TAG, "startup, call from = [" + context.getPackageName() + "], isRunning = [" + isRunning + "]");
         if (!isRunning) {
             Intent intentService = new Intent();
             intentService.setPackage(I007_SERVICE_PACKAGE);
             intentService.setAction(I007_SERVICE_SERVICE_AIDL);
             boolean result = context.bindService(intentService, this, Context.BIND_AUTO_CREATE);
-            Log.d(TAG, "bind service result = [" + result + "]");
+            SmartLog.d(TAG, "bind I007 System Server result = [" + result + "]");
         }
     }
 
@@ -99,6 +109,10 @@ public class ServiceManagerNative implements ServiceConnection {
     private IServiceFetcher getServiceFetcher() {
         if (sFetcher == null) {
             //TODO
+            /**
+             * 每次调接口的时候如果服务不存在，都告诉客户端是否合理？
+             */
+            mSlm.notifyDied();
         }
         return sFetcher;
     }
@@ -118,7 +132,7 @@ public class ServiceManagerNative implements ServiceConnection {
                 e.printStackTrace();
             }
         }
-        Log.e(TAG, "GetService(" + name + ") return null.");
+        SmartLog.e(TAG, "GetService(" + name + ") return null.");
         return null;
     }
 
@@ -137,7 +151,6 @@ public class ServiceManagerNative implements ServiceConnection {
                 e.printStackTrace();
             }
         }
-
     }
 
     /**
@@ -156,14 +169,34 @@ public class ServiceManagerNative implements ServiceConnection {
         }
     }
 
+    /**
+     * Registers a callback to be invoked on voice command result.
+     *
+     * @param listener The callback that will run.
+     */
+    public void registerListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
+    }
+
+    /**
+     * Unregisters a previous callback.
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerListener
+     */
+    public void unregisterListener(ServerLifecycle listener) {
+        mSlm.registerListener(listener);
+    }
+
     private void linkBinderDied(final IBinder binder) {
         IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
             @Override
             public void binderDied() {
                 binder.unlinkToDeath(this, 0);
-                Log.e(TAG, "oops, the server has crashed.");
+                SmartLog.e(TAG, "oops, the server has crashed.");
                 I007Core.getCore().setRunning(false);
                 sFetcher = null;
+                mSlm.notifyDied();
             }
         };
         try {
@@ -172,4 +205,5 @@ public class ServiceManagerNative implements ServiceConnection {
             e.printStackTrace();
         }
     }
+
 }

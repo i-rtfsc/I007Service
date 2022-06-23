@@ -21,11 +21,11 @@ import android.graphics.Bitmap;
 import android.os.Trace;
 import android.util.Pair;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.utils.FileUtils;
 import com.journeyOS.common.utils.JsonHelper;
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.AiResult;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 import org.pytorch.IValue;
@@ -76,7 +76,7 @@ public class ImageClassifier extends PytorchClassifier<Bitmap> {
         startInterval();
         // running the model
         final Tensor outputTensor = mModel.forward(IValue.from(inputTensor)).toTensor();
-        stopInterval("Run pytorch model inference");
+        long time = stopInterval("Run pytorch model inference");
         Trace.endSection();
 
         // getting tensor content as java array of floats
@@ -84,11 +84,12 @@ public class ImageClassifier extends PytorchClassifier<Bitmap> {
 
         for (Pair<Integer, Float> pair : topK(TOP_K, scores)) {
             String label = mImageClasses.get(pair.first);
-            float confidence = pair.second;
-            SmartLog.d(TAG, " label = [" + label + "], confidence = [" + confidence + "]");
+            float probability = pair.second;
+            SmartLog.d(TAG, " label = [" + label + "], probability = [" + probability + "]");
             results.add(new AiResult.Builder()
                     .setLabel(label)
-                    .setConfidence(confidence)
+                    .setProbability(probability)
+                    .setTime(time)
                     .build()
             );
         }

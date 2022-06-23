@@ -19,9 +19,9 @@ package com.journeyOS.framework.clients;
 import android.os.Handler;
 import android.os.RemoteException;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.II007Observer;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * 客户端

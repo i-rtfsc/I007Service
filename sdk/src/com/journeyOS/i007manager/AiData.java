@@ -26,12 +26,21 @@ import android.os.Parcelable;
  */
 public class AiData implements Parcelable {
 
+    /**
+     * CREATOR
+     */
     public static final Creator<AiData> CREATOR = new Creator<AiData>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiData createFromParcel(Parcel in) {
             return new AiData(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiData[] newArray(int size) {
             return new AiData[size];
@@ -66,12 +75,20 @@ public class AiData implements Parcelable {
         this.image = image;
     }
 
+    /**
+     * 构造函数
+     *
+     * @param in Parcel
+     */
     protected AiData(Parcel in) {
         channel = in.readInt();
         text = in.readString();
         image = in.readParcelable(AiImage.class.getClassLoader());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(channel);
@@ -79,6 +96,9 @@ public class AiData implements Parcelable {
         dest.writeParcelable(image, flags);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -110,7 +130,6 @@ public class AiData implements Parcelable {
     public AiImage getImage() {
         return image;
     }
-
 
     /**
      * builder

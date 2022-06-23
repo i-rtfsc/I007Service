@@ -78,4 +78,5 @@ public abstract class Tensor {
      * 释放资源
      */
     public abstract void release();
+
 }

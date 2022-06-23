@@ -25,7 +25,7 @@ public class NativeMace {
     public static final int JNI_ERR = -1;
 
     static {
-        System.loadLibrary("mace_mobile_jni");
+        System.loadLibrary("mace_neural_network");
     }
 
     /**
@@ -89,7 +89,7 @@ public class NativeMace {
      * @param model             模型名字
      * @param device            运行环境
      * @param ompNumThreads     线程数量
-     * @param cpuAffinityPolicy cput调度
+     * @param cpuAffinityPolicy cpu调度
      * @param gpuPerfHint       gpu性能
      * @param gpuPriorityHint   gpu优先级
      * @return 是否成功

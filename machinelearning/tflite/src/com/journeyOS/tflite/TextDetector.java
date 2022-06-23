@@ -65,17 +65,18 @@ public class TextDetector extends TfliteClassifier<String> {
     private List<AiResult> classify(String text) {
         startInterval();
         List<Category> apiResults = mTextClassifier.classify(text);
-        stopInterval("Run tf-lite-model inference");
+        long time = stopInterval("Run tf-lite-model inference");
         int size = apiResults.size();
         List<AiResult> results = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Category category = apiResults.get(i);
             String label = category.getLabel();
-            float score = category.getScore();
+            float probability = category.getScore();
 
             results.add(new AiResult.Builder()
                     .setLabel(label)
-                    .setConfidence(score)
+                    .setProbability(probability)
+                    .setTime(time)
                     .build());
         }
         return results;

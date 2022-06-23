@@ -22,11 +22,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Battery;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.AbstractMonitor;
+import com.journeyOS.i007manager.SmartLog;
+import com.journeyOS.monitor.BaseMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -34,13 +34,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class BatteryAbstractMonitor extends AbstractMonitor {
-    private static final String TAG = BatteryAbstractMonitor.class.getSimpleName();
-    private static volatile BatteryAbstractMonitor sInstance = null;
+public final class BatteryBaseMonitor extends BaseMonitor {
+    private static final String TAG = BatteryBaseMonitor.class.getSimpleName();
+    private static volatile BatteryBaseMonitor sInstance = null;
     private Context mContext;
     private BatteryBroadcastReceiver mReceiver;
 
-    private BatteryAbstractMonitor() {
+    private BatteryBaseMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -49,11 +49,11 @@ public final class BatteryAbstractMonitor extends AbstractMonitor {
      *
      * @return BatteryMonitor
      */
-    public static BatteryAbstractMonitor getInstance() {
+    public static BatteryBaseMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (BatteryAbstractMonitor.class) {
+            synchronized (BatteryBaseMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new BatteryAbstractMonitor();
+                    sInstance = new BatteryBaseMonitor();
                 }
             }
         }

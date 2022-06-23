@@ -21,11 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.I007Screen;
-import com.journeyOS.monitor.AbstractMonitor;
+import com.journeyOS.i007manager.SmartLog;
+import com.journeyOS.monitor.BaseMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -33,13 +33,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class LcdAbstractMonitor extends AbstractMonitor {
-    private static final String TAG = LcdAbstractMonitor.class.getSimpleName();
-    private static volatile LcdAbstractMonitor sInstance = null;
+public final class LcdBaseMonitor extends BaseMonitor {
+    private static final String TAG = LcdBaseMonitor.class.getSimpleName();
+    private static volatile LcdBaseMonitor sInstance = null;
     private Context mContext;
     private ScreenBroadcastReceiver mReceiver;
 
-    private LcdAbstractMonitor() {
+    private LcdBaseMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -48,11 +48,11 @@ public final class LcdAbstractMonitor extends AbstractMonitor {
      *
      * @return LCDMonitor实例
      */
-    public static LcdAbstractMonitor getInstance() {
+    public static LcdBaseMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (LcdAbstractMonitor.class) {
+            synchronized (LcdBaseMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new LcdAbstractMonitor();
+                    sInstance = new LcdBaseMonitor();
                 }
             }
         }

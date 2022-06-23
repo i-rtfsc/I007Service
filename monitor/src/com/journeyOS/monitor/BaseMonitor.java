@@ -16,13 +16,13 @@
 
 package com.journeyOS.monitor;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * @author solo
  */
-public abstract class AbstractMonitor {
-    private static final String TAG = AbstractMonitor.class.getSimpleName();
+public abstract class BaseMonitor {
+    private static final String TAG = BaseMonitor.class.getSimpleName();
 
     protected long mFactoryId;
     protected boolean mInit = false;

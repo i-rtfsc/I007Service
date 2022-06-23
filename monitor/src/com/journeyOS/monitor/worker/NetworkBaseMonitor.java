@@ -24,11 +24,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Net;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.AbstractMonitor;
+import com.journeyOS.i007manager.SmartLog;
+import com.journeyOS.monitor.BaseMonitor;
 import com.journeyOS.monitor.MonitorManager;
 
 /**
@@ -36,12 +36,12 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class NetworkAbstractMonitor extends AbstractMonitor {
-    private static final String TAG = NetworkAbstractMonitor.class.getSimpleName();
-    private static volatile NetworkAbstractMonitor sInstance = null;
+public final class NetworkBaseMonitor extends BaseMonitor {
+    private static final String TAG = NetworkBaseMonitor.class.getSimpleName();
+    private static volatile NetworkBaseMonitor sInstance = null;
     private NetworkBroadcastReceiver mReceiver;
 
-    private NetworkAbstractMonitor() {
+    private NetworkBaseMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -50,11 +50,11 @@ public final class NetworkAbstractMonitor extends AbstractMonitor {
      *
      * @return NetworkMonitor
      */
-    public static NetworkAbstractMonitor getInstance() {
+    public static NetworkBaseMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (NetworkAbstractMonitor.class) {
+            synchronized (NetworkBaseMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new NetworkAbstractMonitor();
+                    sInstance = new NetworkBaseMonitor();
                 }
             }
         }

@@ -24,12 +24,21 @@ import android.os.Parcelable;
  */
 public class AiResult implements Parcelable {
 
+    /**
+     * Creator
+     */
     public static final Creator<AiResult> CREATOR = new Creator<AiResult>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiResult createFromParcel(Parcel in) {
             return new AiResult(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiResult[] newArray(int size) {
             return new AiResult[size];
@@ -40,35 +49,51 @@ public class AiResult implements Parcelable {
      */
     private String label;
     /**
-     * 得分(分词情况下没有得分)
+     * 概率
      */
-    private Float confidence;
+    private float probability;
+    /**
+     * 耗时（ms）
+     */
+    private long time;
 
-    public AiResult(String label, Float confidence) {
+    /**
+     * 构造函数
+     *
+     * @param label       标签
+     * @param probability 概率
+     * @param time        耗时
+     */
+    public AiResult(String label, float probability, long time) {
         this.label = label;
-        this.confidence = confidence;
+        this.probability = probability;
+        this.time = time;
     }
 
+    /**
+     * 构造函数
+     *
+     * @param in Parcel
+     */
     protected AiResult(Parcel in) {
         label = in.readString();
-        if (in.readByte() == 0) {
-            confidence = null;
-        } else {
-            confidence = in.readFloat();
-        }
+        probability = in.readFloat();
+        time = in.readLong();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(label);
-        if (confidence == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeFloat(confidence);
-        }
+        dest.writeFloat(probability);
+        dest.writeLong(time);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -84,19 +109,32 @@ public class AiResult implements Parcelable {
     }
 
     /**
-     * 获取得分
+     * 获取概率
      *
-     * @return 得分
+     * @return 概率
      */
-    public Float getConfidence() {
-        return confidence;
+    public float getProbability() {
+        return probability;
     }
 
+    /**
+     * 获取推荐模型花费的时间
+     *
+     * @return 时间
+     */
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return "AiTextResult{" +
+        return "AiResult{" +
                 "label='" + label + '\'' +
-                ", confidence=" + confidence +
+                ", probability=" + probability +
+                ", time=" + time +
                 '}';
     }
 
@@ -110,9 +148,14 @@ public class AiResult implements Parcelable {
         private String label;
 
         /**
-         * 得分(分词情况下没有得分)
+         * 概率
          */
-        private Float confidence;
+        private float probability;
+
+        /**
+         * 耗时（ms）
+         */
+        private long time;
 
         /**
          * 设置标签
@@ -126,13 +169,24 @@ public class AiResult implements Parcelable {
         }
 
         /**
-         * 设置得分
+         * 设置概率
          *
-         * @param confidence 得分
+         * @param probability 概率
          * @return Builder
          */
-        public Builder setConfidence(Float confidence) {
-            this.confidence = confidence;
+        public Builder setProbability(float probability) {
+            this.probability = probability;
+            return this;
+        }
+
+        /**
+         * 设置时间
+         *
+         * @param time 时间
+         * @return Builder
+         */
+        public Builder setTime(long time) {
+            this.time = time;
             return this;
         }
 
@@ -142,7 +196,7 @@ public class AiResult implements Parcelable {
          * @return AiTextResult
          */
         public AiResult build() {
-            return new AiResult(label, confidence);
+            return new AiResult(label, probability, time);
         }
     }
 

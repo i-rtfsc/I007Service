@@ -18,7 +18,7 @@ package com.journeyOS.common.utils;
 
 import android.content.Context;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

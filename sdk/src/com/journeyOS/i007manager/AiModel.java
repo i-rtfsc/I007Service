@@ -26,12 +26,21 @@ import android.text.TextUtils;
  * @author solo
  */
 public class AiModel implements Parcelable {
+    /**
+     * Creator
+     */
     public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiModel createFromParcel(Parcel in) {
             return new AiModel(in);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public AiModel[] newArray(int size) {
             return new AiModel[size];
@@ -98,6 +107,9 @@ public class AiModel implements Parcelable {
         storage = in.readInt();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
@@ -108,6 +120,9 @@ public class AiModel implements Parcelable {
         dest.writeInt(storage);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -176,6 +191,9 @@ public class AiModel implements Parcelable {
         return storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "ModelInfo{" +

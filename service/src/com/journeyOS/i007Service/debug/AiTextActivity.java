@@ -26,14 +26,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007Service.R;
 import com.journeyOS.i007manager.AiData;
 import com.journeyOS.i007manager.AiManager;
 import com.journeyOS.i007manager.AiModel;
-import com.journeyOS.i007manager.AiModelMaker;
+import com.journeyOS.i007manager.AiModelBuilder;
 import com.journeyOS.i007manager.AiObserver;
 import com.journeyOS.i007manager.AiResult;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.platform.PlatformManager;
 
 import java.util.List;
@@ -43,9 +43,9 @@ import java.util.List;
  */
 public class AiTextActivity extends AppCompatActivity {
     private static final String TAG = "AiTextActivity";
-    boolean supportML = false;
+    boolean supportTflite = false;
     AiManager mAm = null;
-    AiModel mModel = AiModelMaker.getInstance().makePytorchImageClassification();
+    AiModel mModel = AiModelBuilder.TextClassification.getTflite();
     private TextView resultTextView;
     private EditText inputEditText;
     private ScrollView scrollView;
@@ -59,10 +59,10 @@ public class AiTextActivity extends AppCompatActivity {
         inputEditText = findViewById(R.id.input_text);
         scrollView = findViewById(R.id.scroll_view);
 
-        supportML = PlatformManager.getInstance().supportMachineLearning();
-        SmartLog.d(TAG, "supportMachineLearning = [" + supportML + "]");
-        if (supportML) {
-            mAm = AiManager.getInstance(getApplicationContext());
+        supportTflite = PlatformManager.getInstance().supportTflite();
+        SmartLog.d(TAG, "supportTflite = [" + supportTflite + "]");
+        if (supportTflite) {
+            mAm = AiManager.getInstance();
             mAm.initModel(mModel);
         }
 
@@ -109,7 +109,7 @@ public class AiTextActivity extends AppCompatActivity {
                     String textToShow = "Input: " + inputText + "\nOutput:\n";
                     for (int i = 0; i < results.size(); i++) {
                         AiResult result = results.get(i);
-                        textToShow += String.format("    %s: %s\n", result.getLabel(), result.getConfidence());
+                        textToShow += String.format("    %s: %s\n", result.getLabel(), result.getProbability());
                     }
                     textToShow += "---------\n";
 

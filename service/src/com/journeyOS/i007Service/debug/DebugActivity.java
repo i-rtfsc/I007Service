@@ -29,11 +29,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Observer;
 import com.journeyOS.i007manager.I007Result;
+import com.journeyOS.i007manager.SmartLog;
 
 /**
  * @author solo
@@ -115,7 +115,7 @@ public class DebugActivity extends AppCompatActivity {
 
     private void init() {
         I007Core.getCore().startup(mContext);
-        I007Manager i007m = I007Manager.getInstance(mContext);
+        I007Manager i007m = I007Manager.getInstance();
         i007m.subscribeObserver(new I007Observer() {
             @Override
             public void onSceneChanged(I007Result result) throws RemoteException {
@@ -127,12 +127,12 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     private void update() {
-        I007Manager i007m = I007Manager.getInstance(mContext);
+        I007Manager i007m = I007Manager.getInstance();
         i007m.updateFactor(I007Manager.SCENE_FACTOR_BATTERY);
     }
 
     private void remove() {
-        I007Manager i007m = I007Manager.getInstance(mContext);
+        I007Manager i007m = I007Manager.getInstance();
         i007m.removeFactor(I007Manager.SCENE_FACTOR_BATTERY);
     }
 

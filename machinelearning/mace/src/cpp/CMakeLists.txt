@@ -46,7 +46,7 @@ add_library(mobilenet_v2_quant_lib STATIC IMPORTED)
 set_target_properties(mobilenet_v2_quant_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_quant_lib})
 
 add_library( # Sets the name of the library.
-        mace_mobile_jni
+        mace_neural_network
 
         # Sets the library as a shared library.
         SHARED
@@ -72,7 +72,7 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        mace_mobile_jni
+        mace_neural_network
         mobilenet_v1_lib
         mobilenet_v1_quant_lib
         mobilenet_v2_lib

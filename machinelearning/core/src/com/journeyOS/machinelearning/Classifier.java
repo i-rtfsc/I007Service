@@ -19,9 +19,9 @@ package com.journeyOS.machinelearning;
 import android.app.Application;
 import android.util.Pair;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.task.TaskManager;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 /**
@@ -176,9 +176,11 @@ public abstract class Classifier<T> {
      * 结束时间
      *
      * @param message 需要打印的信息（一般是模型名称）
+     * @return 耗时
      */
-    protected void stopInterval(String message) {
+    protected long stopInterval(String message) {
         final long duration = System.currentTimeMillis() - mLastBegin;
         SmartLog.d(TAG, message + ", time = [" + duration + "ms]");
+        return duration;
     }
 }

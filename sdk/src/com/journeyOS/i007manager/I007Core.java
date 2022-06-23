@@ -17,7 +17,6 @@
 package com.journeyOS.i007manager;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.journeyOS.i007manager.base.ServiceManagerNative;
 
@@ -31,15 +30,18 @@ import java.lang.ref.WeakReference;
 public final class I007Core {
     private static final String TAG = I007Core.class.getSimpleName();
     private static final boolean DEBUG = true;
-
     private static volatile I007Core sInstance = null;
-
     private WeakReference<Context> mReference;
     private boolean isRunning = false;
 
     private I007Core() {
     }
 
+    /**
+     * 获取 I007Core 单例
+     *
+     * @return I007Core 实例
+     */
     public static I007Core getCore() {
         if (sInstance == null) {
             synchronized (I007Core.class) {
@@ -51,9 +53,14 @@ public final class I007Core {
         return sInstance;
     }
 
+    /**
+     * 启动 I007 System Server
+     *
+     * @param context 上下文
+     */
     public void startup(Context context) {
         if (DEBUG) {
-            Log.d(TAG, "startup, call from = [" + context.getPackageName() + "], isRunning = [" + isRunning + "]");
+            SmartLog.d(TAG, "startup, call from = [" + context.getPackageName() + "], isRunning = [" + isRunning + "]");
         }
 
         if (!isRunning) {
@@ -72,11 +79,43 @@ public final class I007Core {
         return mReference.get();
     }
 
+    /**
+     * I007 System Server 是否正在运行
+     *
+     * @return 是否运行
+     */
     public boolean isRunning() {
         return isRunning;
     }
 
+    /**
+     * 内部设置I007 System Server的状态，内部不要调用此接口
+     *
+     * @param running 运行状态
+     */
+    @Deprecated
     public void setRunning(boolean running) {
         isRunning = running;
     }
+
+    /**
+     * Registers a callback to be invoked on voice command result.
+     * 在startup函数之前调用，才有回调过去
+     *
+     * @param listener The callback that will run.
+     */
+    public void registerListener(ServerLifecycle listener) {
+        ServiceManagerNative.getInstance().registerListener(listener);
+    }
+
+    /**
+     * Unregisters a previous callback.
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerListener
+     */
+    public void unregisterListener(ServerLifecycle listener) {
+        ServiceManagerNative.getInstance().unregisterListener(listener);
+    }
+
 }

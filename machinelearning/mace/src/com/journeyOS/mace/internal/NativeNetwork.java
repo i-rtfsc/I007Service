@@ -16,7 +16,7 @@
 
 package com.journeyOS.mace.internal;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.FloatTensor;
 import com.journeyOS.mace.core.NeuralNetwork;
 
@@ -25,20 +25,12 @@ import com.journeyOS.mace.core.NeuralNetwork;
  */
 public class NativeNetwork implements NeuralNetwork {
     private final String TAG = NativeNetwork.class.getSimpleName();
-
-    private static final int JNI_OK = 0;
-    private static final int JNI_ERR = -1;
-
-    static {
-        System.loadLibrary("mace_mobile_jni");
-    }
-
     private int[] mInputTensorShape;
     private int[] mOutputTensorShape;
     private String mInputTensorName;
     private String mOutputTensorName;
 
-    private long mNativeHandle = JNI_ERR;
+    private long mNativeHandle = NativeMace.JNI_ERR;
     private String mModelVersion;
 
     private String mStorageDirectory;
@@ -77,43 +69,60 @@ public class NativeNetwork implements NeuralNetwork {
         mOutputTensorShape = NativeMace.nativeGetOutputTensorShape(mModelName);
 
         mNativeHandle = NativeMace.nativeMaceCreateNetwork(mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy);
-        SmartLog.d(TAG, "create network, success = [" + (mNativeHandle == JNI_OK) + "]");
+        SmartLog.d(TAG, "create network, success = [" + (mNativeHandle == NativeMace.JNI_OK) + "]");
 
-        if (mNativeHandle == JNI_OK) {
+        if (mNativeHandle == NativeMace.JNI_OK) {
             mNativeHandle = NativeMace.nativeMaceCreateEngine(mModelName, mRuntime.name(), mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal);
-            SmartLog.d(TAG, "create engine, success = [" + (mNativeHandle == JNI_OK) + "]");
+            SmartLog.d(TAG, "create engine, success = [" + (mNativeHandle == NativeMace.JNI_OK) + "]");
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[] getInputTensorShape() {
         return mInputTensorShape;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[] getOutputTensorsShapes() {
         return mOutputTensorShape;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getInputTensorName() {
         return mInputTensorName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getOutputTensorName() {
         return mOutputTensorName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Runtime getRuntime() {
         return mRuntime;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FloatTensor execute(FloatTensor inputTensor) {
-        if (mNativeHandle == JNI_ERR) {
+        if (mNativeHandle == NativeMace.JNI_ERR) {
             SmartLog.e(TAG, "execute fail with mNativeHandle == null");
             return null;
         }

@@ -18,7 +18,6 @@ package com.journeyOS.monitor.worker;
 
 import android.content.Context;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.task.TaskManager;
 import com.journeyOS.database.DataRepository;
 import com.journeyOS.database.source.local.app.App;
@@ -26,7 +25,8 @@ import com.journeyOS.database.source.local.base.DBConfigs;
 import com.journeyOS.i007manager.I007App;
 import com.journeyOS.i007manager.I007Core;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.AbstractMonitor;
+import com.journeyOS.i007manager.SmartLog;
+import com.journeyOS.monitor.BaseMonitor;
 import com.journeyOS.monitor.MonitorManager;
 import com.journeyOS.monitor.accessibility.AccessibilityInfoObserver;
 import com.journeyOS.monitor.accessibility.AccessibilityService;
@@ -37,15 +37,15 @@ import com.journeyOS.monitor.accessibility.ActivityListener;
  *
  * @author solo
  */
-public final class AccessibilityAbstractMonitor extends AbstractMonitor implements ActivityListener {
-    private static final String TAG = AccessibilityAbstractMonitor.class.getSimpleName();
-    private static volatile AccessibilityAbstractMonitor sInstance = null;
+public final class AccessibilityBaseMonitor extends BaseMonitor implements ActivityListener {
+    private static final String TAG = AccessibilityBaseMonitor.class.getSimpleName();
+    private static volatile AccessibilityBaseMonitor sInstance = null;
     private AccessibilityInfoObserver mAccessibilityInfoObserver;
     private Context mContext = null;
     private String mPackageName = null;
     private String mActivity = null;
 
-    private AccessibilityAbstractMonitor() {
+    private AccessibilityBaseMonitor() {
         SmartLog.d(TAG, "init");
         mContext = I007Core.getCore().getContext();
     }
@@ -55,11 +55,11 @@ public final class AccessibilityAbstractMonitor extends AbstractMonitor implemen
      *
      * @return AccessibilityMonitor实例
      */
-    public static AccessibilityAbstractMonitor getInstance() {
+    public static AccessibilityBaseMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (AccessibilityAbstractMonitor.class) {
+            synchronized (AccessibilityBaseMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new AccessibilityAbstractMonitor();
+                    sInstance = new AccessibilityBaseMonitor();
                 }
             }
         }

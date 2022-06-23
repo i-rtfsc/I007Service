@@ -19,7 +19,7 @@ package com.journeyOS.mace.core;
 import android.app.Application;
 import android.content.Context;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.NeuralNetwork.Runtime;
 import com.journeyOS.mace.internal.NativeMace;
 import com.journeyOS.mace.internal.NativeNetwork;
@@ -197,6 +197,7 @@ public class MACE {
          * 如果是运行环境是GPU，设置storage和openCL cache后会crash
          * 已经给读写权限的情况下，错误提示是文件无法读写。
          * 暂时找不到原因，所以此接口先不使用（改成private）
+         * 后续新增mace file功能就把这个改成传模型地址
          *
          * @param storageDirectory
          * @return NeuralNetworkBuilder
@@ -216,6 +217,12 @@ public class MACE {
             return this;
         }
 
+        /**
+         * 创建神经网络
+         *
+         * @return 神经网络（NeuralNetwork）
+         * @throws IllegalArgumentException 设置GPU并且是file模型时，如果当前进行无法读取改模型所在的地址，直接抛出异常
+         */
         public NeuralNetwork build() throws IllegalArgumentException {
             if (mPreferRuntime == NeuralNetwork.Runtime.GPU && !mStorageDirectory.isEmpty()) {
                 File file = new File(mStorageDirectory);

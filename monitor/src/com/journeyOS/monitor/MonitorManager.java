@@ -18,13 +18,13 @@ package com.journeyOS.monitor;
 
 import android.util.Log;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Result;
-import com.journeyOS.monitor.worker.AccessibilityAbstractMonitor;
-import com.journeyOS.monitor.worker.BatteryAbstractMonitor;
-import com.journeyOS.monitor.worker.LcdAbstractMonitor;
-import com.journeyOS.monitor.worker.NetworkAbstractMonitor;
+import com.journeyOS.i007manager.SmartLog;
+import com.journeyOS.monitor.worker.AccessibilityBaseMonitor;
+import com.journeyOS.monitor.worker.BatteryBaseMonitor;
+import com.journeyOS.monitor.worker.LcdBaseMonitor;
+import com.journeyOS.monitor.worker.NetworkBaseMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public final class MonitorManager {
     private static final String TAG = MonitorManager.class.getSimpleName();
     private static volatile MonitorManager sInstance = null;
     private I007Result.Builder mBuilder = new I007Result.Builder();
-    private ConcurrentHashMap<Long, AbstractMonitor> mMonitors = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, BaseMonitor> mMonitors = new ConcurrentHashMap<>();
     private List<OnSceneListener> mListeners = new ArrayList<OnSceneListener>();
 
     private MonitorManager() {
@@ -80,27 +80,27 @@ public final class MonitorManager {
      */
     protected boolean init(long factors) {
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             if (monitor == null) {
-                monitor = AccessibilityAbstractMonitor.getInstance();
+                monitor = AccessibilityBaseMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_APP);
                 mMonitors.put(I007Manager.SCENE_FACTOR_APP, monitor);
             }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             if (monitor == null) {
-                monitor = LcdAbstractMonitor.getInstance();
+                monitor = LcdBaseMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_LCD);
                 mMonitors.put(I007Manager.SCENE_FACTOR_LCD, monitor);
             }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             if (monitor == null) {
-                monitor = NetworkAbstractMonitor.getInstance();
+                monitor = NetworkBaseMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_NET);
                 mMonitors.put(I007Manager.SCENE_FACTOR_NET, monitor);
             }
@@ -112,9 +112,9 @@ public final class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             if (monitor == null) {
-                monitor = BatteryAbstractMonitor.getInstance();
+                monitor = BatteryBaseMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_BATTERY);
                 mMonitors.put(I007Manager.SCENE_FACTOR_BATTERY, monitor);
             }
@@ -132,17 +132,17 @@ public final class MonitorManager {
         init(factors);
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             result = monitor.start();
         }
 
@@ -152,7 +152,7 @@ public final class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             result = monitor.start();
         }
         return result;
@@ -167,17 +167,17 @@ public final class MonitorManager {
     public boolean stop(long factors) {
         boolean result = false;
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             result = monitor.stop();
         }
 
@@ -187,7 +187,7 @@ public final class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
-            AbstractMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             result = monitor.stop();
         }
         return result;

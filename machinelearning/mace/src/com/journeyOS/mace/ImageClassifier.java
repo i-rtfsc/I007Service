@@ -21,20 +21,18 @@ import android.graphics.Bitmap;
 import android.os.Trace;
 import android.util.Pair;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.utils.FileUtils;
 import com.journeyOS.common.utils.JsonHelper;
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.AiResult;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.FloatTensor;
 import com.journeyOS.machinelearning.helpers.BitmapHelper;
 import com.journeyOS.machinelearning.helpers.TimeStat;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 图像分类
@@ -87,7 +85,7 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         int length = width * height;
-        if (mTensorSize != length) {
+        if (mWidth * mHeight != length) {
             SmartLog.w(TAG, "tensor width = [" + mWidth + "], tensor height = [" + mHeight + "], width = [" + width + "], height = [" + height + "]");
             return mBitmapHelper.resizeBitmap(bitmap, mWidth, mHeight);
         }
@@ -112,19 +110,17 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
             mTimeStat.stopInterval("i_tensor", 20, false);
         }
 
-        final Map<String, FloatTensor> inputs = new HashMap<>();
-        inputs.put(mInputLayer, mInputTensor);
-
         Trace.beginSection("runInference");
-        startInterval();
         if (mTimeStat != null) {
             mTimeStat.startInterval();
         }
+        startInterval();
         FloatTensor outputTensor = mNeuralNetwork.execute(mInputTensor);
+        long time = stopInterval("Run mace-model inference");
+
         if (mTimeStat != null) {
             mTimeStat.stopInterval("nn_exec ", 20, false);
         }
-        stopInterval("Run mace-model inference");
         Trace.endSection();
 
         final float[] array = new float[outputTensor.getSize()];
@@ -132,11 +128,13 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
 
         for (Pair<Integer, Float> pair : topK(TOP_K, array)) {
             String label = mImageClasses.get(pair.first);
-            float confidence = pair.second;
-            SmartLog.d(TAG, " label = [" + label + "], confidence = [" + confidence + "]");
+            float probability = pair.second;
+
+            SmartLog.d(TAG, " label = [" + label + "], probability = [" + probability + "]");
             results.add(new AiResult.Builder()
                     .setLabel(label)
-                    .setConfidence(confidence)
+                    .setProbability(probability)
+                    .setTime(time)
                     .build()
             );
         }

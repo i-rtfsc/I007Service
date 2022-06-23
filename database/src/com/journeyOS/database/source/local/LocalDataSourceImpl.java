@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.journeyOS.common.FileConfigConstant;
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.common.task.TaskManager;
 import com.journeyOS.common.utils.AESUtils;
 import com.journeyOS.common.utils.FileUtils;
@@ -36,6 +35,7 @@ import com.journeyOS.database.source.local.base.DBHelper;
 import com.journeyOS.database.source.local.base.I007Database;
 import com.journeyOS.database.source.local.setting.Setting;
 import com.journeyOS.database.source.local.setting.SettingDao;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.util.List;
 
@@ -94,7 +94,7 @@ public final class LocalDataSourceImpl implements LocalDataSource {
     private void initApp() {
         boolean init = getBoolean(DBConstant.Setting.APP_INIT, DBConstant.Setting.APP_INIT_DEFAULT);
         if (init) {
-            SmartLog.d(TAG, "app table has't been init");
+            SmartLog.d(TAG, "app table has been init");
             return;
         }
 

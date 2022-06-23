@@ -18,7 +18,7 @@ package com.journeyOS.framework.service;
 
 import android.os.IBinder;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.util.HashMap;
 import java.util.Map;

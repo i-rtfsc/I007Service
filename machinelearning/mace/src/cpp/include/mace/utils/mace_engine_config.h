@@ -23,83 +23,84 @@
 
 namespace mace {
 
-class MaceEngineCfgImpl {
- public:
-  MaceEngineCfgImpl();
-  ~MaceEngineCfgImpl() = default;
+    class MaceEngineCfgImpl {
+    public:
+        MaceEngineCfgImpl();
 
-  void SetRuntimeType(const RuntimeType runtime_type,
-                      const char *sub_graph_name);
+        ~MaceEngineCfgImpl() = default;
 
-  MaceStatus SetOpenclContext(std::shared_ptr<OpenclContext> context);
+        void SetRuntimeType(const RuntimeType runtime_type,
+                            const char *sub_graph_name);
 
-  MaceStatus SetGPUHints(GPUPerfHint perf_hint, GPUPriorityHint priority_hint);
+        MaceStatus SetOpenclContext(std::shared_ptr <OpenclContext> context);
 
-  MaceStatus SetCPUThreadPolicy(int num_threads_hint,
-                                CPUAffinityPolicy policy);
+        MaceStatus SetGPUHints(GPUPerfHint perf_hint, GPUPriorityHint priority_hint);
 
-  MaceStatus SetHexagonToUnsignedPD();
+        MaceStatus SetCPUThreadPolicy(int num_threads_hint,
+                                      CPUAffinityPolicy policy);
 
-  MaceStatus SetHexagonPower(HexagonNNCornerType corner,
-                             bool dcvs_enable,
-                             int latency);
+        MaceStatus SetHexagonToUnsignedPD();
 
-  MaceStatus SetQnnPerformance(HexagonPerformanceType type);
+        MaceStatus SetHexagonPower(HexagonNNCornerType corner,
+                                   bool dcvs_enable,
+                                   int latency);
 
-  MaceStatus SetAcceleratorCache(AcceleratorCachePolicy policy,
-                                 const std::string &binary_file,
-                                 const std::string &storage_file);
+        MaceStatus SetQnnPerformance(HexagonPerformanceType type);
 
-  MaceStatus SetAPUHints(uint8_t boost_hint,
-                         APUPreferenceHint preference_hint);
+        MaceStatus SetAcceleratorCache(AcceleratorCachePolicy policy,
+                                       const std::string &binary_file,
+                                       const std::string &storage_file);
 
-  int num_threads() const;
+        MaceStatus SetAPUHints(uint8_t boost_hint,
+                               APUPreferenceHint preference_hint);
 
-  CPUAffinityPolicy cpu_affinity_policy() const;
+        int num_threads() const;
 
-  std::shared_ptr<OpenclContext> opencl_context() const;
+        CPUAffinityPolicy cpu_affinity_policy() const;
 
-  GPUPriorityHint gpu_priority_hint() const;
+        std::shared_ptr <OpenclContext> opencl_context() const;
 
-  GPUPerfHint gpu_perf_hint() const;
+        GPUPriorityHint gpu_priority_hint() const;
 
-  HexagonNNCornerType hexagon_corner() const;
+        GPUPerfHint gpu_perf_hint() const;
 
-  bool hexagon_dcvs_enable() const;
+        HexagonNNCornerType hexagon_corner() const;
 
-  int hexagon_latency() const;
+        bool hexagon_dcvs_enable() const;
 
-  HexagonPerformanceType hexagon_performance() const;
+        int hexagon_latency() const;
 
-  AcceleratorCachePolicy accelerator_cache_policy() const;
+        HexagonPerformanceType hexagon_performance() const;
 
-  uint8_t apu_boost_hint() const;
+        AcceleratorCachePolicy accelerator_cache_policy() const;
 
-  APUPreferenceHint apu_preference_hint() const;
+        uint8_t apu_boost_hint() const;
 
-  std::string accelerator_binary_file() const;
+        APUPreferenceHint apu_preference_hint() const;
 
-  std::string accelerator_storage_file() const;
+        std::string accelerator_binary_file() const;
 
-  RuntimeType runtime_type(const std::string &sub_graph_name) const;
+        std::string accelerator_storage_file() const;
 
- private:
-  int num_threads_;
-  CPUAffinityPolicy cpu_affinity_policy_;
-  std::shared_ptr<OpenclContext> opencl_context_;
-  GPUPriorityHint gpu_priority_hint_;
-  GPUPerfHint gpu_perf_hint_;
-  HexagonNNCornerType hexagon_corner_;
-  bool hexagon_dcvs_enable_;
-  int hexagon_latency_;
-  HexagonPerformanceType hexagon_perf_;
-  AcceleratorCachePolicy accelerator_cache_policy_;
-  std::string accelerator_binary_file_;
-  std::string accelerator_storage_file_;
-  uint8_t apu_boost_hint_;
-  APUPreferenceHint apu_preference_hint_;
-  std::unordered_map<std::string, int> runtime_map_;
-};
+        RuntimeType runtime_type(const std::string &sub_graph_name) const;
+
+    private:
+        int num_threads_;
+        CPUAffinityPolicy cpu_affinity_policy_;
+        std::shared_ptr <OpenclContext> opencl_context_;
+        GPUPriorityHint gpu_priority_hint_;
+        GPUPerfHint gpu_perf_hint_;
+        HexagonNNCornerType hexagon_corner_;
+        bool hexagon_dcvs_enable_;
+        int hexagon_latency_;
+        HexagonPerformanceType hexagon_perf_;
+        AcceleratorCachePolicy accelerator_cache_policy_;
+        std::string accelerator_binary_file_;
+        std::string accelerator_storage_file_;
+        uint8_t apu_boost_hint_;
+        APUPreferenceHint apu_preference_hint_;
+        std::unordered_map<std::string, int> runtime_map_;
+    };
 
 }  // namespace mace
 

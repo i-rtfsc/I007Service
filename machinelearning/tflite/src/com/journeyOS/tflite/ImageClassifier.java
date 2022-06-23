@@ -25,6 +25,7 @@ import android.os.Trace;
 
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.AiResult;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 import org.tensorflow.lite.support.image.TensorImage;
@@ -86,7 +87,7 @@ public class ImageClassifier extends TfliteClassifier<Bitmap> {
         Trace.beginSection("runInference");
         startInterval();
         List<Classifications> classifications = mImageClassifier.classify(inputImage, imageOptions);
-        stopInterval("Run tf-lite-model inference");
+        long time = stopInterval("Run tf-lite-model inference");
         Trace.endSection();
 
         Trace.endSection();
@@ -94,11 +95,13 @@ public class ImageClassifier extends TfliteClassifier<Bitmap> {
         //top k
         List<AiResult> results = new ArrayList<>(TOP_K);
         for (Category category : classifications.get(0).getCategories()) {
-            String className = category.getLabel();
-            float score = category.getScore();
+            String label = category.getLabel();
+            float probability = category.getScore();
+            SmartLog.d(TAG, " label = [" + label + "], probability = [" + probability + "]");
             results.add(new AiResult.Builder()
-                    .setLabel(className)
-                    .setConfidence(score)
+                    .setLabel(label)
+                    .setProbability(probability)
+                    .setTime(time)
                     .build());
         }
 

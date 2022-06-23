@@ -21,7 +21,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;
 
-import com.journeyOS.common.SmartLog;
+import com.journeyOS.i007manager.SmartLog;
 
 import java.util.HashMap;
 import java.util.Map;

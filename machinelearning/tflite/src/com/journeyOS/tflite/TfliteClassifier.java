@@ -19,8 +19,8 @@ package com.journeyOS.tflite;
 import android.app.Application;
 import android.content.Context;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.Classifier;
 
 import org.tensorflow.lite.task.core.BaseOptions;

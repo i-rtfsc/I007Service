@@ -18,8 +18,8 @@ package com.journeyOS.snpe;
 
 import android.app.Application;
 
-import com.journeyOS.common.SmartLog;
 import com.journeyOS.i007manager.AiModel;
+import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.Classifier;
 import com.qualcomm.qti.snpe.FloatTensor;
 import com.qualcomm.qti.snpe.NeuralNetwork;
@@ -73,6 +73,8 @@ public abstract class SnpeClassifier<T> extends Classifier<T> {
                 mInputLayer = inputNames.iterator().next();
                 mOutputLayer = outputNames.iterator().next();
             }
+            SmartLog.d(TAG, "inputLayer = [" + mInputLayer + "]");
+            SmartLog.d(TAG, "outputLayer = [" + mOutputLayer + "]");
             startInterval();
             mInputTensor = mNeuralNetwork.createFloatTensor(mNeuralNetwork.getInputTensorsShapes().get(mInputLayer));
             stopInterval("create snpe tensor");
@@ -150,7 +152,7 @@ public abstract class SnpeClassifier<T> extends Classifier<T> {
             NeuralNetwork network = new SNPE.NeuralNetworkBuilder(application)
                     .setDebugEnabled(false)
                     .setModel(assetInputStream, assetInputStream.available())
-                    .setRuntimeOrder(selectedRuntime) // Runtime.DSP, Runtime.GPU_FLOAT16, Runtime.GPU, Runtime.CPU
+                    .setRuntimeOrder(selectedRuntime)
                     .setCpuFallbackEnabled(true)
 //                    .setPerformanceProfile(NeuralNetwork.PerformanceProfile.HIGH_PERFORMANCE)
                     .build();
