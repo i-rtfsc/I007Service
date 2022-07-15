@@ -20,6 +20,11 @@ import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.FloatTensor;
 import com.journeyOS.mace.core.NeuralNetwork;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author solo
  */
@@ -30,10 +35,9 @@ public class NativeNetwork implements NeuralNetwork {
     private String mInputTensorName;
     private String mOutputTensorName;
 
-    private long mNativeHandle = NativeMace.JNI_ERR;
+    private long mNativeMaceContext = NativeMace.JNI_ERR;
     private String mModelVersion;
 
-    private String mStorageDirectory;
     private String mOpenclCacheFullPath;
     private int mOpenclCacheReusePolicy;
 
@@ -47,10 +51,41 @@ public class NativeNetwork implements NeuralNetwork {
 
     private boolean isDebugEnabled;
 
-    public NativeNetwork(String storagePath, String openclCacheFullPath, int openclCacheReusePolicy,
-                         String modelName, Runtime runtime,
+    private boolean isFileModel = false;
+
+    /*---------------- file mace_file_model ----------------*/
+    private String mModelGraphFilePath;
+    private String mModelDataFilePath;
+    private String mStorageDirectory;
+
+    private Map<String, int[]> mInputTensorsShapes = new HashMap<>();
+    private Map<String, int[]> mOutputTensorsShapes = new HashMap<>();
+
+    private Map<String, FloatTensor> mInputTensors = new HashMap<>();
+    private Map<String, FloatTensor> mOutputTensors = new HashMap<>();
+    /*---------------- file mace_file_model ----------------*/
+
+
+    /**
+     * 构造函数（code模型）
+     *
+     * @param modelName              模型名字
+     * @param runtime                运行环境
+     * @param storagePath
+     * @param openclCacheFullPath
+     * @param openclCacheReusePolicy
+     * @param ompNumThreads          线程数量
+     * @param cpuPolicy              cpu调度
+     * @param gpuPerfHint            gpu性能
+     * @param gpuPriorityHint        gpu优先级
+     * @param debug                  是否打开log
+     */
+    public NativeNetwork(String modelName, Runtime runtime,
+                         String storagePath, String openclCacheFullPath, int openclCacheReusePolicy,
                          int ompNumThreads, CpuPolicy cpuPolicy, GpuPerformance gpuPerfHint, GpuPriority gpuPriorityHint,
                          boolean debug) {
+        SmartLog.d(TAG, "start mace code network");
+        this.isFileModel = false;
         this.mModelName = modelName;
         this.mRuntime = runtime;
         this.mStorageDirectory = storagePath;
@@ -62,18 +97,136 @@ public class NativeNetwork implements NeuralNetwork {
         this.mGpuPriority = gpuPriorityHint;
         this.isDebugEnabled = debug;
 
-        mModelVersion = NativeMace.nativeGetModelVersion(modelName);
-        mInputTensorName = NativeMace.nativeGetInputTensorName(mModelName);
-        mInputTensorShape = NativeMace.nativeGetInputTensorShape(mModelName);
-        mOutputTensorName = NativeMace.nativeGetOutputTensorName(mModelName);
-        mOutputTensorShape = NativeMace.nativeGetOutputTensorShape(mModelName);
+        NativeMace nativeMaceInfo = NativeMace.nativeGetMaceModelInfo(modelName);
 
-        mNativeHandle = NativeMace.nativeMaceCreateNetwork(mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy);
-        SmartLog.d(TAG, "create network, success = [" + (mNativeHandle == NativeMace.JNI_OK) + "]");
+        mModelVersion = nativeMaceInfo.getModelVersion();
 
-        if (mNativeHandle == NativeMace.JNI_OK) {
-            mNativeHandle = NativeMace.nativeMaceCreateEngine(mModelName, mRuntime.name(), mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal);
-            SmartLog.d(TAG, "create engine, success = [" + (mNativeHandle == NativeMace.JNI_OK) + "]");
+        mInputTensorsShapes = nativeMaceInfo.getInputTensorsShapes();
+        mInputTensorName = mInputTensorsShapes.keySet().iterator().next();
+        mInputTensorShape = mInputTensorsShapes.get(mInputTensorName);
+
+        mOutputTensorsShapes = nativeMaceInfo.getOutputTensorsShapes();
+        mOutputTensorName = mOutputTensorsShapes.keySet().iterator().next();
+        mOutputTensorShape = mOutputTensorsShapes.get(mOutputTensorName);
+
+        mNativeMaceContext = NativeMace.nativeMaceCodeCreateNetworkEngine(mModelName, mRuntime.name(),
+                mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy,
+                mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal);
+        SmartLog.d(TAG, "create mace code network engine, native mace context = [" + mNativeMaceContext + "]");
+    }
+
+    /**
+     * 构造函数（file模型）
+     *
+     * @param modelName           模型名字
+     * @param runtime             运行环境
+     * @param modelGraphFilePath  模型graph文件
+     * @param modelDataFilePath   模型data文件
+     * @param storageDirectory    storage目录
+     * @param ompNumThreads       线程数量
+     * @param cpuPolicy           cpu调度
+     * @param gpuPerfHint         gpu性能
+     * @param gpuPriorityHint     gpu优先级
+     * @param inputTensorsShapes  输入的shape
+     * @param outputTensorsShapes 输出的shape
+     * @param debug               是否打开log
+     */
+    public NativeNetwork(String modelName, Runtime runtime,
+                         String modelGraphFilePath, String modelDataFilePath, String storageDirectory,
+                         int ompNumThreads, CpuPolicy cpuPolicy, GpuPerformance gpuPerfHint, GpuPriority gpuPriorityHint,
+                         Map<String, int[]> inputTensorsShapes, Map<String, int[]> outputTensorsShapes,
+                         boolean debug) {
+        SmartLog.d(TAG, "start mace file network");
+        this.isFileModel = true;
+        this.mModelName = modelName;
+        this.mRuntime = runtime;
+
+        this.mModelGraphFilePath = modelGraphFilePath;
+        this.mModelDataFilePath = modelDataFilePath;
+        this.mStorageDirectory = storageDirectory;
+
+        this.mThreads = ompNumThreads;
+        this.mCpuPolicy = cpuPolicy;
+        this.mGpuPerformance = gpuPerfHint;
+        this.mGpuPriority = gpuPriorityHint;
+
+        this.mInputTensorsShapes = inputTensorsShapes;
+        this.mOutputTensorsShapes = outputTensorsShapes;
+
+        this.isDebugEnabled = debug;
+
+        mNativeMaceContext = NativeMace.nativeMaceFileCreateNetworkEngine(mModelName, mRuntime.name(),
+                mModelGraphFilePath, mModelDataFilePath, mStorageDirectory,
+                mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal,
+                mInputTensorsShapes, mOutputTensorsShapes);
+        SmartLog.d(TAG, "create mace file network engine, native mace context = [" + mNativeMaceContext + "]");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, int[]> getInputTensorsShapes() {
+        return mInputTensorsShapes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, int[]> getOutputTensorsShapes() {
+        return mOutputTensorsShapes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getInputTensorsNames() {
+        Set<String> inputTensorsNames = new HashSet<>();
+        for (String key : mInputTensorsShapes.keySet()) {
+            inputTensorsNames.add(key);
+        }
+        return inputTensorsNames;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getOutputTensorsNames() {
+        Set<String> outputTensorsNames = new HashSet<>();
+        for (String key : mOutputTensorsShapes.keySet()) {
+            outputTensorsNames.add(key);
+        }
+        return outputTensorsNames;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, FloatTensor> execute(Map<String, FloatTensor> map) {
+        if (mNativeMaceContext == NativeMace.JNI_ERR) {
+            SmartLog.e(TAG, "execute fail with mNativeHandle == null");
+            return null;
+        }
+        if (isFileModel) {
+            mInputTensors.clear();
+            mOutputTensors.clear();
+            for (String key : map.keySet()) {
+                mInputTensors.put(key, map.get(key));
+            }
+            boolean ret = NativeMace.nativeMaceFileExecute(mNativeMaceContext, mInputTensors, mOutputTensors);
+            return ret ? mOutputTensors : null;
+        } else {
+            FloatTensor inputTensor = map.get(mInputTensorName);
+            float[] output = NativeMace.nativeMaceCodeExecute(mNativeMaceContext, new float[inputTensor.getSize()]);
+            FloatTensor outputTensor = new NativeFloatTensor(mOutputTensorShape);
+            outputTensor.write(output, 0, output.length);
+            mOutputTensors.put(mOutputTensorName, outputTensor);
+
+            return output != null ? mOutputTensors : null;
         }
     }
 
@@ -81,32 +234,8 @@ public class NativeNetwork implements NeuralNetwork {
      * {@inheritDoc}
      */
     @Override
-    public int[] getInputTensorShape() {
-        return mInputTensorShape;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int[] getOutputTensorsShapes() {
-        return mOutputTensorShape;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getInputTensorName() {
-        return mInputTensorName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getOutputTensorName() {
-        return mOutputTensorName;
+    public String getModelVersion() {
+        return mModelVersion;
     }
 
     /**
@@ -121,33 +250,18 @@ public class NativeNetwork implements NeuralNetwork {
      * {@inheritDoc}
      */
     @Override
-    public FloatTensor execute(FloatTensor inputTensor) {
-        if (mNativeHandle == NativeMace.JNI_ERR) {
-            SmartLog.e(TAG, "execute fail with mNativeHandle == null");
-            return null;
-        }
-
-        float[] output = NativeMace.nativeMaceExecute(new float[inputTensor.getSize()]);
-        FloatTensor outputTensor = new FloatTensor(mOutputTensorShape);
-        outputTensor.write(output, 0, output.length);
-
-        return output != null ? outputTensor : null;
-    }
-
-
-    @Override
-    public String getModelVersion() {
-        return mModelVersion;
-    }
-
-    @Override
     public void release() {
-        //TODO
+        if (isFileModel) {
+            NativeMace.nativeMaceFileRelease(mNativeMaceContext);
+        } else {
+            NativeMace.nativeMaceCodeRelease(mNativeMaceContext);
+        }
+        mNativeMaceContext = NativeMace.JNI_ERR;
     }
 
     @Override
     public FloatTensor createFloatTensor(int[] tensors) {
-        return new FloatTensor(tensors);
+        return new NativeFloatTensor(tensors);
     }
 
 }

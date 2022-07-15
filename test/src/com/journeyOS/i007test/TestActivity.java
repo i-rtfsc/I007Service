@@ -66,35 +66,39 @@ public class TestActivity extends AppCompatActivity implements ServerLifecycle {
         mContext = getApplicationContext();
         mResultTextView = findViewById(R.id.tv_result);
         mImageView = findViewById(R.id.image);
-        I007Core.getCore().registerListener(this);
-        I007Core.getCore().startup(this);
 
-        mModel = AiModelBuilder.ImageClassification.getMace(AiModelBuilder.ImageClassification.MaceModel.MOBILENET_V1);
-        SmartLog.d(TAG, "model = [" + mModel.toString() + "]");
-        try {
-            bitmap = BitmapFactory.decodeStream(getAssets().open("fan.png"));
-            bitmap = resizeBitmap(bitmap, 224, 224);
-            bitmap = compressQuality(bitmap);
+        if (supportML) {
+            I007Core.getCore().registerListener(this);
+            I007Core.getCore().startup(this);
 
-            mImageView.setImageBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
+            mModel = AiModelBuilder.ImageClassification.getMace(AiModelBuilder.ImageClassification.MaceModel.MOBILENET_V1);
+            SmartLog.d(TAG, "model = [" + mModel.toString() + "]");
+            try {
+                bitmap = BitmapFactory.decodeStream(getAssets().open("fan.png"));
+                bitmap = resizeBitmap(bitmap, 224, 224);
+                bitmap = compressQuality(bitmap);
+
+                mImageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         checkCameraPermission();
 
-
         Button classifyButton = findViewById(R.id.button);
         classifyButton.setOnClickListener(
                 (View v) -> {
-                    classify(bitmap);
+                    if (supportML) {
+                        classify(bitmap);
+                    }
                 });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mAm != null) {
+        if (supportML && mAm != null) {
             mAm.initModel(mModel);
             mAm.loadModel(mModel);
         }
@@ -103,10 +107,34 @@ public class TestActivity extends AppCompatActivity implements ServerLifecycle {
     @Override
     protected void onStop() {
         super.onStop();
-        I007Core.getCore().unregisterListener(this);
-        if (mAm != null) {
+        if (supportML) {
+            I007Core.getCore().unregisterListener(this);
+        }
+        if (supportML && mAm != null) {
             mAm.unloadModel(mModel);
         }
+    }
+
+    @Override
+    public void onStarted() {
+        SmartLog.d(TAG, "onStarted() called");
+        mAm = AiManager.getInstance();
+        mAm.initModel(mModel);
+        mAm.loadModel(mModel);
+    }
+
+    @Override
+    public void onDied() {
+        SmartLog.d(TAG, "onDied() called");
+    }
+
+    boolean checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -200,27 +228,5 @@ public class TestActivity extends AppCompatActivity implements ServerLifecycle {
                     // Append the result to the UI.
                     mResultTextView.append(textToShow);
                 });
-    }
-
-    boolean checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onStarted() {
-        SmartLog.d(TAG, "onStarted() called");
-        mAm = AiManager.getInstance();
-        mAm.initModel(mModel);
-        mAm.loadModel(mModel);
-    }
-
-    @Override
-    public void onDied() {
-        SmartLog.d(TAG, "onDied() called");
     }
 }

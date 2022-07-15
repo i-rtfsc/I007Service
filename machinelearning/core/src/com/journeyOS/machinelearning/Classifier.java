@@ -43,11 +43,12 @@ public abstract class Classifier<T> {
      */
     public final synchronized boolean loadModel(Application application, AiModel aiModel) {
         if (mStart) {
-            SmartLog.d(TAG, this.TAG + " is already started");
+            SmartLog.d(TAG, " is already started");
         } else {
             TaskManager.getDefault().submit(new Runnable() {
                 @Override
                 public void run() {
+                    SmartLog.d(TAG, " start");
                     mStart = onStart(application, aiModel);
                     if (mStart) {
                         /**
@@ -81,8 +82,9 @@ public abstract class Classifier<T> {
     public final synchronized boolean unloadModel() {
         boolean ret = false;
         if (!mStart) {
-            SmartLog.d(TAG, this.TAG + " is already stopped");
+            SmartLog.d(TAG, " is already stopped");
         } else {
+            SmartLog.d(TAG, " stop");
             ret = onStop();
             mStart = false;
         }

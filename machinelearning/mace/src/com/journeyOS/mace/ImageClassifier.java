@@ -32,7 +32,9 @@ import com.journeyOS.machinelearning.helpers.TimeStat;
 import com.journeyOS.machinelearning.tasks.TaskResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 图像分类
@@ -115,28 +117,37 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
             mTimeStat.startInterval();
         }
         startInterval();
-        FloatTensor outputTensor = mNeuralNetwork.execute(mInputTensor);
-        long time = stopInterval("Run mace-model inference");
+
+        final Map<String, FloatTensor> inputs = new HashMap<>();
+        inputs.put(mInputLayer, mInputTensor);
+
+        final Map<String, FloatTensor> outputs = mNeuralNetwork.execute(inputs);
+        long time = stopInterval("Run mace-mace_file_model inference");
 
         if (mTimeStat != null) {
             mTimeStat.stopInterval("nn_exec ", 20, false);
         }
         Trace.endSection();
 
-        final float[] array = new float[outputTensor.getSize()];
-        outputTensor.read(array, 0, array.length);
+        for (Map.Entry<String, FloatTensor> output : outputs.entrySet()) {
+            if (output.getKey().equals(mOutputLayer)) {
+                FloatTensor outputTensor = output.getValue();
 
-        for (Pair<Integer, Float> pair : topK(TOP_K, array)) {
-            String label = mImageClasses.get(pair.first);
-            float probability = pair.second;
+                final float[] array = new float[outputTensor.getSize()];
+                outputTensor.read(array, 0, array.length);
 
-            SmartLog.d(TAG, " label = [" + label + "], probability = [" + probability + "]");
-            results.add(new AiResult.Builder()
-                    .setLabel(label)
-                    .setProbability(probability)
-                    .setTime(time)
-                    .build()
-            );
+                for (Pair<Integer, Float> pair : topK(TOP_K, array)) {
+                    String label = mImageClasses.get(pair.first);
+                    float probability = pair.second;
+                    SmartLog.d(TAG, " label = [" + label + "], probability = [" + probability + "]");
+                    results.add(new AiResult.Builder()
+                            .setLabel(label)
+                            .setProbability(probability)
+                            .setTime(time)
+                            .build()
+                    );
+                }
+            }
         }
 
         return results;

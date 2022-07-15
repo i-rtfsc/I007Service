@@ -52,3 +52,7 @@
 #实体类不参与混淆
 -keep class com.journeyOS.database.source.local.app.App { *; }
 -keep class com.journeyOS.database.source.local.setting.Setting { *; }
+
+
+#jni 不参与混淆
+-keep class com.journeyOS.mace.internal.*

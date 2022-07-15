@@ -109,11 +109,11 @@ namespace mace {
 
 /// \brief Create MaceEngine from code
 ///
-/// Create MaceEngine object based on model graph code and model data file or
-/// model data code.
+/// Create MaceEngine object based on mace_file_model graph code and mace_file_model data file or
+/// mace_file_model data code.
 ///
-/// \param model_name[in]: the name of model you want to use.
-/// \param model_data_file[in]: the path of model data file,
+/// \param model_name[in]: the name of mace_file_model you want to use.
+/// \param model_data_file[in]: the path of mace_file_model data file,
 ///        if model_data_format is code, just pass empty string("")
 /// \param input_nodes[in]: the array of input nodes' name
 /// \param output_nodes[in]: the array of output nodes' name
@@ -135,7 +135,7 @@ namespace mace {
             const MaceEngineConfig &config,
             std::shared_ptr<MaceEngine> *engine,
             MaceEngine *tutor = nullptr) {
-        // load model
+        // load mace_file_model
         if (engine == nullptr) {
             return MaceStatus::MACE_INVALID_ARGS;
         }
@@ -197,13 +197,13 @@ namespace mace {
 
 /// \brief Create MaceEngine from code
 ///
-/// Create MaceEngine object based on model graph code and model data code
+/// Create MaceEngine object based on mace_file_model graph code and mace_file_model data code
 ///
-/// \param model_name[in]: the name of model you want to use.
-/// \param model_weights_data[in]: the content of model weights data, the
+/// \param model_name[in]: the name of mace_file_model you want to use.
+/// \param model_weights_data[in]: the content of mace_file_model weights data, the
 ///                                returned engine will refer to this buffer
 ///                                if model_data_unused return false.
-/// \param model_weights_data_size[in]: the size of model weights data
+/// \param model_weights_data_size[in]: the size of mace_file_model weights data
 /// \param input_nodes[in]: the array of input nodes' name
 /// \param output_nodes[in]: the array of output nodes' name
 /// \param config[in]: configurations for MaceEngine.
@@ -228,7 +228,7 @@ namespace mace {
             bool *model_data_unused = nullptr,
             MaceEngine *tutor = nullptr,
             bool fake_warmup = false) {
-        // load model
+        // load mace_file_model
         if (engine == nullptr) {
             return MaceStatus::MACE_INVALID_ARGS;
         }

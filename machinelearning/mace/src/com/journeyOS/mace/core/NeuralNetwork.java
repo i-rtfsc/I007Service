@@ -16,46 +16,13 @@
 
 package com.journeyOS.mace.core;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author solo
  */
 public interface NeuralNetwork {
-
-    /**
-     * 获取输入的shape
-     * 如果有多输入的模型可以模仿高通 snpe
-     * Map<String,int[]> getInputTensorsShapes();
-     *
-     * @return int数组
-     */
-    int[] getInputTensorShape();
-
-    /**
-     * 获取输出的shape
-     * 如果有多输出的模型可以模仿高通 snpe
-     * getOutputTensorsShapes
-     *
-     * @return int数组
-     */
-    int[] getOutputTensorsShapes();
-
-    /**
-     * 获取输入的tensor name
-     * 如果有多输入的模型可以模仿高通 snpe
-     * Set<String> getInputTensorsNames();
-     *
-     * @return 字符串tensor name
-     */
-    String getInputTensorName();
-
-    /**
-     * 获取输出的tensor name
-     * 如果有多输出的模型可以模仿高通 snpe
-     * Set<String> getOutputTensorsNames();
-     *
-     * @return 字符串tensor name
-     */
-    String getOutputTensorName();
 
     /**
      * 获取当前模型的版本
@@ -72,13 +39,44 @@ public interface NeuralNetwork {
     NeuralNetwork.Runtime getRuntime();
 
     /**
-     * 推演
-     * 如果有多输入输出的模型可以模仿高通 snpe
-     * Map<String, FloatTensor> execute(Map<String, FloatTensor> map);
+     * 获取输入的shape
+     * 模仿高通 snpe 写法
      *
-     * @return FloatTensor
+     * @return map[输入名字, int数组]
      */
-    FloatTensor execute(FloatTensor inputTensor);
+    Map<String, int[]> getInputTensorsShapes();
+
+    /**
+     * 获取输出的shape
+     * 模仿高通 snpe 写法
+     *
+     * @return map[输出名字, int数组]
+     */
+    Map<String, int[]> getOutputTensorsShapes();
+
+    /**
+     * 获取输入的tensor name
+     * 模仿高通 snpe
+     *
+     * @return Set
+     */
+    Set<String> getInputTensorsNames();
+
+    /**
+     * 获取输出的tensor name
+     * 模仿高通 snpe
+     *
+     * @return Set
+     */
+    Set<String> getOutputTensorsNames();
+
+    /**
+     * 推演
+     * 模仿高通 snpe
+     *
+     * @return Map
+     */
+    Map<String, FloatTensor> execute(Map<String, FloatTensor> map);
 
     /**
      * 释放模型

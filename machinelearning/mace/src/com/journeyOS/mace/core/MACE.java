@@ -18,6 +18,7 @@ package com.journeyOS.mace.core;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.NeuralNetwork.Runtime;
@@ -25,6 +26,9 @@ import com.journeyOS.mace.internal.NativeMace;
 import com.journeyOS.mace.internal.NativeNetwork;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author solo
@@ -96,11 +100,19 @@ public class MACE {
         private NeuralNetwork.GpuPerformance mGpuPerformance = NeuralNetwork.GpuPerformance.HIGH;
         private NeuralNetwork.GpuPriority mGpuPriority = NeuralNetwork.GpuPriority.HIGH;
 
-        private String mStorageDirectory = "";
         private String mOpenclCacheFullPath = "";
         private int mOpenclCacheReusePolicy = 1;
 
         private boolean isDebugEnabled;
+
+        /*---------------- file mace_file_model ----------------*/
+        private String mModelGraphFile = "";
+        private String mModelDataFile = "";
+        private String mStorageDirectory = "";
+
+        private Map<String, int[]> mInputDimensions = new HashMap<>();
+        private Map<String, int[]> mOutputDimensions = new HashMap<>();
+        /*---------------- file mace_file_model ----------------*/
 
         /**
          * 构造函数
@@ -194,26 +206,77 @@ public class MACE {
         }
 
         /**
-         * 如果是运行环境是GPU，设置storage和openCL cache后会crash
-         * 已经给读写权限的情况下，错误提示是文件无法读写。
-         * 暂时找不到原因，所以此接口先不使用（改成private）
-         * 后续新增mace file功能就把这个改成传模型地址
+         * 设置输入Layers
          *
-         * @param storageDirectory
+         * @param dimensions 输入dim
          * @return NeuralNetworkBuilder
          */
-        @Deprecated
-        private NeuralNetworkBuilder setStorageDirectory(String storageDirectory) {
+        public NeuralNetworkBuilder setInputLayers(Map<String, int[]> dimensions) {
+            for (String key : dimensions.keySet()) {
+                mInputDimensions.put(key, dimensions.get(key));
+            }
+            return this;
+        }
+
+        /**
+         * 设置输出Layers
+         *
+         * @param dimensions 输出dim
+         * @return NeuralNetworkBuilder
+         */
+        public NeuralNetworkBuilder setOutputLayers(Map<String, int[]> dimensions) {
+            for (String key : dimensions.keySet()) {
+                mOutputDimensions.put(key, dimensions.get(key));
+            }
+            return this;
+        }
+
+        /**
+         * 设置模型graph文件
+         *
+         * @param filePath 模型graph文件
+         * @return NeuralNetworkBuilder
+         * @throws java.io.IOException
+         */
+        public NeuralNetworkBuilder setModelGraph(String filePath) throws java.io.IOException {
+            File file = new File(filePath);
+            if (file.exists() || file.canRead()) {
+                this.mModelGraphFile = filePath;
+            } else {
+                throw new IOException("setModelGraph file not exist : " + file.getPath() + " or can not access");
+            }
+            return this;
+        }
+
+        /**
+         * 设置模型data文件
+         *
+         * @param filePath 模型data文件
+         * @return NeuralNetworkBuilder
+         * @throws java.io.IOException
+         */
+        public NeuralNetworkBuilder setModelData(String filePath) throws java.io.IOException {
+            File file = new File(filePath);
+            if (file.exists() || file.canRead()) {
+                this.mModelDataFile = filePath;
+            } else {
+                throw new IOException("setModelData file not exist : " + file.getPath() + " or can not access");
+            }
+            return this;
+        }
+
+        /**
+         * 设置 storage目录
+         *
+         * @param storageDirectory storage目录
+         * @return NeuralNetworkBuilder
+         */
+        public NeuralNetworkBuilder setStorageDirectory(String storageDirectory) {
             File directory = new File(storageDirectory);
             if (!directory.exists()) {
                 directory.mkdirs();
             }
             mStorageDirectory = storageDirectory;
-
-            /**
-             * storage path will be replaced by openCL cache full path in the future
-             */
-            mOpenclCacheFullPath = mStorageDirectory + File.separator + "mace_cl_compiled_program.bin";
             return this;
         }
 
@@ -231,10 +294,24 @@ public class MACE {
                     throw new IllegalArgumentException("file : " + mStorageDirectory + " could not read");
                 }
             }
+            NeuralNetwork neuralNetwork = null;
 
-            NeuralNetwork neuralNetwork = new NativeNetwork(mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy,
-                    mModelName, mPreferRuntime,
-                    mThreads, mCpuPolicy, mGpuPerformance, mGpuPriority, isDebugEnabled);
+            /**
+             * code模型还是file模型
+             */
+            if (TextUtils.isEmpty(mModelDataFile)) {
+                neuralNetwork = new NativeNetwork(mModelName, mPreferRuntime,
+                        mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy,
+                        mThreads, mCpuPolicy, mGpuPerformance, mGpuPriority,
+                        isDebugEnabled);
+            } else {
+                neuralNetwork = new NativeNetwork(mModelName, mPreferRuntime,
+                        mModelGraphFile, mModelDataFile, mStorageDirectory,
+                        mThreads, mCpuPolicy, mGpuPerformance, mGpuPriority,
+                        mInputDimensions, mOutputDimensions,
+                        isDebugEnabled);
+            }
+
             return neuralNetwork;
         }
     }

@@ -20,51 +20,36 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import java.util.Map;
+
 /**
  * 模型的信息
  *
  * @author solo
  */
 public class AiModel implements Parcelable {
+
     /**
      * Creator
      */
-    public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public AiModel createFromParcel(Parcel in) {
-            return new AiModel(in);
-        }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public AiModel[] newArray(int size) {
-            return new AiModel[size];
-        }
-    };
+
     private static final String TAG = AiModel.class.getSimpleName();
     /**
      * 模型名字
      * 如"text_classifier"
      */
     private String name;
-
     /**
      * 模型文件名
      * 如"text_classifier.tflite"
      */
     private String fileName;
-
     /**
      * 词汇文件名
      * 如"vocab.txt"
      */
     private String configName = Config.DEFAULT;
-
     /**
      * 何种模型
      * 如snpe、mace、tflite、ptl
@@ -80,23 +65,54 @@ public class AiModel implements Parcelable {
      * 如assets目录、sdcard目录
      */
     private int storage = Storage.UNKNOWN;
+    /**
+     * mace模型graph文件
+     */
+    private String graphPath = "";
+    /**
+     * mace模型data文件
+     */
+    private String dataPath = "";
+    /**
+     * mace模型storage目录
+     */
+    private String storagePath = "";
+    /**
+     * 输入shapes
+     */
+    private Map<String, int[]> inputTensorsShapes;
+    /**
+     * 输出shapes
+     */
+    private Map<String, int[]> outputTensorsShapes;
 
     /**
-     * @param name      模型名字
-     * @param fileName  模型文件名
-     * @param vocabName 词汇文件名
-     * @param graph     何种模型
-     * @param runtime   模型跑在什么设备上
-     * @param storage   模型存在何处
+     * @param name                模型名字
+     * @param fileName            模型文件名
+     * @param configName          配置（词汇）文件名
+     * @param graph               何种模型
+     * @param runtime             模型跑在什么设备上
+     * @param storage             模型存在何处
+     * @param graphPath           mace模型graph文件
+     * @param dataPath            mace模型data文件
+     * @param storagePath         mace模型storage目录
+     * @param inputTensorsShapes  输入shapes
+     * @param outputTensorsShapes 输出shapes
      */
-    public AiModel(String name, String fileName, String vocabName, String graph, String runtime, int storage) {
+    public AiModel(String name, String fileName, String configName, String graph, String runtime, int storage, String graphPath, String dataPath, String storagePath, Map<String, int[]> inputTensorsShapes, Map<String, int[]> outputTensorsShapes) {
         this.name = name;
         this.fileName = fileName;
-        this.configName = vocabName;
+        this.configName = configName;
         this.graph = graph;
         this.runtime = runtime;
         this.storage = storage;
+        this.graphPath = graphPath;
+        this.dataPath = dataPath;
+        this.storagePath = storagePath;
+        this.inputTensorsShapes = inputTensorsShapes;
+        this.outputTensorsShapes = outputTensorsShapes;
     }
+
 
     protected AiModel(Parcel in) {
         name = in.readString();
@@ -105,11 +121,11 @@ public class AiModel implements Parcelable {
         graph = in.readString();
         runtime = in.readString();
         storage = in.readInt();
+        graphPath = in.readString();
+        dataPath = in.readString();
+        storagePath = in.readString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
@@ -118,15 +134,27 @@ public class AiModel implements Parcelable {
         dest.writeString(graph);
         dest.writeString(runtime);
         dest.writeInt(storage);
+        dest.writeString(graphPath);
+        dest.writeString(dataPath);
+        dest.writeString(storagePath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int describeContents() {
         return 0;
     }
+
+    public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
+        @Override
+        public AiModel createFromParcel(Parcel in) {
+            return new AiModel(in);
+        }
+
+        @Override
+        public AiModel[] newArray(int size) {
+            return new AiModel[size];
+        }
+    };
 
     /**
      * 获取模型名字
@@ -189,6 +217,51 @@ public class AiModel implements Parcelable {
      */
     public int getStorage() {
         return storage;
+    }
+
+    /**
+     * 获取mace模型graph文件
+     *
+     * @return mace模型graph文件
+     */
+    public String getMaceFileModelGraph() {
+        return graphPath;
+    }
+
+    /**
+     * 获取mace模型data文件
+     *
+     * @return mace模型data文件
+     */
+    public String getMaceFileModelData() {
+        return dataPath;
+    }
+
+    /**
+     * 获取mace模型主目录
+     *
+     * @return mace模型主目录
+     */
+    public String getMaceFileModelStorage() {
+        return storagePath;
+    }
+
+    /**
+     * 获取 输入shapes
+     *
+     * @return 输入shapes
+     */
+    public Map<String, int[]> getInputTensorsShapes() {
+        return inputTensorsShapes;
+    }
+
+    /**
+     * 获取 输出shapes
+     *
+     * @return 输出shapes
+     */
+    public Map<String, int[]> getOutputTensorsShapes() {
+        return outputTensorsShapes;
     }
 
     /**
@@ -333,6 +406,22 @@ public class AiModel implements Parcelable {
         private String runtime = Runtime.CPU;
         private int storage = Storage.ASSETS;
 
+        Map<String, int[]> inputTensorsShapes;
+        Map<String, int[]> outputTensorsShapes;
+
+        /**
+         * mace模型graph文件
+         */
+        private String graphPath = "";
+        /**
+         * mace模型data文件
+         */
+        private String dataPath = "";
+        /**
+         * mace模型storage目录
+         */
+        private String storagePath = "";
+
         /**
          * 设置模型名字
          *
@@ -400,6 +489,64 @@ public class AiModel implements Parcelable {
         }
 
         /**
+         * 设置mace模型graph文件
+         * mace file 模型才需要设置
+         *
+         * @param graphPath mace模型graph文件
+         * @return Builder
+         */
+        public Builder setMaceFileModelGraph(String graphPath) {
+            this.graphPath = graphPath;
+            return this;
+        }
+
+        /**
+         * 设置mace模型data文件
+         * mace file 模型才需要设置
+         *
+         * @param dataPath mace模型data文件
+         * @return Builder
+         */
+        public Builder setMaceFileModelData(String dataPath) {
+            this.dataPath = dataPath;
+            return this;
+        }
+
+        /**
+         * 设置mace模型storage目录
+         * mace file 模型才需要设置
+         *
+         * @param storagePath mace模型storage目录
+         * @return Builder
+         */
+        public Builder setMaceFileModelStorageDirectory(String storagePath) {
+            this.storagePath = storagePath;
+            return this;
+        }
+
+        /**
+         * 设置 输入shapes
+         *
+         * @param inputTensorsShapes 输入shapes
+         * @return Builder
+         */
+        public Builder setInputTensorsShapes(Map<String, int[]> inputTensorsShapes) {
+            this.inputTensorsShapes = inputTensorsShapes;
+            return this;
+        }
+
+        /**
+         * 设置 输出shapes
+         *
+         * @param outputTensorsShapes 输出shapes
+         * @return Builder
+         */
+        public Builder setOutputTensorsShapes(Map<String, int[]> outputTensorsShapes) {
+            this.outputTensorsShapes = outputTensorsShapes;
+            return this;
+        }
+
+        /**
          * 构建
          *
          * @return ModelInfo
@@ -426,7 +573,7 @@ public class AiModel implements Parcelable {
                 throw new IllegalStateException("graph  was not null");
             }
 
-            return new AiModel(name, fileName, configName, graph, runtime, storage);
+            return new AiModel(name, fileName, configName, graph, runtime, storage, graphPath, dataPath, storagePath, inputTensorsShapes, outputTensorsShapes);
         }
     }
 

@@ -67,7 +67,7 @@ public class AiImageActivity extends AppCompatActivity {
         mImageView = findViewById(R.id.image);
 
         mModel = AiModelBuilder.ImageClassification.getMace(AiModelBuilder.ImageClassification.MaceModel.MOBILENET_V1);
-        SmartLog.d(TAG, "model = [" + mModel.toString() + "]");
+        SmartLog.d(TAG, "mace_file_model = [" + mModel.toString() + "]");
         try {
             bitmap = BitmapFactory.decodeStream(getAssets().open("fan.jpg"));
             mImageView.setImageBitmap(bitmap);

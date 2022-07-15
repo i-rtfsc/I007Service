@@ -39,7 +39,7 @@ import com.journeyOS.i007manager.SmartLog;
  * @author solo
  */
 public class DebugActivity extends AppCompatActivity {
-    private static final String TAG = "solo-debug-Activity";
+    private static final String TAG = DebugActivity.class.getSimpleName();
     private LinearLayout mLayout;
     private Context mContext;
 

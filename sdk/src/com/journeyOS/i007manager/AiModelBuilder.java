@@ -16,6 +16,9 @@
 
 package com.journeyOS.i007manager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author solo
  */
@@ -37,7 +40,6 @@ public class AiModelBuilder {
                     .build();
 
         }
-
     }
 
     public static class ImageClassification {
@@ -62,7 +64,6 @@ public class AiModelBuilder {
 
             return builder.build();
         }
-
 
         /**
          * 生成 pytorch 图像分类模型
@@ -94,7 +95,6 @@ public class AiModelBuilder {
                     .build();
         }
 
-
         /**
          * 生成 mace 图像分类模型
          *
@@ -102,9 +102,29 @@ public class AiModelBuilder {
          * @return 图像分类模型
          */
         public static AiModel getMace(MaceModel maceModel) {
+            return getMaceCodeModel(maceModel);
+        }
+
+        /**
+         * 生成 mace 图像分类模型
+         *
+         * @param maceModel mace model(enum)
+         * @param fileModel code模型 还是 文件模型
+         * @return 图像分类模型
+         */
+        public static AiModel getMace(MaceModel maceModel, boolean fileModel) {
+            if (fileModel) {
+                return getMaceFileModel(maceModel);
+            } else {
+                return getMaceCodeModel(maceModel);
+            }
+        }
+
+        private static AiModel getMaceCodeModel(MaceModel maceModel) {
             AiModel.Builder builder = new AiModel.Builder();
             builder.setName(AiModel.Model.IMAGE_CLASSIFICATION);
             builder.setConfigName("mobilenet.json");
+
             builder.setGraph(AiModel.Graph.MACE);
             builder.setFileName(maceModel.ordinal);
 
@@ -116,6 +136,34 @@ public class AiModelBuilder {
                 case MOBILENET_V1_QUANT:
                 case MOBILENET_V2_QUANT:
                     builder.setRuntime(AiModel.Runtime.CPU);
+                    break;
+                default:
+                    break;
+            }
+
+            return builder.build();
+        }
+
+        private static AiModel getMaceFileModel(MaceModel maceModel) {
+            AiModel.Builder builder = new AiModel.Builder();
+            builder.setName(AiModel.Model.IMAGE_CLASSIFICATION);
+            builder.setConfigName("mobilenet.json");
+            builder.setGraph(AiModel.Graph.MACE);
+            builder.setFileName(maceModel.ordinal);
+
+            switch (maceModel) {
+                case MOBILENET_V1:
+                    builder.setRuntime(AiModel.Runtime.GPU);
+                    builder.setMaceFileModelData("/sdcard/mobilenet_v1/mobilenet_v1.data");
+                    builder.setMaceFileModelGraph("/sdcard/mobilenet_v1/mobilenet_v1.pb");
+                    builder.setMaceFileModelStorageDirectory("/sdcard/mobilenet_v1");
+                    Map<String, int[]> inputTensorsShapes = new HashMap<>();
+                    inputTensorsShapes.put("input", new int[]{1, 224, 224, 3});
+                    builder.setInputTensorsShapes(inputTensorsShapes);
+                    Map<String, int[]> outputTensorsShapes = new HashMap<>();
+                    outputTensorsShapes.put("MobilenetV1/Predictions/Reshape_1", new int[]{1, 1001});
+                    builder.setOutputTensorsShapes(outputTensorsShapes);
+                default:
                     break;
             }
 

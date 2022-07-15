@@ -157,11 +157,11 @@ namespace mace {
     };
 
 // ACCELERATOR Initial Cache Policy:
-// NONE: Compile model using the information from net_def and model_data.
-// STORE: Compile model using the information from net_def and model_data and
-// store the compiled model.
-// LOAD: Get input/output information from net_def and load pre-compiled model.
-// LOAD_OR_STORE: Try LOAD first. If the pre-compiled model is outdated,
+// NONE: Compile mace_file_model using the information from net_def and model_data.
+// STORE: Compile mace_file_model using the information from net_def and model_data and
+// store the compiled mace_file_model.
+// LOAD: Get input/output information from net_def and load pre-compiled mace_file_model.
+// LOAD_OR_STORE: Try LOAD first. If the pre-compiled mace_file_model is outdated,
 //                or absent, then STORE.
     enum AcceleratorCachePolicy {
         ACCELERATOR_CACHE_NONE = 0,
@@ -233,7 +233,7 @@ namespace mace {
 /// The quantized8_performance is just a arbitrary value tested
 /// using mobilenet-v2 offline
 /// Actually, It's hard to test the precise performance, the result could be
-/// more accurate when your model is like with mobilenet-v2, otherwise the
+/// more accurate when your mace_file_model is like with mobilenet-v2, otherwise the
 /// value is just a reference.
 ///
 /// \return capability of the device
@@ -664,16 +664,16 @@ namespace mace {
         MaceEngine &operator=(const MaceEngine &) = delete;
     };
 
-/// \brief Create MaceEngine from model graph proto and weights data
+/// \brief Create MaceEngine from mace_file_model graph proto and weights data
 ///
 /// Create MaceEngine object
 ///
-/// \param model_graph_proto[in]: the content of model graph proto
-/// \param model_graph_proto_size[in]: the size of model graph proto
-/// \param model_weights_data[in]: the content of model weights data, the
+/// \param model_graph_proto[in]: the content of mace_file_model graph proto
+/// \param model_graph_proto_size[in]: the size of mace_file_model graph proto
+/// \param model_weights_data[in]: the content of mace_file_model weights data, the
 ///                                returned engine will refer to this buffer
 ///                                if model_data_unused return false.
-/// \param model_weights_data_size[in]: the size of model weights data
+/// \param model_weights_data_size[in]: the size of mace_file_model weights data
 /// \param input_nodes[in]: the array of input nodes' name
 /// \param output_nodes[in]: the array of output nodes' name
 /// \param config[in]: configurations for MaceEngine.
@@ -700,13 +700,13 @@ namespace mace {
             MaceEngine *tutor = nullptr,
             bool fake_warmup = false);
 
-/// \brief Create MaceEngine from files (model file + data file)
+/// \brief Create MaceEngine from files (mace_file_model file + data file)
 /// Deprecated, will be removed in future version
 ///
 /// Create MaceEngine object
 ///
-/// \param model_pb[in]: the content of model graph file
-/// \param model_data_file[in]: the path of model data file
+/// \param model_pb[in]: the content of mace_file_model graph file
+/// \param model_data_file[in]: the path of mace_file_model data file
 /// \param input_nodes[in]: the array of input nodes' name
 /// \param output_nodes[in]: the array of output nodes' name
 /// \param config[in]: configurations for MaceEngine.

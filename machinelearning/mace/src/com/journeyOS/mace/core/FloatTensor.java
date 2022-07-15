@@ -16,18 +16,11 @@
 
 package com.journeyOS.mace.core;
 
-import com.journeyOS.i007manager.SmartLog;
-
-import java.nio.FloatBuffer;
-
 /**
  * @author solo
  */
-public class FloatTensor extends Tensor {
+public abstract class  FloatTensor extends Tensor {
     private final String TAG = FloatTensor.class.getSimpleName();
-
-    private FloatBuffer floatBuffer;
-    private int capacity;
 
     /**
      * 构造函数
@@ -36,47 +29,5 @@ public class FloatTensor extends Tensor {
      */
     public FloatTensor(int[] shape) {
         super(shape);
-        capacity = 1;
-        for (int i : shape) {
-            capacity *= i;
-        }
-        floatBuffer = FloatBuffer.allocate(capacity);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void write(float[] floats, int startPos, int length) {
-        if (length > capacity || (startPos + length) > capacity || startPos < 0) {
-            SmartLog.e(TAG, "illegal argument with write, startPos = [" + startPos + "], length = [" + startPos + "], capacity = [" + capacity + "]");
-            return;
-        }
-        floatBuffer.rewind();
-        floatBuffer.put(floats, startPos, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int read(float[] floats, int startPos, int length) {
-        if (length > capacity || startPos < 0) {
-            SmartLog.e(TAG, "illegal argument with read, startPos = [" + startPos + "], length = [" + startPos + "], capacity = [" + capacity + "]");
-            return -1;
-        }
-        floatBuffer.rewind();
-        floatBuffer.get(floats, startPos, length);
-        return length;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void release() {
-        floatBuffer.clear();
-        floatBuffer = null;
-    }
-
 }

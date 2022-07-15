@@ -25,6 +25,10 @@ android {
         targetSdkVersion androidSdk.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+        //使用buildConfigField向BuildConfig类中写入常量
+        buildConfigField("int", "BUILD_VERSION_CODE", rootProject.ext.versionCode + "")
+        buildConfigField("String", "BUILD_VERSION_NAME", "\"" + rootProject.ext.versionName + "\"")
+        buildConfigField("String", "BUILD_VERSION_BRANCH", "\"" + rootProject.ext.versionBranch + "\"")
 
         if (BUILD_NATIVE.toBoolean()) {
             externalNativeBuild {
@@ -35,17 +39,12 @@ android {
             }
         }
 
-        //支持svg图片
-        vectorDrawables.useSupportLibrary = true
-
         if (BUILD_FLAVORS.toBoolean()) {
             flavorDimensions "default"
         }
 
-        //使用buildConfigField向BuildConfig类中写入常量
-        buildConfigField("int", "BUILD_VERSION_CODE", rootProject.ext.versionCode + "")
-        buildConfigField("String", "BUILD_VERSION_NAME", "\"" + rootProject.ext.versionName + "\"")
-        buildConfigField("String", "BUILD_VERSION_BRANCH", "\"" + rootProject.ext.versionBranch + "\"")
+        //支持svg图片
+        vectorDrawables.useSupportLibrary = true
     }
 
     sourceSets {
@@ -74,6 +73,14 @@ android {
                 path "src/cpp/CMakeLists.txt"
             }
         }
+
+        task ndkClean(type: Delete) {
+            delete fileTree('.externalNativeBuild') {
+                exclude defaultConfig.ndk.abiFilters.collect { '**/' + it }
+            }
+            delete '.cxx'
+        }
+        tasks.findByPath(':clean').dependsOn ndkClean
     }
 
     compileOptions {
@@ -102,7 +109,8 @@ android {
         release {
             zipAlignEnabled true
             minifyEnabled false
-            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            //consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "${project.rootDir}/proguard-rules.pro"
             if (BUILD_APPLICATION.toBoolean()) {
                 signingConfig signingConfigs.release
             }
@@ -110,7 +118,8 @@ android {
         debug {
             zipAlignEnabled true
             minifyEnabled false
-            consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            //consumerProguardFiles "${project.rootDir}/proguard-rules.pro"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "${project.rootDir}/proguard-rules.pro"
             if (BUILD_APPLICATION.toBoolean()) {
                 signingConfig signingConfigs.debug
             }

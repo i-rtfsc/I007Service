@@ -17,6 +17,7 @@
 package com.journeyOS.mace;
 
 import android.app.Application;
+import android.text.TextUtils;
 
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.SmartLog;
@@ -24,6 +25,9 @@ import com.journeyOS.mace.core.FloatTensor;
 import com.journeyOS.mace.core.MACE;
 import com.journeyOS.mace.core.NeuralNetwork;
 import com.journeyOS.machinelearning.Classifier;
+
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Mobile AI Compute Engine  (MACE)
@@ -62,22 +66,23 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
         SmartLog.d(TAG, "mace version = [" + maceVersion + "]");
 
         boolean success = false;
-        mNeuralNetwork = loadNetwork(application, aiModel.getFileName(), aiModel.getRuntime());
+        mNeuralNetwork = loadNetwork(application, aiModel);
         SmartLog.d(TAG, "load network success = [" + (mNeuralNetwork != null) + "]");
+
         if (mNeuralNetwork != null) {
-            String modelVersion = mNeuralNetwork.getModelVersion();
-            SmartLog.d(TAG, "model version = [" + modelVersion + "]");
-
-            mInputLayer = mNeuralNetwork.getInputTensorName();
-            mOutputLayer = mNeuralNetwork.getOutputTensorName();
-            mTensorShape = mNeuralNetwork.getInputTensorShape();
-
-            SmartLog.d(TAG, "mInputLayer = [" + mInputLayer + "]");
-            SmartLog.d(TAG, "mOutputLayer = [" + mOutputLayer + "]");
-
+            Set<String> inputNames = mNeuralNetwork.getInputTensorsNames();
+            Set<String> outputNames = mNeuralNetwork.getOutputTensorsNames();
+            if (inputNames.size() != 1 || outputNames.size() != 1) {
+                throw new IllegalStateException("Invalid network input and/or output tensors.");
+            } else {
+                mInputLayer = inputNames.iterator().next();
+                mOutputLayer = outputNames.iterator().next();
+            }
+            SmartLog.d(TAG, "inputLayer = [" + mInputLayer + "]");
+            SmartLog.d(TAG, "outputLayer = [" + mOutputLayer + "]");
             startInterval();
-            mInputTensor = mNeuralNetwork.createFloatTensor(mTensorShape);
-            stopInterval("create mace tensor");
+            mInputTensor = mNeuralNetwork.createFloatTensor(mNeuralNetwork.getInputTensorsShapes().get(mInputLayer));
+            stopInterval("create snpe tensor");
             success = (mInputTensor != null);
             if (success) {
                 /**
@@ -91,12 +96,14 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
                 mHeight = mTensorShape[1];
                 if (DEBUG) {
                     SmartLog.d(TAG, "batch_size = [" + mTensorShape[0] + "]");
-                    SmartLog.d(TAG, "is gray scale = [" + isGrayScale + "]");
+                    SmartLog.d(TAG, "channels = [" + isGrayScale + "]");
                     SmartLog.d(TAG, "width = [" + mWidth + "], height = [" + mHeight + "]");
                     SmartLog.d(TAG, "tensor size = [" + mTensorSize + "]");
                 }
             }
         }
+
+
         SmartLog.d(TAG, "load network, success = [" + success + "]");
         return success;
     }
@@ -124,7 +131,9 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
         return true;
     }
 
-    private NeuralNetwork loadNetwork(Application application, String fileName, String runtime) {
+    private NeuralNetwork loadNetwork(Application application, AiModel aiModel) {
+        String fileName = aiModel.getFileName();
+        String runtime = aiModel.getRuntime();
         SmartLog.d(TAG, "load network, fileName = [" + fileName + "], runtime = [" + runtime + "]");
         NeuralNetwork.Runtime selectedRuntime = NeuralNetwork.Runtime.CPU;
         switch (runtime) {
@@ -137,18 +146,33 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
             case AiModel.Runtime.DSP:
                 selectedRuntime = NeuralNetwork.Runtime.DSP;
                 break;
+            default:
+                break;
         }
 
         startInterval();
         /**
          * create the neural network
          */
-        NeuralNetwork network = new MACE.NeuralNetworkBuilder(application)
-                .setModelName(fileName)
-                .setRuntimeOrder(selectedRuntime)
-                .setCpuPolicy(NeuralNetwork.CpuPolicy.BIG_ONLY)
-                .setDebugEnabled(false)
-                .build();
+        MACE.NeuralNetworkBuilder builder = new MACE.NeuralNetworkBuilder(application);
+        builder.setModelName(fileName);
+        builder.setRuntimeOrder(selectedRuntime);
+        builder.setDebugEnabled(false);
+        builder.setCpuPolicy(NeuralNetwork.CpuPolicy.BIG_ONLY);
+        if (!TextUtils.isEmpty(aiModel.getMaceFileModelGraph())) {
+            try {
+                builder.setModelData(aiModel.getMaceFileModelData());
+                builder.setModelGraph(aiModel.getMaceFileModelGraph());
+                builder.setStorageDirectory(aiModel.getMaceFileModelStorage());
+                builder.setInputLayers(aiModel.getInputTensorsShapes());
+                builder.setOutputLayers(aiModel.getOutputTensorsShapes());
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+
+        NeuralNetwork network = builder.build();
         stopInterval("build mace");
 
         return network;

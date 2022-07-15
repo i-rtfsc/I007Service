@@ -51,7 +51,9 @@ public class I007Manager implements IBinder.DeathRecipient {
      * 电池电量、温度等变化场景
      */
     public static final long SCENE_FACTOR_BATTERY = 1 << 5;
+
     private static final String TAG = I007Manager.class.getSimpleName();
+
     private static volatile I007Manager sInstance = null;
     private II007Manager mService = null;
     private ServerLifecycleManager mSlm = null;
