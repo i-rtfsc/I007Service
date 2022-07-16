@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-#include <android/log.h>
-#include <jni.h>
-
+#include <string>
+#include <vector>
+#include <numeric>
 #include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
-#include <string>
-#include <vector>
-#include <numeric>
+
+#include <jni.h>
 
 #include "JniLog.h"
+#include "MaceCommon.h"
 #include "MaceCodeNetwork.h"
 
-static DeviceType ParseDeviceType(const string &device) {
-    if (device.compare("CPU") == 0) {
-        return DeviceType::CPU;
-    } else if (device.compare("GPU") == 0) {
-        return DeviceType::GPU;
-    } else if (device.compare("HEXAGON") == 0) {
-        return DeviceType::HEXAGON;
-    } else {
-        return DeviceType::CPU;
-    }
-}
+jobject jni_native_mace_code_get_model_info(JNIEnv *env, jclass thiz, jstring model_name_str) {
+    LOGV("Enter : %s", __func__);
 
-static void init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
+    // parse mace_file_model name
+    const char *model_name_ptr = env->GetStringUTFChars(model_name_str, nullptr);
+    if (model_name_ptr == nullptr) {
+        return nullptr;
+    }
+
     /**
      * com/journeyOS/mace/internal/NativeMace
      */
@@ -69,24 +65,8 @@ static void init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
     gNativeMaceClass.setOutputTensorShape = env->GetMethodID(gNativeMaceClass.clazz,
                                                              "setOutputTensorShape",
                                                              "(Ljava/lang/String;[I)V");
-    return;
-}
-
-jobject jni_native_get_mace_model_info(JNIEnv *env, jclass thiz, jstring model_name_str) {
-    LOGV("Enter : %s", __func__);
-    init_native_clazz_methods(env, thiz);
-
-    const char *mace_version = MaceVersion();
-    LOGI("mace version = %s", mace_version);
 
     MaceContext *maceContext = new MaceContext();
-
-    //  parse mace_file_model name
-    const char *model_name_ptr = env->GetStringUTFChars(model_name_str, nullptr);
-    if (model_name_ptr == nullptr) {
-        return nullptr;
-    }
-
     maceContext->model_name.assign(model_name_ptr);
     env->ReleaseStringUTFChars(model_name_str, model_name_ptr);
 
@@ -96,22 +76,25 @@ jobject jni_native_get_mace_model_info(JNIEnv *env, jclass thiz, jstring model_n
         return nullptr;
     }
 
+    /**
+     * 获取模型版本号
+     */
     string version_name = model_info_iter->second.version_name;
-    if (DEBUG) {
+    if (gDebug) {
         LOGD("%s(), version_name: %s", __func__, version_name.c_str());
     }
-
-    //调用 setModelVersion 方法
+    /**
+     * 调用 setModelVersion 方法
+     */
     env->CallVoidMethod(gNativeMaceClass.object, gNativeMaceClass.setModelVersion,
                         env->NewStringUTF(version_name.c_str()));
-
-//    jobject native_mace_obj = env->NewObject(gNativeMaceClass.clazz, gNativeMaceClass.init,
-//                                             env->NewStringUTF(mace_version),
-//                                             env->NewStringUTF(version_name.c_str()));
-    if (DEBUG) {
-        LOGD("%s(), call java init finish ", __func__);
+    if (gDebug) {
+        LOGD("%s(), call java setModelVersion() finish ", __func__);
     }
 
+    /**
+     * 获取模型input shape
+     */
     string input_tensor_name = model_info_iter->second.input_name;
     const vector<int64_t> &input_shape = model_info_iter->second.input_shape;
     int input_size = input_shape.size();
@@ -121,11 +104,18 @@ jobject jni_native_get_mace_model_info(JNIEnv *env, jclass thiz, jstring model_n
         int_shape[i] = input_shape[i];
     }
     env->SetIntArrayRegion(inputArray, 0, input_size, int_shape);
-    //调用 setInputTensorShape 方法
+    /**
+     * 调用 setInputTensorShape 方法
+     */
     env->CallVoidMethod(gNativeMaceClass.object, gNativeMaceClass.setInputTensorShape,
                         env->NewStringUTF(input_tensor_name.c_str()), inputArray);
+    if (gDebug) {
+        LOGD("%s(), call java setInputTensorShape() finish ", __func__);
+    }
 
-
+    /**
+     * 获取模型output shape
+     */
     string output_tensor_name = model_info_iter->second.output_name;
     const vector<int64_t> &output_shape = model_info_iter->second.output_shape;
     int output_size = output_shape.size();
@@ -135,76 +125,95 @@ jobject jni_native_get_mace_model_info(JNIEnv *env, jclass thiz, jstring model_n
         out_shape[i] = output_shape[i];
     }
     env->SetIntArrayRegion(outputArray, 0, output_size, out_shape);
-    //调用 setInputTensorShape 方法
+    /**
+     * 调用 setOutputTensorShape 方法
+     */
     env->CallVoidMethod(gNativeMaceClass.object, gNativeMaceClass.setOutputTensorShape,
                         env->NewStringUTF(output_tensor_name.c_str()), outputArray);
+    if (gDebug) {
+        LOGD("%s(), call java setOutputTensorShape() finish ", __func__);
+    }
 
     delete maceContext;
 
     return gNativeMaceClass.object;
 }
 
-jstring jni_native_get_mace_version(JNIEnv *env, jclass thiz) {
-    const char *mace_version = MaceVersion();
-    LOGI("mace version = %s", mace_version);
-    return env->NewStringUTF(mace_version);
-}
-
 jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
                                                  jstring model_name_str,
                                                  jstring target_runtime,
                                                  jstring storage_path,
-                                                 jstring opencl_cache_full_path,
                                                  jint opencl_cache_reuse_policy,
                                                  jint omp_num_threads,
                                                  jint cpu_affinity_policy,
                                                  jint gpu_perf_hint,
-                                                 jint gpu_priority_hint) {
+                                                 jint gpu_priority_hint,
+                                                 jboolean debug) {
+    LOGV("%s(), start", __func__);
+    gDebug = debug;
+    LOGI("debug log enable = %d", gDebug);
 
-    // DO NOT USE tmp directory.
-    // Please use APP's own directory and make sure the directory exists.
+    /**
+     * storage path
+     * DO NOT USE tmp directory.
+     * Please use APP's own directory and make sure the directory exists.
+     */
     const char *storage_path_ptr = env->GetStringUTFChars(storage_path, nullptr);
+    if (gDebug) {
+        LOGD("storage path = %s", storage_path_ptr);
+    }
     if (storage_path_ptr == nullptr) {
+        LOGE("storage path was null");
         return JNI_ERR;
     }
-
     const string storage_file_path(storage_path_ptr);
     env->ReleaseStringUTFChars(storage_path, storage_path_ptr);
 
-    const char *opencl_cache_full_path_ptr = env->GetStringUTFChars(opencl_cache_full_path,
-                                                                    nullptr);
-    if (opencl_cache_full_path_ptr == nullptr) {
-        return JNI_ERR;
-    }
-
-    const string str_opencl_cache_full_path(opencl_cache_full_path_ptr);
-    env->ReleaseStringUTFChars(opencl_cache_full_path, opencl_cache_full_path_ptr);
-
-    // create MaceContext
+    /**
+     * create MaceContext
+     */
     MaceContext *maceContext = new MaceContext;
 
-    // SetStoragePath will be replaced by SetOpenCLCacheFullPath in the future
-    maceContext->gpu_context = GPUContextBuilder()
-            .SetStoragePath(storage_file_path)
-            .SetOpenCLCacheFullPath(str_opencl_cache_full_path)
-            .SetOpenCLCacheReusePolicy(
-                    static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
-            .Finalize();
-
-    // get device
-    const char *target_runtime_ptr = env->GetStringUTFChars(target_runtime, nullptr);
-    if (target_runtime_ptr == nullptr) {
-        return JNI_ERR;
+    /**
+     * SetStoragePath will be replaced by SetOpenCLCacheFullPath in the future
+     */
+    if (strlen(storage_file_path.c_str()) > 0) {
+        maceContext->gpu_context = GPUContextBuilder()
+                .SetStoragePath(storage_path_ptr)
+                .SetOpenCLCacheReusePolicy(
+                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+                .Finalize();
+    } else {
+        maceContext->gpu_context = GPUContextBuilder()
+                .SetOpenCLCacheReusePolicy(
+                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+                .Finalize();
     }
 
-    maceContext->device_type = ParseDeviceType(target_runtime_ptr);
+    /**
+     * get device(runtime)
+     */
+    const char *target_runtime_ptr = env->GetStringUTFChars(target_runtime, nullptr);
+    if (gDebug) {
+        LOGD("runtime = %s", target_runtime_ptr);
+    }
+    if (target_runtime_ptr == nullptr) {
+        LOGE("target runtime was null");
+        return JNI_ERR;
+    }
+    maceContext->device_type = MaceCommon::getInstance()->parseDeviceType(target_runtime_ptr);
     env->ReleaseStringUTFChars(target_runtime, target_runtime_ptr);
 
-    // create MaceEngineConfig
+    /**
+     * create MaceEngineConfig
+     */
     MaceStatus status;
     MaceEngineConfig config(maceContext->device_type);
     status = config.SetCPUThreadPolicy(omp_num_threads,
                                        static_cast<CPUAffinityPolicy>(cpu_affinity_policy));
+    if (gDebug) {
+        LOGD("SetCPUThreadPolicy status = %d", status.code());
+    }
     if (status != MaceStatus::MACE_SUCCESS) {
         LOGE("openmp result: %s, threads: %d, cpu: %d", status.information().c_str(),
              omp_num_threads, cpu_affinity_policy);
@@ -216,18 +225,23 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
         LOGI("gpu perf: %d, priority: %d", gpu_perf_hint, gpu_priority_hint);
     }
 
-    LOGI("device: %d", maceContext->device_type);
 
-    // parse mace_file_model name
+    /**
+     * parse mace_file_model name
+     */
     const char *model_name_ptr = env->GetStringUTFChars(model_name_str, nullptr);
+    if (gDebug) {
+        LOGD("model name = %s", model_name_ptr);
+    }
     if (model_name_ptr == nullptr) {
         return JNI_ERR;
     }
-
     maceContext->model_name.assign(model_name_ptr);
     env->ReleaseStringUTFChars(model_name_str, model_name_ptr);
 
-    // load mace_file_model input and output name
+    /**
+     * load mace_file_model input and output name
+     */
     auto model_info_iter = maceContext->model_infos.find(maceContext->model_name);
     if (model_info_iter == maceContext->model_infos.end()) {
         LOGE("Invalid mace_file_model name: %s", maceContext->model_name.c_str());
@@ -248,8 +262,10 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     LOGI("create result, status = %d, msg = %s", create_engine_status.code(),
          create_engine_status.information().c_str());
 
-    LOGV("Leave : %s with maceContext = %ld : 0x%lx", __func__, (jlong) (maceContext),
-         (jlong) (maceContext));
+    if (gDebug) {
+        LOGD("Leave : %s with maceContext = %ld : 0x%lx", __func__, (jlong) (maceContext),
+             (jlong) (maceContext));
+    }
     return (jlong) (maceContext);
 }
 
@@ -281,7 +297,9 @@ jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
             accumulate(output_shape.begin(), output_shape.end(), 1,
                        multiplies<int64_t>());
 
-    //  load input
+    /**
+     * load input
+     */
     jfloat *input_data_ptr = env->GetFloatArrayElements(input_data, nullptr);
     if (input_data_ptr == nullptr) {
         return nullptr;
@@ -294,40 +312,53 @@ jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
 
     map<string, MaceTensor> inputs;
     map<string, MaceTensor> outputs;
-    // construct input
+    /**
+     * construct input
+     */
     auto buffer_in = shared_ptr<float>(new float[input_size],
                                        default_delete<float[]>());
     copy_n(input_data_ptr, input_size, buffer_in.get());
     env->ReleaseFloatArrayElements(input_data, input_data_ptr, 0);
     inputs[input_name] = MaceTensor(input_shape, buffer_in);
 
-    // construct output
+    /**
+     * construct output
+     */
     auto buffer_out = shared_ptr<float>(new float[output_size],
                                         default_delete<float[]>());
     outputs[output_name] = MaceTensor(output_shape, buffer_out);
 
-    // run mace_file_model
+    /**
+     * run mace_file_model
+     */
     maceContext->engine->Run(inputs, &outputs);
 
-    // transform output
-    jfloatArray jOutputData = env->NewFloatArray(output_size);  // allocate
+    /**
+     * transform output
+     * allocate
+     */
+    jfloatArray jOutputData = env->NewFloatArray(output_size);
     if (jOutputData == nullptr) {
         return nullptr;
     }
 
-    env->SetFloatArrayRegion(jOutputData, 0, output_size,
-                             outputs[output_name].data().get());  // copy
+    /**
+     * copy
+     */
+    env->SetFloatArrayRegion(jOutputData, 0, output_size, outputs[output_name].data().get());
 
     return jOutputData;
 }
 
 
 jboolean jni_native_mace_code_release(JNIEnv *env, jobject thiz, jlong native_mace_context) {
-//    LOGV("%s() with native_mace_context = %ld : 0x%lx", __func__,
-//         (jlong) (native_mace_context),
-//         (jlong) (native_mace_context));
-//    MaceContext *maceContext = (MaceContext *) native_mace_context;
-//    delete maceContext;
+    if (gDebug) {
+        LOGD("%s() with native_mace_context = %ld : 0x%lx", __func__, (jlong) (native_mace_context),
+             (jlong) (native_mace_context));
+    }
+
+    MaceContext *maceContext = (MaceContext *) native_mace_context;
+    delete maceContext;
 
     return true;
 }

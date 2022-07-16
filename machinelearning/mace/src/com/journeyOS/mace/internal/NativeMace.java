@@ -116,19 +116,19 @@ public class NativeMace {
     }
 
     /**
+     * 获取 mace 版本号
+     *
+     * @return 版本号
+     */
+    public static native String nativeGetMaceVersion();
+
+    /**
      * 获取模型信息，包括模型版本号、输入的shape、输出的shape等
      *
      * @param modelName 模型名称
      * @return NativeMace-
      */
-    public static native NativeMace nativeGetMaceModelInfo(String modelName);
-
-    /**
-     * 获取 mace 版本号
-     *
-     * @return 版本号
-     */
-    public static native String nativeGetRuntimeVersion();
+    public static native NativeMace nativeMaceCodeGetModelInfo(String modelName);
 
     /**
      * 初始化 code 网络模型
@@ -136,23 +136,23 @@ public class NativeMace {
      * @param model                     模型名字
      * @param targetRuntime             运行环境
      * @param storagePath
-     * @param openclCacheFullPath
      * @param opencl_cache_reuse_policy
      * @param ompNumThreads             线程数量
      * @param cpuAffinityPolicy         cpu调度
      * @param gpuPerfHint               gpu性能
      * @param gpuPriorityHint           gpu优先级
+     * @param debug                     是否打开log
      * @return mace上下文
      */
     public static native long nativeMaceCodeCreateNetworkEngine(String model,
                                                                 String targetRuntime,
                                                                 String storagePath,
-                                                                String openclCacheFullPath,
                                                                 int opencl_cache_reuse_policy,
                                                                 int ompNumThreads,
                                                                 int cpuAffinityPolicy,
                                                                 int gpuPerfHint,
-                                                                int gpuPriorityHint);
+                                                                int gpuPriorityHint,
+                                                                boolean debug);
 
 
     /**
@@ -173,17 +173,19 @@ public class NativeMace {
     /**
      * 初始化 file 网络模型
      *
-     * @param modelName          模型名字
-     * @param targetRuntime      运行环境
-     * @param modelGraphFilePath 模型graph文件
-     * @param modelDataFilePath  模型data文件
-     * @param storageDirectory   storage目录
-     * @param ompNumThreads      线程数量
-     * @param cpuAffinityPolicy  cpu调度
-     * @param gpuPerfHint        gpu性能
-     * @param gpuPriorityHint    gpu优先级
-     * @param inputTensorsShapes 输入的shape
-     * @param outputTensorShapes 输出的shape
+     * @param modelName                 模型名字
+     * @param targetRuntime             运行环境
+     * @param modelGraphFilePath        模型graph文件
+     * @param modelDataFilePath         模型data文件
+     * @param storageDirectory          storage目录
+     * @param opencl_cache_reuse_policy
+     * @param ompNumThreads             线程数量
+     * @param cpuAffinityPolicy         cpu调度
+     * @param gpuPerfHint               gpu性能
+     * @param gpuPriorityHint           gpu优先级
+     * @param inputTensorsShapes        输入的shape
+     * @param outputTensorShapes        输出的shape
+     * @param debug                     是否打开log
      * @return mace上下文
      */
     public static native long nativeMaceFileCreateNetworkEngine(String modelName,
@@ -191,12 +193,14 @@ public class NativeMace {
                                                                 String modelGraphFilePath,
                                                                 String modelDataFilePath,
                                                                 String storageDirectory,
+                                                                int opencl_cache_reuse_policy,
                                                                 int ompNumThreads,
                                                                 int cpuAffinityPolicy,
                                                                 int gpuPerfHint,
                                                                 int gpuPriorityHint,
                                                                 Map<String, int[]> inputTensorsShapes,
-                                                                Map<String, int[]> outputTensorShapes);
+                                                                Map<String, int[]> outputTensorShapes,
+                                                                boolean debug);
 
 
     /**

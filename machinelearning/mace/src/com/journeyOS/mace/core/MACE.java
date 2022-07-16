@@ -81,7 +81,7 @@ public class MACE {
      */
     public String getRuntimeVersion() {
         if (sRuntimeVersion == null) {
-            sRuntimeVersion = NativeMace.nativeGetRuntimeVersion();
+            sRuntimeVersion = NativeMace.nativeGetMaceVersion();
         }
 
         return sRuntimeVersion;
@@ -100,10 +100,9 @@ public class MACE {
         private NeuralNetwork.GpuPerformance mGpuPerformance = NeuralNetwork.GpuPerformance.HIGH;
         private NeuralNetwork.GpuPriority mGpuPriority = NeuralNetwork.GpuPriority.HIGH;
 
-        private String mOpenclCacheFullPath = "";
         private int mOpenclCacheReusePolicy = 1;
 
-        private boolean isDebugEnabled;
+        private boolean isDebugEnabled = false;
 
         /*---------------- file mace_file_model ----------------*/
         private String mModelGraphFile = "";
@@ -301,7 +300,7 @@ public class MACE {
              */
             if (TextUtils.isEmpty(mModelDataFile)) {
                 neuralNetwork = new NativeNetwork(mModelName, mPreferRuntime,
-                        mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy,
+                        mStorageDirectory, mOpenclCacheReusePolicy,
                         mThreads, mCpuPolicy, mGpuPerformance, mGpuPriority,
                         isDebugEnabled);
             } else {

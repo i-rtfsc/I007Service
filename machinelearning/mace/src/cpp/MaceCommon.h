@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-#ifndef _JNI_LOG_H
-#define _JNI_LOG_H
 
-#include <android/log.h>
+#ifndef _MACE_COMMON_H
+#define _MACE_COMMON_H
 
-#undef  LOG_TAG
-#define LOG_TAG "I007-MACE"
+#include <string>
+#include <vector>
+#include "mace/public/mace.h"
 
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG , LOG_TAG,  __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO  , LOG_TAG, __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN  , LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOG_TAG, __VA_ARGS__)
+using namespace std;
+using namespace mace;
 
-#endif //_JNI_LOG_H
+class MaceCommon {
+public:
+    MaceCommon();
+
+    ~MaceCommon();
+
+    static MaceCommon *getInstance();
+
+    DeviceType parseDeviceType(const string &device);
+
+private:
+    static MaceCommon *sInstance;
+};
+
+#endif //_MACE_COMMON_H

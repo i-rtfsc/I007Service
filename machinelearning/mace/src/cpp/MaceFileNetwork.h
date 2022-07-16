@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _MACE_NETWORK_H
-#define _MACE_NETWORK_H
+#ifndef _MACE_FILE_NETWORK_H
+#define _MACE_FILE_NETWORK_H
 
 #include <string>
 #include <vector>
@@ -76,4 +76,6 @@ static struct {
 
 static bool gInit = false;
 
-#endif //_MACE_NETWORK_H
+static bool gDebug = false;
+
+#endif //_MACE_FILE_NETWORK_H

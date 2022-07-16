@@ -59,5 +59,6 @@ static struct {
     jmethodID setOutputTensorShape;
 } gNativeMaceClass;
 
+static bool gDebug = false;
 
 #endif //_MACE_CODE_NETWORK_H

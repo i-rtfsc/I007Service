@@ -38,7 +38,6 @@ public class NativeNetwork implements NeuralNetwork {
     private long mNativeMaceContext = NativeMace.JNI_ERR;
     private String mModelVersion;
 
-    private String mOpenclCacheFullPath;
     private int mOpenclCacheReusePolicy;
 
     private String mModelName;
@@ -81,7 +80,7 @@ public class NativeNetwork implements NeuralNetwork {
      * @param debug                  是否打开log
      */
     public NativeNetwork(String modelName, Runtime runtime,
-                         String storagePath, String openclCacheFullPath, int openclCacheReusePolicy,
+                         String storagePath, int openclCacheReusePolicy,
                          int ompNumThreads, CpuPolicy cpuPolicy, GpuPerformance gpuPerfHint, GpuPriority gpuPriorityHint,
                          boolean debug) {
         SmartLog.d(TAG, "start mace code network");
@@ -89,7 +88,6 @@ public class NativeNetwork implements NeuralNetwork {
         this.mModelName = modelName;
         this.mRuntime = runtime;
         this.mStorageDirectory = storagePath;
-        this.mOpenclCacheFullPath = openclCacheFullPath;
         this.mOpenclCacheReusePolicy = openclCacheReusePolicy;
         this.mThreads = ompNumThreads;
         this.mCpuPolicy = cpuPolicy;
@@ -97,7 +95,7 @@ public class NativeNetwork implements NeuralNetwork {
         this.mGpuPriority = gpuPriorityHint;
         this.isDebugEnabled = debug;
 
-        NativeMace nativeMaceInfo = NativeMace.nativeGetMaceModelInfo(modelName);
+        NativeMace nativeMaceInfo = NativeMace.nativeMaceCodeGetModelInfo(modelName);
 
         mModelVersion = nativeMaceInfo.getModelVersion();
 
@@ -110,8 +108,8 @@ public class NativeNetwork implements NeuralNetwork {
         mOutputTensorShape = mOutputTensorsShapes.get(mOutputTensorName);
 
         mNativeMaceContext = NativeMace.nativeMaceCodeCreateNetworkEngine(mModelName, mRuntime.name(),
-                mStorageDirectory, mOpenclCacheFullPath, mOpenclCacheReusePolicy,
-                mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal);
+                mStorageDirectory, mOpenclCacheReusePolicy,
+                mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal, isDebugEnabled);
         SmartLog.d(TAG, "create mace code network engine, native mace context = [" + mNativeMaceContext + "]");
     }
 
@@ -156,9 +154,9 @@ public class NativeNetwork implements NeuralNetwork {
         this.isDebugEnabled = debug;
 
         mNativeMaceContext = NativeMace.nativeMaceFileCreateNetworkEngine(mModelName, mRuntime.name(),
-                mModelGraphFilePath, mModelDataFilePath, mStorageDirectory,
+                mModelGraphFilePath, mModelDataFilePath, mStorageDirectory, mOpenclCacheReusePolicy,
                 mThreads, mCpuPolicy.ordinal, mGpuPerformance.ordinal, mGpuPriority.ordinal,
-                mInputTensorsShapes, mOutputTensorsShapes);
+                mInputTensorsShapes, mOutputTensorsShapes, isDebugEnabled);
         SmartLog.d(TAG, "create mace file network engine, native mace context = [" + mNativeMaceContext + "]");
     }
 

@@ -157,7 +157,7 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
         MACE.NeuralNetworkBuilder builder = new MACE.NeuralNetworkBuilder(application);
         builder.setModelName(fileName);
         builder.setRuntimeOrder(selectedRuntime);
-        builder.setDebugEnabled(false);
+        builder.setDebugEnabled(DEBUG);
         builder.setCpuPolicy(NeuralNetwork.CpuPolicy.BIG_ONLY);
         if (!TextUtils.isEmpty(aiModel.getMaceFileModelGraph())) {
             try {
@@ -167,7 +167,6 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
                 builder.setInputLayers(aiModel.getInputTensorsShapes());
                 builder.setOutputLayers(aiModel.getOutputTensorsShapes());
             } catch (IOException e) {
-
                 e.printStackTrace();
             }
         }

@@ -20,21 +20,21 @@
 //对应的java包名
 static const char *native_library_class_path_name = "com.journeyOS.mace.internal.NativeMace";
 
-jobject jni_native_get_mace_model_info(JNIEnv *env, jclass thiz,
-                                       jstring model_name_str);
-
 jstring jni_native_get_mace_version(JNIEnv *env, jclass thiz);
+
+jobject jni_native_mace_code_get_model_info(JNIEnv *env, jclass thiz,
+                                            jstring model_name_str);
 
 jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
                                                  jstring model_name_str,
                                                  jstring target_runtime,
                                                  jstring storage_path,
-                                                 jstring opencl_cache_full_path,
                                                  jint opencl_cache_reuse_policy,
                                                  jint omp_num_threads,
                                                  jint cpu_affinity_policy,
                                                  jint gpu_perf_hint,
-                                                 jint gpu_priority_hint);
+                                                 jint gpu_priority_hint,
+                                                 jboolean debug);
 
 jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
                                          jlong native_mace_context,
@@ -49,12 +49,14 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
                                                  jstring model_graph_file_path,
                                                  jstring model_data_file_path,
                                                  jstring storage_directory,
+                                                 jint opencl_cache_reuse_policy,
                                                  jint omp_num_threads,
                                                  jint cpu_affinity_policy,
                                                  jint gpu_perf_hint,
                                                  jint gpu_priority_hint,
                                                  jobject input_tensors_shapes,
-                                                 jobject output_tensors_shapes);
+                                                 jobject output_tensors_shapes,
+                                                 jboolean debug);
 
 jboolean jni_native_mace_file_execute(JNIEnv *env, jobject thiz,
                                       jlong native_mace_context,
@@ -73,16 +75,16 @@ static JNINativeMethod
         //name：Java中函数的名字
         //signature：描述了函数的参数和返回值（Java类型跟C类型对应表可自行网上查询）
         //fnPtr：C/C++的函数名
-        {"nativeGetMaceModelInfo",            "(Ljava/lang/String;)Lcom/journeyOS/mace/internal/NativeMace;",                                                                    (void *) jni_native_get_mace_model_info},
-        {"nativeGetRuntimeVersion",           "()Ljava/lang/String;",                                                                                                            (void *) jni_native_get_mace_version},
-
-        {"nativeMaceCodeCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIII)J",                                                (void *) jni_native_mace_code_create_network_engine},
-        {"nativeMaceCodeExecute",             "(J[F)[F",                                                                                                                         (void *) jni_native_mace_code_execute},
-        {"nativeMaceCodeRelease",             "(J)Z",                                                                                                                            (void *) jni_native_mace_code_release},
-
-        {"nativeMaceFileCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/util/Map;Ljava/util/Map;)J", (void *) jni_native_mace_file_create_network_engine},
-        {"nativeMaceFileExecute",             "(JLjava/util/Map;Ljava/util/Map;)Z",                                                                                              (void *) jni_native_mace_file_execute},
-        {"nativeMaceFileRelease",             "(J)Z",                                                                                                                            (void *) jni_native_mace_file_release},
+        {"nativeGetMaceVersion",              "()Ljava/lang/String;",                                                                                                              (void *) jni_native_get_mace_version},
+        //mace code model
+        {"nativeMaceCodeGetModelInfo",        "(Ljava/lang/String;)Lcom/journeyOS/mace/internal/NativeMace;",                                                                      (void *) jni_native_mace_code_get_model_info},
+        {"nativeMaceCodeCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIIIZ)J",                                                                   (void *) jni_native_mace_code_create_network_engine},
+        {"nativeMaceCodeExecute",             "(J[F)[F",                                                                                                                           (void *) jni_native_mace_code_execute},
+        {"nativeMaceCodeRelease",             "(J)Z",                                                                                                                              (void *) jni_native_mace_code_release},
+        //mace file model
+        {"nativeMaceFileCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIIILjava/util/Map;Ljava/util/Map;Z)J", (void *) jni_native_mace_file_create_network_engine},
+        {"nativeMaceFileExecute",             "(JLjava/util/Map;Ljava/util/Map;)Z",                                                                                                (void *) jni_native_mace_file_execute},
+        {"nativeMaceFileRelease",             "(J)Z",                                                                                                                              (void *) jni_native_mace_file_release},
 };
 
 #endif //_JNI_HELPER_H
