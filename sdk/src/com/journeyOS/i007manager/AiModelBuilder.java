@@ -54,13 +54,12 @@ public class AiModelBuilder {
             builder.setGraph(AiModel.Graph.TF_LITE);
 
             if (quant) {
-                builder.setFileName("mobilenet_v1_1.0_224.tflite");
-                builder.setRuntime(AiModel.Runtime.GPU);
-            } else {
                 builder.setFileName("mobilenet_v1_1.0_224_quant.tflite");
                 builder.setRuntime(AiModel.Runtime.CPU);
+            } else {
+                builder.setFileName("mobilenet_v1_1.0_224.tflite");
+                builder.setRuntime(AiModel.Runtime.GPU);
             }
-
 
             return builder.build();
         }
@@ -156,7 +155,6 @@ public class AiModelBuilder {
                     builder.setRuntime(AiModel.Runtime.GPU);
                     builder.setMaceFileModelData("/sdcard/mobilenet_v1/mobilenet_v1.data");
                     builder.setMaceFileModelGraph("/sdcard/mobilenet_v1/mobilenet_v1.pb");
-                    builder.setMaceFileModelStorageDirectory("/sdcard/mobilenet_v1");
                     Map<String, int[]> inputTensorsShapes = new HashMap<>();
                     inputTensorsShapes.put("input", new int[]{1, 224, 224, 3});
                     builder.setInputTensorsShapes(inputTensorsShapes);

@@ -96,7 +96,7 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
                 mHeight = mTensorShape[1];
                 if (DEBUG) {
                     SmartLog.d(TAG, "batch_size = [" + mTensorShape[0] + "]");
-                    SmartLog.d(TAG, "channels = [" + isGrayScale + "]");
+                    SmartLog.d(TAG, "isGrayScale = [" + isGrayScale + "]");
                     SmartLog.d(TAG, "width = [" + mWidth + "], height = [" + mHeight + "]");
                     SmartLog.d(TAG, "tensor size = [" + mTensorSize + "]");
                 }
@@ -161,9 +161,9 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
         builder.setCpuPolicy(NeuralNetwork.CpuPolicy.BIG_ONLY);
         if (!TextUtils.isEmpty(aiModel.getMaceFileModelGraph())) {
             try {
+                builder.setStorageDirectory(application.getFilesDir().getAbsolutePath());
                 builder.setModelData(aiModel.getMaceFileModelData());
                 builder.setModelGraph(aiModel.getMaceFileModelGraph());
-                builder.setStorageDirectory(aiModel.getMaceFileModelStorage());
                 builder.setInputLayers(aiModel.getInputTensorsShapes());
                 builder.setOutputLayers(aiModel.getOutputTensorsShapes());
             } catch (IOException e) {

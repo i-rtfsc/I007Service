@@ -83,7 +83,7 @@ public class ImageClassifier extends SnpeClassifier<Bitmap> {
         int length = width * height;
         if (mWidth * mHeight != length) {
             SmartLog.w(TAG, "tensor width = [" + mWidth + "], tensor height = [" + mHeight + "], width = [" + width + "], height = [" + height + "]");
-            return mBitmapHelper.resizeBitmap(bitmap, mWidth, mHeight);
+            return mBitmapHelper.scaleBitmap(bitmap, mWidth, mHeight);
         }
         return bitmap;
     }

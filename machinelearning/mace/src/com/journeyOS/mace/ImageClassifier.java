@@ -89,7 +89,7 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
         int length = width * height;
         if (mWidth * mHeight != length) {
             SmartLog.w(TAG, "tensor width = [" + mWidth + "], tensor height = [" + mHeight + "], width = [" + width + "], height = [" + height + "]");
-            return mBitmapHelper.resizeBitmap(bitmap, mWidth, mHeight);
+            return mBitmapHelper.scaleBitmap(bitmap, mWidth, mHeight);
         }
         return bitmap;
     }
@@ -122,7 +122,7 @@ public class ImageClassifier extends MaceClassifier<Bitmap> {
         inputs.put(mInputLayer, mInputTensor);
 
         final Map<String, FloatTensor> outputs = mNeuralNetwork.execute(inputs);
-        long time = stopInterval("Run mace-mace_file_model inference");
+        long time = stopInterval("Run mace model inference");
 
         if (mTimeStat != null) {
             mTimeStat.stopInterval("nn_exec ", 20, false);

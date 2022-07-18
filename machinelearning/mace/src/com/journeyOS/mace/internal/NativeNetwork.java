@@ -219,11 +219,12 @@ public class NativeNetwork implements NeuralNetwork {
             return ret ? mOutputTensors : null;
         } else {
             FloatTensor inputTensor = map.get(mInputTensorName);
-            float[] output = NativeMace.nativeMaceCodeExecute(mNativeMaceContext, new float[inputTensor.getSize()]);
+            float[] input = new float[inputTensor.getSize()];
+            inputTensor.read(input, 0, input.length);
+            float[] output = NativeMace.nativeMaceCodeExecute(mNativeMaceContext, input);
             FloatTensor outputTensor = new NativeFloatTensor(mOutputTensorShape);
             outputTensor.write(output, 0, output.length);
             mOutputTensors.put(mOutputTensorName, outputTensor);
-
             return output != null ? mOutputTensors : null;
         }
     }

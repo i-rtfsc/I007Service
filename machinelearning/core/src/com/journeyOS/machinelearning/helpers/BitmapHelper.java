@@ -82,74 +82,31 @@ public class BitmapHelper {
     /**
      * 缩放图片
      *
-     * @param image     图片
+     * @param origin    图片
      * @param newWidth  图片新的宽
      * @param newHeight 图片新的高
      * @return 缩放后的图片
      */
-    public Bitmap getResizedBitmap(Bitmap image, int newWidth, int newHeight) {
-        int width = image.getWidth();
-        int height = image.getHeight();
+    public Bitmap scaleBitmap(Bitmap origin, int newWidth, int newHeight) {
+        if (origin == null) {
+            return null;
+        }
+        int height = origin.getHeight();
+        int width = origin.getWidth();
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
         // CREATE A MATRIX FOR THE MANIPULATION
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
         matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(image, 0, 0, width, height, matrix, false);
-        image.recycle();
-        return resizedBitmap;
-    }
-
-    /**
-     * 缩放图片
-     *
-     * @param source 图片
-     * @param width  图片新的宽
-     * @param height 图片新的高
-     * @return 缩放后的图片
-     */
-    public Bitmap resizeBitmap(Bitmap source, int width, int height) {
-        if (source.getHeight() == height && source.getWidth() == width) {
-            return source;
+        Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
+        if (!origin.isRecycled()) {
+            origin.recycle();
         }
-        int maxLength = Math.min(width, height);
-        try {
-            source = source.copy(source.getConfig(), true);
-            if (source.getHeight() <= source.getWidth()) {
-                /**
-                 * if image already smaller than the required height
-                 */
-                if (source.getHeight() <= maxLength) {
-                    return source;
-                }
-
-                double aspectRatio = (double) source.getWidth() / (double) source.getHeight();
-                int targetWidth = (int) (maxLength * aspectRatio);
-
-                return Bitmap.createScaledBitmap(source, targetWidth, maxLength, false);
-            } else {
-                /**
-                 * if image already smaller than the required height
-                 */
-                if (source.getWidth() <= maxLength) {
-                    return source;
-                }
-
-                double aspectRatio = ((double) source.getHeight()) / ((double) source.getWidth());
-                int targetHeight = (int) (maxLength * aspectRatio);
-
-                return Bitmap.createScaledBitmap(source, maxLength, targetHeight, false);
-            }
-        } catch (Exception e) {
-            return source;
-        }
+        return newBM;
     }
 
     private float[] extractColorChannels(int pixel) {
-
         float b = ((pixel) & 0xFF);
         float g = ((pixel >> 8) & 0xFF);
         float r = ((pixel >> 16) & 0xFF);
