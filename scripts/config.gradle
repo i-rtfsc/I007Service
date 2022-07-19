@@ -11,30 +11,48 @@ ext {
 
     //android开发版本配置
     androidSdk = [
-            compileSdkVersion: 30,
-            buildToolsVersion: "30.0.3",
             applicationId    : "com.journeyOS.i007Service",
             testApplicationId: "com.journeyOS.i007test",
-            minSdkVersion    : 29,
+            buildToolsVersion: "30.0.3",
+            compileSdkVersion: 30,
             targetSdkVersion : 30,
+            minSdkVersion    : 29,
     ]
 
-    androidxSupportVersion = '1.1.0'
+    // 通过 https://mvnrepository.com/ 查询到最新到lib版本
+    // 因为 mace 在android sdk 31 上opencl相关 crash
+    // 导致无法使用sdk 31，只能找到目前"最新"的又支持sdk 30的lib
+
+    androidxSupportVersion = '1.4.2'
     androidxSupportDependencies = [
-            core_ktx        : "androidx.core:core-ktx:$androidxSupportVersion",
-            appcompat       : "androidx.appcompat:appcompat:$androidxSupportVersion",
-            constraintlayout: "androidx.constraintlayout:constraintlayout:${androidxSupportVersion}",
-            annotation      : "androidx.annotation:annotation:$androidxSupportVersion",
-//            material        : "com.google.android.material:material:$androidxSupportVersion"
-//            recyclerview    : "androidx.recyclerview:recyclerview:$androidxSupportVersion",
-//            fragment        : "androidx.fragment:fragment-ktx:$androidxSupportVersion",
-//            preference      : "androidx.preference:preference:$androidxSupportVersion",
-//            exifinterface   : "androidx.exifinterface:exifinterface:${androidxSupportVersion}",
-//            legacy_v4       : "androidx.legacy:legacy-support-v4:${androidxSupportVersion}",
+            //core_ktx 1.7.0 会要求compileSdkVersion是31
+            "core_ktx"      : "androidx.core:core-ktx:1.6.0",
+            //appcompat 1.4.0 会要求compileSdkVersion是31
+            appcompat       : "androidx.appcompat:appcompat:1.3.1",
+            constraintlayout: "androidx.constraintlayout:constraintlayout:2.1.4",
+            annotation      : "androidx.annotation:annotation:1.4.0",
+//            material        : "com.google.android.material:material:1.6.1"
+//            recyclerview    : "androidx.recyclerview:recyclerview:1.2.0",
+//            fragment        : "androidx.fragment:fragment-ktx:1.5.0",
+//            preference      : "androidx.preference:preference:1.2.0",
+//            exifinterface   : "androidx.exifinterface:exifinterface:1.3.3",
+//            legacy_v4       : "androidx.legacy:legacy-support-v4:1.0.0",
     ]
 
-    kotlinVersion = '1.3.70'
-    coroutineVersion = '1.3.7'
+    // 2.4.0会要求compileSdkVersion是31
+    // androidxLifecycleVersion = '2.5.0'
+    androidxLifecycleVersion = '2.2.0'
+    androidxLifecycleDependence = [
+            "livedata_ktx" : "androidx.lifecycle:lifecycle-livedata-ktx:$androidxLifecycleVersion",
+            "viewmodel_ktx": "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidxLifecycleVersion",
+            "common_java8" : "androidx.lifecycle:lifecycle-common-java8:$androidxLifecycleVersion",
+            "service"      : "androidx.lifecycle:lifecycle-service:$androidxLifecycleVersion",
+            "process"      : "androidx.lifecycle:lifecycle-process:$androidxLifecycleVersion",
+            "extensions"   : "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleVersion",
+    ]
+
+    kotlinVersion = '1.7.10'
+    coroutineVersion = '1.6.4'
     kotlinDependencies = [
             "kotlin-jdk"               : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
             "kotlin-reflect"           : "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
@@ -46,31 +64,35 @@ ext {
     // 使用最新的1.1.0库会要求compileSdkVersion是31
     // 但如果compileSdkVersion是31是，mace(native总的opencl相关)会出问题。
     // 所以还是得等到mace最好适配了再改吧
-    def camerax_version = "1.0.0-beta05"
+    def cameraxVersion = "1.0.0-beta05"
     cameraxDependencies = [
-            //"camerax-core"     : "androidx.camera:camera-core:$camerax_version",
-            "camerax-camera2"  : "androidx.camera:camera-camera2:$camerax_version",
-            "camerax-lifecycle": "androidx.camera:camera-lifecycle:$camerax_version",
+            //"camerax-core"     : "androidx.camera:camera-core:cameraxVersion",
+            "camerax-camera2"  : "androidx.camera:camera-camera2:$cameraxVersion",
+            "camerax-lifecycle": "androidx.camera:camera-lifecycle:$cameraxVersion",
             "camerax-view"     : "androidx.camera:camera-view:1.0.0-alpha12",
     ]
 
-    //ai库
+    //tflite库
+    //tensorflow-lite-task-text和tensorflow-lite-task-vision是对tensorflow-lite再一次封装，方便开发使用
+    tfliteVersion = '2.9.0'
+    tfliteSupportVersion = '0.4.1'
     tfDependencies = [
             //tensorflow-lite
-            //"tensorflow-lite"         : "org.tensorflow:tensorflow-lite:2.7.0",
-            //"tensorflow-lite-metadata": "org.tensorflow:tensorflow-lite-metadata:0.3.0",
-            //https://search.maven.org/artifact/org.tensorflow
-            "tensorflow-lite-task-text"          : "org.tensorflow:tensorflow-lite-task-text:0.4.1",
-            "tensorflow-lite-task-vision"        : "org.tensorflow:tensorflow-lite-task-vision:0.3.0",
-            "tensorflow-lite-metadata"           : "org.tensorflow:tensorflow-lite-metadata:0.3.0",
-            "tensorflow-lite-gpu-delegate-plugin": "org.tensorflow:tensorflow-lite-gpu-delegate-plugin:0.3.0",
+            "tensorflow-lite"         : "org.tensorflow:tensorflow-lite:$tfliteVersion",
+            "tensorflow-lite-gpu"     : "org.tensorflow:tensorflow-lite-gpu:$tfliteVersion",
+            "tensorflow-lite-support" : "org.tensorflow:tensorflow-lite-support:$tfliteSupportVersion",
+            "tensorflow-lite-metadata": "org.tensorflow:tensorflow-lite-metadata:$tfliteSupportVersion",
+            //https://search.maven.org/
+//            "tensorflow-lite-task-text"          : "org.tensorflow:tensorflow-lite-task-text:$tfliteSupportVersion",
+//            "tensorflow-lite-task-vision"        : "org.tensorflow:tensorflow-lite-task-vision:$tfliteSupportVersion",
+//            "tensorflow-lite-gpu-delegate-plugin": "org.tensorflow:tensorflow-lite-gpu-delegate-plugin:$tfliteSupportVersion",
     ]
 
-    pytorchVersion = '1.9.0'
+    pytorchVersion = '1.12.2'
     pytorchDependencies = [
             //pytorch
-            "pytorch-android-lite"       : "org.pytorch:pytorch_android_lite:$pytorchVersion",
-            "pytorch_android_torchvision": "org.pytorch:pytorch_android_torchvision:$pytorchVersion",
+            "pytorch-android-lite"            : "org.pytorch:pytorch_android_lite:$pytorchVersion",
+            "pytorch_android_torchvision_lite": "org.pytorch:pytorch_android_torchvision_lite:$pytorchVersion",
     ]
 
     //rx和网络库
@@ -86,12 +108,14 @@ ext {
     ]
 
     //3方库版本
+    roomVersion = '2.3.0'
     threePartyDependencies = [
             //json解析
-            "gson"         : "com.google.code.gson:gson:2.8.6",
+            "gson"         : "com.google.code.gson:gson:2.9.0",
             //room数据库
-            "room-runtime" : "androidx.room:room-runtime:2.2.6",
-            "room-compiler": "androidx.room:room-compiler:2.2.6",
+            //room 2.4.0 会要求compileSdkVersion是31
+            "room-runtime" : "androidx.room:room-runtime:$roomVersion",
+            "room-compiler": "androidx.room:room-compiler:$roomVersion",
     ]
 }
 

@@ -28,12 +28,26 @@ import java.util.Map;
  * @author solo
  */
 public class AiModel implements Parcelable {
-
     /**
      * Creator
      */
+    public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public AiModel createFromParcel(Parcel in) {
+            return new AiModel(in);
+        }
 
-
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public AiModel[] newArray(int size) {
+            return new AiModel[size];
+        }
+    };
     private static final String TAG = AiModel.class.getSimpleName();
     /**
      * 模型名字
@@ -66,6 +80,10 @@ public class AiModel implements Parcelable {
      */
     private int storage = Storage.UNKNOWN;
     /**
+     * 模型是否量化
+     */
+    private boolean isQuantized = false;
+    /**
      * mace模型graph文件
      */
     private String graphPath = "";
@@ -93,19 +111,21 @@ public class AiModel implements Parcelable {
      * @param graph               何种模型
      * @param runtime             模型跑在什么设备上
      * @param storage             模型存在何处
+     * @param isQuantized         模型是否量化
      * @param graphPath           mace模型graph文件
      * @param dataPath            mace模型data文件
      * @param storagePath         mace模型storage目录
      * @param inputTensorsShapes  输入shapes
      * @param outputTensorsShapes 输出shapes
      */
-    public AiModel(String name, String fileName, String configName, String graph, String runtime, int storage, String graphPath, String dataPath, String storagePath, Map<String, int[]> inputTensorsShapes, Map<String, int[]> outputTensorsShapes) {
+    public AiModel(String name, String fileName, String configName, String graph, String runtime, int storage, boolean isQuantized, String graphPath, String dataPath, String storagePath, Map<String, int[]> inputTensorsShapes, Map<String, int[]> outputTensorsShapes) {
         this.name = name;
         this.fileName = fileName;
         this.configName = configName;
         this.graph = graph;
         this.runtime = runtime;
         this.storage = storage;
+        this.isQuantized = isQuantized;
         this.graphPath = graphPath;
         this.dataPath = dataPath;
         this.storagePath = storagePath;
@@ -113,7 +133,10 @@ public class AiModel implements Parcelable {
         this.outputTensorsShapes = outputTensorsShapes;
     }
 
-
+    /**
+     * Parcel
+     * @param in Parcel
+     */
     protected AiModel(Parcel in) {
         name = in.readString();
         fileName = in.readString();
@@ -121,11 +144,15 @@ public class AiModel implements Parcelable {
         graph = in.readString();
         runtime = in.readString();
         storage = in.readInt();
+        isQuantized = in.readByte() != 0;
         graphPath = in.readString();
         dataPath = in.readString();
         storagePath = in.readString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
@@ -134,27 +161,19 @@ public class AiModel implements Parcelable {
         dest.writeString(graph);
         dest.writeString(runtime);
         dest.writeInt(storage);
+        dest.writeByte((byte) (isQuantized ? 1 : 0));
         dest.writeString(graphPath);
         dest.writeString(dataPath);
         dest.writeString(storagePath);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<AiModel> CREATOR = new Creator<AiModel>() {
-        @Override
-        public AiModel createFromParcel(Parcel in) {
-            return new AiModel(in);
-        }
-
-        @Override
-        public AiModel[] newArray(int size) {
-            return new AiModel[size];
-        }
-    };
 
     /**
      * 获取模型名字
@@ -220,6 +239,15 @@ public class AiModel implements Parcelable {
     }
 
     /**
+     * 模型是否量化
+     *
+     * @return ture是量化模型
+     */
+    public boolean isQuantized() {
+        return isQuantized;
+    }
+
+    /**
      * 获取mace模型graph文件
      *
      * @return mace模型graph文件
@@ -269,13 +297,19 @@ public class AiModel implements Parcelable {
      */
     @Override
     public String toString() {
-        return "ModelInfo{" +
+        return "AiModel{" +
                 "name='" + name + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", configName='" + configName + '\'' +
                 ", graph='" + graph + '\'' +
                 ", runtime='" + runtime + '\'' +
                 ", storage=" + storage +
+                ", isQuantized=" + isQuantized +
+                ", graphPath='" + graphPath + '\'' +
+                ", dataPath='" + dataPath + '\'' +
+                ", storagePath='" + storagePath + '\'' +
+                ", inputTensorsShapes=" + inputTensorsShapes +
+                ", outputTensorsShapes=" + outputTensorsShapes +
                 '}';
     }
 
@@ -405,9 +439,10 @@ public class AiModel implements Parcelable {
         private String graph = Graph.UNKNOWN;
         private String runtime = Runtime.CPU;
         private int storage = Storage.ASSETS;
+        private boolean isQuantized = false;
 
-        Map<String, int[]> inputTensorsShapes;
-        Map<String, int[]> outputTensorsShapes;
+        private Map<String, int[]> inputTensorsShapes;
+        private Map<String, int[]> outputTensorsShapes;
 
         /**
          * mace模型graph文件
@@ -485,6 +520,17 @@ public class AiModel implements Parcelable {
          */
         public Builder setStorage(int storage) {
             this.storage = storage;
+            return this;
+        }
+
+        /**
+         * 设置当前模型是否被量化
+         *
+         * @param quantized 量化
+         * @return Builder
+         */
+        public Builder setQuantized(boolean quantized) {
+            isQuantized = quantized;
             return this;
         }
 
@@ -573,7 +619,7 @@ public class AiModel implements Parcelable {
                 throw new IllegalStateException("graph  was not null");
             }
 
-            return new AiModel(name, fileName, configName, graph, runtime, storage, graphPath, dataPath, storagePath, inputTensorsShapes, outputTensorsShapes);
+            return new AiModel(name, fileName, configName, graph, runtime, storage, isQuantized, graphPath, dataPath, storagePath, inputTensorsShapes, outputTensorsShapes);
         }
     }
 

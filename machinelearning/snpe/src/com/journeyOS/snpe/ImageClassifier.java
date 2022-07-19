@@ -49,7 +49,7 @@ public class ImageClassifier extends SnpeClassifier<Bitmap> {
     private TimeStat mTimeStat = null;
 
     @Override
-    protected void onExtraLoad(Application application, AiModel aiModel) {
+    protected boolean onExtraLoad(Application application, AiModel aiModel) {
         /**
          * 初始化 labels
          */
@@ -64,6 +64,8 @@ public class ImageClassifier extends SnpeClassifier<Bitmap> {
          * 需要调试的时候在打开
          */
         //mTimeStat = new TimeStat();
+
+        return true;
     }
 
     /**

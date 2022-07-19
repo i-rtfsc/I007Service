@@ -17,18 +17,19 @@
 package com.journeyOS.tflite;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.machinelearning.Classifier;
 
-import org.tensorflow.lite.task.core.BaseOptions;
-import org.tensorflow.lite.task.text.nlclassifier.NLClassifier;
-import org.tensorflow.lite.task.vision.classifier.ImageClassifier;
-import org.tensorflow.lite.task.vision.classifier.ImageClassifier.ImageClassifierOptions;
+import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.gpu.CompatibilityList;
+import org.tensorflow.lite.gpu.GpuDelegate;
+import org.tensorflow.lite.nnapi.NnApiDelegate;
+import org.tensorflow.lite.support.common.FileUtil;
 
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 /**
  * tensorflow lite
@@ -40,8 +41,29 @@ import java.io.IOException;
 public abstract class TfliteClassifier<T> extends Classifier<T> {
     private static final String TAG = TfliteClassifier.class.getSimpleName();
 
-    protected NLClassifier mTextClassifier = null;
-    protected ImageClassifier mImageClassifier = null;
+    protected boolean isQuantized = false;
+
+    private static final int NUM_THREADS = 3;
+    /**
+     * Options for configuring the Interpreter.
+     */
+    private final Interpreter.Options mTFLiteOptions = new Interpreter.Options();
+    /**
+     * An instance of the driver class to run model inference with Tensorflow Lite.
+     */
+    protected Interpreter mTFLite;
+    /**
+     * 文字识别模型里有词汇表，这个设置成protected，需要需要的模型使用
+     */
+    protected MappedByteBuffer mModelBuffer;
+    /**
+     * Optional GPU delegate for accleration.
+     */
+    private GpuDelegate mGpuDelegate = null;
+    /**
+     * Optional NNAPI delegate for accleration.
+     */
+    private NnApiDelegate mNnApiDelegate = null;
 
     /**
      * {@inheritDoc}
@@ -53,12 +75,7 @@ public abstract class TfliteClassifier<T> extends Classifier<T> {
             return true;
         }
 
-        boolean success = false;
-        if (AiModel.Model.TEXT_CLASSIFICATION.equals(aiModel.getName())) {
-            success = loadTextModel(application, aiModel);
-        } else if (AiModel.Model.IMAGE_CLASSIFICATION.equals(aiModel.getName())) {
-            success = loadImageModel(application, aiModel);
-        }
+        boolean success = loadTfModel(application, aiModel);
 
         return success;
     }
@@ -72,97 +89,51 @@ public abstract class TfliteClassifier<T> extends Classifier<T> {
             SmartLog.e(TAG, "already stopped");
             return true;
         }
-        unloadTextModel();
-        unloadImageModel();
         return true;
     }
 
-    private boolean loadTextModel(Context context, AiModel aiModel) {
-        boolean success = false;
-        String modelName = aiModel.getFileName();
+    boolean loadTfModel(Application application, AiModel aiModel) {
+        isQuantized = aiModel.isQuantized();
         try {
-            startInterval();
-            BaseOptions.Builder builder = BaseOptions.builder();
+            mModelBuffer = FileUtil.loadMappedFile(application, aiModel.getFileName());
             switch (aiModel.getRuntime()) {
                 case AiModel.Runtime.GPU:
-                    SmartLog.w(TAG, "model not support gpu, use cpu...");
-                    // builder.useGpu();
-                    builder.useNnapi();
+                    if (!supportGpu(aiModel.getFileName())) {
+                        SmartLog.w(TAG, "model not support gpu, use cpu...");
+                        mTFLiteOptions.setUseXNNPACK(true);
+                    } else {
+                        CompatibilityList compatList = new CompatibilityList();
+                        if (compatList.isDelegateSupportedOnThisDevice()) {
+                            /**
+                             * if the device has a supported GPU, add the GPU delegate
+                             */
+                            GpuDelegate.Options delegateOptions = compatList.getBestOptionsForThisDevice();
+                            GpuDelegate gpuDelegate = new GpuDelegate(delegateOptions);
+                            mTFLiteOptions.addDelegate(gpuDelegate);
+                            SmartLog.d(TAG, "GPU supported. GPU delegate created and added to options");
+                        } else {
+                            mTFLiteOptions.setUseXNNPACK(true);
+                            SmartLog.d(TAG, "GPU not supported. Default to CPU.");
+                        }
+                    }
                     break;
                 case AiModel.Runtime.NNAPI:
-                    builder.useNnapi();
+                    mNnApiDelegate = new NnApiDelegate();
+                    mTFLiteOptions.addDelegate(mNnApiDelegate);
+                    break;
+                case AiModel.Runtime.CPU:
+                    mTFLiteOptions.setUseXNNPACK(true);
                     break;
                 default:
                     break;
             }
 
-            NLClassifier.NLClassifierOptions options = NLClassifier.NLClassifierOptions.builder()
-                    .setBaseOptions(builder.build())
-                    .build();
-            stopInterval("build tf-lite NLClassifier");
-            startInterval();
-            mTextClassifier = NLClassifier.createFromFileAndOptions(context, modelName, options);
-            //classifier = NLClassifier.createFromFile(context, modelName);
-            stopInterval("create tf-lite NLClassifier");
-            success = true;
-        } catch (IOException ex) {
-            success = false;
-            SmartLog.e(TAG, "error loading model " + ex);
-        }
-
-        return success;
-    }
-
-    private void unloadTextModel() {
-        if (mImageClassifier != null) {
-            mTextClassifier.close();
-            mTextClassifier = null;
-        }
-    }
-
-    private boolean loadImageModel(Context context, AiModel aiModel) {
-        boolean success = false;
-        startInterval();
-        BaseOptions.Builder baseOptionsBuilder = BaseOptions.builder();
-        switch (aiModel.getRuntime()) {
-            case AiModel.Runtime.GPU:
-                if (!supportGpu(aiModel.getFileName())) {
-                    SmartLog.w(TAG, "model not support gpu, use cpu...");
-                    baseOptionsBuilder.useNnapi();
-                } else {
-                    baseOptionsBuilder.useGpu();
-                }
-                break;
-            case AiModel.Runtime.NNAPI:
-                baseOptionsBuilder.useNnapi();
-                break;
-            default:
-                break;
-        }
-
-        // Create the ImageClassifier instance.
-        ImageClassifierOptions options = ImageClassifierOptions.builder()
-                .setBaseOptions(baseOptionsBuilder.build())
-                .setMaxResults(getTopK())
-                .build();
-        stopInterval("build tf-lite ImageClassifier");
-        try {
-            startInterval();
-            mImageClassifier = ImageClassifier.createFromFileAndOptions(context, aiModel.getFileName(), options);
-            stopInterval("create tf-lite ImageClassifier");
-            success = true;
+            mTFLiteOptions.setNumThreads(NUM_THREADS);
+            mTFLite = new Interpreter(mModelBuffer, mTFLiteOptions);
+            return true;
         } catch (IOException e) {
-            success = false;
             e.printStackTrace();
-        }
-
-        return success;
-    }
-
-    private void unloadImageModel() {
-        if (mImageClassifier != null) {
-            mImageClassifier.close();
-            mImageClassifier = null;
+            return false;
         }
     }
 
@@ -174,19 +145,12 @@ public abstract class TfliteClassifier<T> extends Classifier<T> {
      * @param fileName
      * @return
      */
-    private boolean supportGpu(String fileName) {
+    protected boolean supportGpu(String fileName) {
         if (fileName != null && fileName.contains("quant")) {
             return false;
         }
 
         return true;
     }
-
-    /**
-     * 获取多少个结果，等同于我们经常说的 top k
-     *
-     * @return n个结果
-     */
-    protected abstract int getTopK();
 
 }

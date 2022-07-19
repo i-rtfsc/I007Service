@@ -105,8 +105,9 @@ public abstract class Classifier<T> {
      *
      * @param application 上下文
      * @param aiModel     模型配置
+     * @return 是否成功
      */
-    protected abstract void onExtraLoad(Application application, AiModel aiModel);
+    protected abstract boolean onExtraLoad(Application application, AiModel aiModel);
 
     /**
      * 检测

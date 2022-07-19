@@ -33,7 +33,8 @@ public class TextDetector extends PytorchClassifier<String> {
      * {@inheritDoc}
      */
     @Override
-    protected void onExtraLoad(Application application, AiModel aiModel) {
+    protected boolean onExtraLoad(Application application, AiModel aiModel) {
+        return true;
     }
 
     /**

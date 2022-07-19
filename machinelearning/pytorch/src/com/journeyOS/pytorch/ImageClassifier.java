@@ -50,10 +50,12 @@ public class ImageClassifier extends PytorchClassifier<Bitmap> {
      * {@inheritDoc}
      */
     @Override
-    protected void onExtraLoad(Application application, AiModel aiModel) {
+    protected boolean onExtraLoad(Application application, AiModel aiModel) {
         String json = FileUtils.readFileFromAsset(application, aiModel.getConfigName());
         ImageNetClasses imageNetClasses = JsonHelper.fromJson(json, ImageNetClasses.class);
         mImageClasses.addAll(imageNetClasses.labels);
+
+        return true;
     }
 
     /**

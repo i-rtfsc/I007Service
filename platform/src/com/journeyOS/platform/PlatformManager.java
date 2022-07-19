@@ -68,7 +68,7 @@ public final class PlatformManager extends BasePlatformApi {
      * @return 是否支持
      */
     public boolean supportTflite() {
-        return PRODUCT_ML_TFLITE.equals(getProduct());
+        return supportAllModel() || PRODUCT_ML_TFLITE.equals(getProduct());
     }
 
     /**
@@ -77,7 +77,7 @@ public final class PlatformManager extends BasePlatformApi {
      * @return 是否支持
      */
     public boolean supportPytorch() {
-        return PRODUCT_ML_PYTORCH.equals(getProduct());
+        return supportAllModel() || PRODUCT_ML_PYTORCH.equals(getProduct());
     }
 
     /**
@@ -86,7 +86,7 @@ public final class PlatformManager extends BasePlatformApi {
      * @return 是否支持
      */
     public boolean supportSnpe() {
-        return PRODUCT_ML_SNPE.equals(getProduct());
+        return supportAllModel() || PRODUCT_ML_SNPE.equals(getProduct());
     }
 
     /**
@@ -95,7 +95,7 @@ public final class PlatformManager extends BasePlatformApi {
      * @return 是否支持
      */
     public boolean supportMace() {
-        return PRODUCT_ML_MACE.equals(getProduct());
+        return supportAllModel() || PRODUCT_ML_MACE.equals(getProduct());
     }
 
 }

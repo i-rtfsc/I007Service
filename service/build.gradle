@@ -13,6 +13,9 @@ dependencies {
     implementation project(':monitor')
     //camerax
     rootProject.ext.cameraxDependencies.each { dependence -> implementation dependence.value }
+    //lifecycle
+    //rootProject.ext.androidxLifecycleDependence.each { dependence -> implementation dependence.value }
+
 
     //标准版本不需要 machine learning 模块。
     //但service中用调用 machine learning 模块代码，需要用 compileOnly 确保编译不报错。

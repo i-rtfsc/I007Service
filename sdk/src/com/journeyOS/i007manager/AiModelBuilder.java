@@ -48,13 +48,15 @@ public class AiModelBuilder {
          *
          * @return 图像分类模型
          */
-        public static AiModel getTflite(boolean quant) {
+        public static AiModel getTflite(boolean quantized) {
             AiModel.Builder builder = new AiModel.Builder();
             builder.setName(AiModel.Model.IMAGE_CLASSIFICATION);
             builder.setGraph(AiModel.Graph.TF_LITE);
+            builder.setConfigName("mobilenet_labels.json");
 
-            if (quant) {
-                builder.setFileName("mobilenet_v1_1.0_224_quant.tflite");
+            if (quantized) {
+                builder.setFileName("mobilenet_v1_1.0_224_quantized.tflite");
+                builder.setQuantized(true);
                 builder.setRuntime(AiModel.Runtime.CPU);
             } else {
                 builder.setFileName("mobilenet_v1_1.0_224.tflite");
@@ -88,6 +90,7 @@ public class AiModelBuilder {
             return new AiModel.Builder()
                     .setName(AiModel.Model.IMAGE_CLASSIFICATION)
                     .setFileName("inception_v3_quantized.dlc")
+                    .setQuantized(true)
                     .setConfigName("inception_v3_quantized.json")
                     .setGraph(AiModel.Graph.SNPE)
                     .setRuntime(AiModel.Runtime.GPU)
@@ -132,9 +135,10 @@ public class AiModelBuilder {
                 case MOBILENET_V2:
                     builder.setRuntime(AiModel.Runtime.GPU);
                     break;
-                case MOBILENET_V1_QUANT:
-                case MOBILENET_V2_QUANT:
+                case MOBILENET_V1_QUANTIZED:
+                case MOBILENET_V2_QUANTIZED:
                     builder.setRuntime(AiModel.Runtime.CPU);
+                    builder.setQuantized(true);
                     break;
                 default:
                     break;
@@ -171,8 +175,8 @@ public class AiModelBuilder {
         public static enum MaceModel {
             MOBILENET_V1("mobilenet_v1"),
             MOBILENET_V2("mobilenet_v2"),
-            MOBILENET_V1_QUANT("mobilenet_v1_quant"),
-            MOBILENET_V2_QUANT("mobilenet_v2_quant");
+            MOBILENET_V1_QUANTIZED("mobilenet_v1_quant"),
+            MOBILENET_V2_QUANTIZED("mobilenet_v2_quant");
 
             public final String ordinal;
 
