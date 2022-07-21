@@ -30,7 +30,7 @@
 
 
 namespace mace {
-    namespace logging_internal {
+namespace logging_internal {
 
 #define LOG(severity) \
   ::mace::port::Logger(__FILE__, __LINE__, mace::severity)
@@ -61,13 +61,13 @@ namespace mace {
 #define MACE_ASSERT(condition, ...) ((void)0)
 #endif
 
-        template<typename T>
-        T &&CheckNotNull(const char *file, int line, const char *exprtext, T &&t) {
-            if (t == nullptr) {
-                ::mace::port::Logger(file, line, FATAL) << std::string(exprtext);
-            }
-            return std::forward<T>(t);
-        }
+template <typename T>
+T &&CheckNotNull(const char *file, int line, const char *exprtext, T &&t) {
+  if (t == nullptr) {
+    ::mace::port::Logger(file, line, FATAL) << std::string(exprtext);
+  }
+  return std::forward<T>(t);
+}
 
 #define MACE_CHECK_NOTNULL(val) \
   ::mace::logging_internal::CheckNotNull(__FILE__, __LINE__, \
@@ -94,31 +94,30 @@ namespace mace {
     }                                                        \
   }
 
-        class LatencyLogger {
-        public:
-            LatencyLogger(int vlog_level, const std::string &message)
-                    : vlog_level_(vlog_level), message_(message) {
-                if (VLOG_IS_ON(vlog_level_)) {
-                    start_micros_ = NowMicros();
-                    VLOG(vlog_level_) << message_ << " started";
-                }
-            }
+class LatencyLogger {
+ public:
+  LatencyLogger(int vlog_level, const std::string &message)
+      : vlog_level_(vlog_level), message_(message) {
+    if (VLOG_IS_ON(vlog_level_)) {
+      start_micros_ = NowMicros();
+      VLOG(vlog_level_) << message_ << " started";
+    }
+  }
+  ~LatencyLogger() {
+    if (VLOG_IS_ON(vlog_level_)) {
+      int64_t stop_micros = NowMicros();
+      VLOG(vlog_level_) << message_
+                        << " latency: " << stop_micros - start_micros_ << " us";
+    }
+  }
 
-            ~LatencyLogger() {
-                if (VLOG_IS_ON(vlog_level_)) {
-                    int64_t stop_micros = NowMicros();
-                    VLOG(vlog_level_) << message_
-                                      << " latency: " << stop_micros - start_micros_ << " us";
-                }
-            }
+ private:
+  const int vlog_level_;
+  const std::string message_;
+  int64_t start_micros_;
 
-        private:
-            const int vlog_level_;
-            const std::string message_;
-            int64_t start_micros_;
-
-            MACE_DISABLE_COPY_AND_ASSIGN(LatencyLogger);
-        };
+  MACE_DISABLE_COPY_AND_ASSIGN(LatencyLogger);
+};
 
 #define MACE_LATENCY_LOGGER(vlog_level, ...)                                  \
   mace::logging_internal::LatencyLogger latency_logger_##__line__(            \
@@ -134,7 +133,7 @@ namespace mace {
 #define MACE_MEMORY_LOGGING_GUARD()
 #endif
 
-    }  // namespace logging_internal
+}  // namespace logging_internal
 }  // namespace mace
 
 #endif  // MACE_UTILS_LOGGING_H_

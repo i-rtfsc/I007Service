@@ -30,10 +30,6 @@
 #include "MaceFileNetwork.h"
 
 static void _init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
-    if (gInit) {
-        return;
-    }
-
     /**
      * java/util/Map
      */
@@ -73,13 +69,12 @@ static void _init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
     gFloatTensorClass.getSize = env->GetMethodID(gFloatTensorClass.clazz, "getSize", "()I");
 
     /**
-     * com/journeyOS/mace/internal/NativeNetwork
+     * com/journeyOS/mace/internal/NativeFloatTensor
      */
-    gNativeNetworkClass.clazz = env->FindClass("com/journeyOS/mace/internal/NativeNetwork");
-    gNativeNetworkClass.createFloatTensor = env->GetMethodID(gNativeNetworkClass.clazz,
-                                                             "createFloatTensor",
-                                                             "([I)Lcom/journeyOS/mace/core/FloatTensor;");
-    gInit = true;
+    gNativeNetworkClass.clazz = env->FindClass("com/journeyOS/mace/internal/NativeFloatTensor");
+    gNativeNetworkClass.createFloatTensor = env->GetMethodID(gNativeNetworkClass.clazz, "<init>",
+                                                             "([I)V");
+
     return;
 }
 
@@ -194,6 +189,7 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
     LOGI("debug log enable = %d", gDebug);
 
     _init_native_clazz_methods(env, thiz);
+
     /**
      * prepare the path variable
      */
@@ -307,13 +303,15 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
         if (strlen(storage_path_ptr) > 0) {
             maceContext->gpu_context = GPUContextBuilder()
                     .SetStoragePath(storage_path_ptr)
-                    .SetOpenCLCacheReusePolicy(
-                            static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+//                mace tag v1.0.2 无此接口，而用tag v1.1.1则加载文件模型报错
+//                    .SetOpenCLCacheReusePolicy(
+//                            static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
                     .Finalize();
         } else {
             maceContext->gpu_context = GPUContextBuilder()
-                    .SetOpenCLCacheReusePolicy(
-                            static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+//                mace tag v1.0.2 无此接口，而用tag v1.1.1则加载文件模型报错
+//                    .SetOpenCLCacheReusePolicy(
+//                            static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
                     .Finalize();
         }
 
@@ -378,6 +376,8 @@ jboolean jni_native_mace_file_execute(JNIEnv *env, jobject thiz,
          (jlong) (native_mace_context),
          (jlong) (native_mace_context));
     MaceContext *maceContext = (MaceContext *) native_mace_context;
+
+    _init_native_clazz_methods(env, thiz);
 
     map<string, MaceTensor> inputs;
     map<string, MaceTensor> outputs;
@@ -455,7 +455,7 @@ jboolean jni_native_mace_file_execute(JNIEnv *env, jobject thiz,
      * inference
      */
     MaceStatus status = maceContext->engine->Run(inputs, &outputs);
-
+    LOGV("inference status = %d", status.code());
     if (status == MaceStatus::MACE_SUCCESS) {
         for (auto &kv: outputs) {
             auto java_output_tensor_name = kv.first;
@@ -475,9 +475,10 @@ jboolean jni_native_mace_file_execute(JNIEnv *env, jobject thiz,
             /**
              * create the FloatTensor object in java
              */
-            jobject java_float_tensor = env->CallObjectMethod(thiz,
-                                                              gNativeNetworkClass.createFloatTensor,
-                                                              shape);
+            jobject java_float_tensor = env->NewObject(gNativeNetworkClass.clazz,
+                                                       gNativeNetworkClass.createFloatTensor,
+                                                       shape);
+
             delete[] int_shape;
             env->DeleteLocalRef(shape);
 

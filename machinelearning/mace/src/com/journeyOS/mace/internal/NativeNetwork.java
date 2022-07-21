@@ -218,14 +218,24 @@ public class NativeNetwork implements NeuralNetwork {
             boolean ret = NativeMace.nativeMaceFileExecute(mNativeMaceContext, mInputTensors, mOutputTensors);
             return ret ? mOutputTensors : null;
         } else {
-            FloatTensor inputTensor = map.get(mInputTensorName);
-            float[] input = new float[inputTensor.getSize()];
-            inputTensor.read(input, 0, input.length);
-            float[] output = NativeMace.nativeMaceCodeExecute(mNativeMaceContext, input);
-            FloatTensor outputTensor = new NativeFloatTensor(mOutputTensorShape);
-            outputTensor.write(output, 0, output.length);
-            mOutputTensors.put(mOutputTensorName, outputTensor);
-            return output != null ? mOutputTensors : null;
+            if (false) {
+                FloatTensor inputTensor = map.get(mInputTensorName);
+                float[] input = new float[inputTensor.getSize()];
+                inputTensor.read(input, 0, input.length);
+                float[] output = NativeMace.nativeMaceCodeExecuteFloat(mNativeMaceContext, input);
+                FloatTensor outputTensor = new NativeFloatTensor(mOutputTensorShape);
+                outputTensor.write(output, 0, output.length);
+                mOutputTensors.put(mOutputTensorName, outputTensor);
+                return output != null ? mOutputTensors : null;
+            } else {
+                mInputTensors.clear();
+                mOutputTensors.clear();
+                for (String key : map.keySet()) {
+                    mInputTensors.put(key, map.get(key));
+                }
+                boolean ret = NativeMace.nativeMaceCodeExecute(mNativeMaceContext, mInputTensors, mOutputTensors);
+                return ret ? mOutputTensors : null;
+            }
         }
     }
 

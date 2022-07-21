@@ -36,9 +36,14 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
                                                  jint gpu_priority_hint,
                                                  jboolean debug);
 
-jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
-                                         jlong native_mace_context,
-                                         jfloatArray input_data);
+jfloatArray jni_native_mace_code_execute_float(JNIEnv *env, jclass thiz,
+                                               jlong native_mace_context,
+                                               jfloatArray input_data);
+
+jboolean jni_native_mace_code_execute(JNIEnv *env, jobject thiz,
+                                      jlong native_mace_context,
+                                      jobject input_tensors,
+                                      jobject output_tensors);
 
 jboolean jni_native_mace_code_release(JNIEnv *env, jobject thiz,
                                       jlong native_mace_context);
@@ -79,7 +84,8 @@ static JNINativeMethod
         //mace code model
         {"nativeMaceCodeGetModelInfo",        "(Ljava/lang/String;)Lcom/journeyOS/mace/internal/NativeMace;",                                                                      (void *) jni_native_mace_code_get_model_info},
         {"nativeMaceCodeCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIIIZ)J",                                                                   (void *) jni_native_mace_code_create_network_engine},
-        {"nativeMaceCodeExecute",             "(J[F)[F",                                                                                                                           (void *) jni_native_mace_code_execute},
+        {"nativeMaceCodeExecuteFloat",        "(J[F)[F",                                                                                                                           (void *) jni_native_mace_code_execute_float},
+        {"nativeMaceCodeExecute",             "(JLjava/util/Map;Ljava/util/Map;)Z",                                                                                                (void *) jni_native_mace_code_execute},
         {"nativeMaceCodeRelease",             "(J)Z",                                                                                                                              (void *) jni_native_mace_code_release},
         //mace file model
         {"nativeMaceFileCreateNetworkEngine", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIIILjava/util/Map;Ljava/util/Map;Z)J", (void *) jni_native_mace_file_create_network_engine},

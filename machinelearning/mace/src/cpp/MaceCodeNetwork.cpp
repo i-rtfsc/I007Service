@@ -28,6 +28,55 @@
 #include "MaceCommon.h"
 #include "MaceCodeNetwork.h"
 
+static void _init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
+    /**
+     * java/util/Map
+     */
+    gMapClass.clazz = env->FindClass("java/util/Map");
+    gMapClass.entrySet = env->GetMethodID(gMapClass.clazz, "entrySet", "()Ljava/util/Set;");
+    gMapClass.put = env->GetMethodID(gMapClass.clazz, "put",
+                                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+    /**
+     * java/util/Set
+     */
+    gSetClass.clazz = env->FindClass("java/util/Set");
+    gSetClass.iterator = env->GetMethodID(gSetClass.clazz, "iterator", "()Ljava/util/Iterator;");
+
+    /**
+     * java/util/Iterator
+     */
+    gIteratorClass.clazz = env->FindClass("java/util/Iterator");
+    gIteratorClass.hasNext = env->GetMethodID(gIteratorClass.clazz, "hasNext", "()Z");
+    gIteratorClass.next = env->GetMethodID(gIteratorClass.clazz, "next", "()Ljava/lang/Object;");
+
+    /**
+     * java/util/Map$Entry
+     */
+    gMap_EntryClass.clazz = env->FindClass("java/util/Map$Entry");
+    gMap_EntryClass.getKey = env->GetMethodID(gMap_EntryClass.clazz, "getKey",
+                                              "()Ljava/lang/Object;");
+    gMap_EntryClass.getValue = env->GetMethodID(gMap_EntryClass.clazz, "getValue",
+                                                "()Ljava/lang/Object;");
+
+    /**
+     * com/journeyOS/mace/core/FloatTensor
+     */
+    gFloatTensorClass.clazz = env->FindClass("com/journeyOS/mace/core/FloatTensor");
+    gFloatTensorClass.read = env->GetMethodID(gFloatTensorClass.clazz, "read", "([FII)I");
+    gFloatTensorClass.write = env->GetMethodID(gFloatTensorClass.clazz, "write", "([FII)V");
+    gFloatTensorClass.getSize = env->GetMethodID(gFloatTensorClass.clazz, "getSize", "()I");
+
+    /**
+     * com/journeyOS/mace/internal/NativeFloatTensor
+     */
+    gNativeNetworkClass.clazz = env->FindClass("com/journeyOS/mace/internal/NativeFloatTensor");
+    gNativeNetworkClass.createFloatTensor = env->GetMethodID(gNativeNetworkClass.clazz, "<init>",
+                                                             "([I)V");
+
+    return;
+}
+
 jobject jni_native_mace_code_get_model_info(JNIEnv *env, jclass thiz, jstring model_name_str) {
     LOGV("Enter : %s", __func__);
 
@@ -180,13 +229,15 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     if (strlen(storage_file_path.c_str()) > 0) {
         maceContext->gpu_context = GPUContextBuilder()
                 .SetStoragePath(storage_path_ptr)
-                .SetOpenCLCacheReusePolicy(
-                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+//                mace tag v1.0.2 无此接口
+//                .SetOpenCLCacheReusePolicy(
+//                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
                 .Finalize();
     } else {
         maceContext->gpu_context = GPUContextBuilder()
-                .SetOpenCLCacheReusePolicy(
-                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
+//                mace tag v1.0.2 无此接口
+//                .SetOpenCLCacheReusePolicy(
+//                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
                 .Finalize();
     }
 
@@ -269,9 +320,9 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     return (jlong) (maceContext);
 }
 
-jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
-                                         jlong native_mace_context,
-                                         jfloatArray input_data) {
+jfloatArray jni_native_mace_code_execute_float(JNIEnv *env, jclass thiz,
+                                               jlong native_mace_context,
+                                               jfloatArray input_data) {
 
     LOGV("%s() start, native_mace_context = %ld : 0x%lx", __func__,
          (jlong) (native_mace_context),
@@ -350,6 +401,157 @@ jfloatArray jni_native_mace_code_execute(JNIEnv *env, jclass thiz,
     return jOutputData;
 }
 
+jboolean jni_native_mace_code_execute(JNIEnv *env, jobject thiz,
+                                      jlong native_mace_context,
+                                      jobject input_tensors,
+                                      jobject output_tensors) {
+    LOGV("%s() with native_mace_context = %ld : 0x%lx", __func__,
+         (jlong) (native_mace_context),
+         (jlong) (native_mace_context));
+
+    _init_native_clazz_methods(env, thiz);
+
+    MaceContext *maceContext = (MaceContext *) native_mace_context;
+
+    //  prepare input and output
+    auto model_info_iter = maceContext->model_infos.find(maceContext->model_name);
+    if (model_info_iter == maceContext->model_infos.end()) {
+        LOGE("Invalid mace_file_model name: %s", maceContext->model_name.c_str());
+        return false;
+    }
+
+    const ModelInfo &model_info = model_info_iter->second;
+
+    const string &input_name = model_info.input_name;
+    const string &output_name = model_info.output_name;
+
+    const vector<int64_t> &input_shape = model_info.input_shape;
+    const vector<int64_t> &output_shape = model_info.output_shape;
+
+    const int64_t input_size = accumulate(input_shape.begin(), input_shape.end(), 1,
+                                          multiplies<int64_t>());
+    const int64_t output_size = accumulate(output_shape.begin(), output_shape.end(), 1,
+                                           multiplies<int64_t>());
+
+
+    map<string, MaceTensor> inputs;
+    map<string, MaceTensor> outputs;
+
+    /**
+     * for input tensor
+     */
+    jobject inputTensorsKeyObj = env->CallObjectMethod(input_tensors, gMapClass.entrySet);
+    jobject inputTensorsKeyIteratorObj = env->CallObjectMethod(inputTensorsKeyObj,
+                                                               gSetClass.iterator);
+    while (env->CallBooleanMethod(inputTensorsKeyIteratorObj, gIteratorClass.hasNext)) {
+        jobject entryObj = env->CallObjectMethod(inputTensorsKeyIteratorObj, gIteratorClass.next);
+        jstring inputTensorName = (jstring) env->CallObjectMethod(entryObj, gMap_EntryClass.getKey);
+        jobject inputTensor = (jobject) env->CallObjectMethod(entryObj, gMap_EntryClass.getValue);
+
+        const char *inputTensorName_ptr = env->GetStringUTFChars(inputTensorName, nullptr);
+
+        auto tensorShape = input_name.c_str();
+        env->ReleaseStringUTFChars(inputTensorName, inputTensorName_ptr);
+
+        /**
+         * tensor shape
+         */
+        const int tensor_size = input_size;
+
+        /**
+         * check input name and size
+         */
+        jint input_size = env->CallIntMethod(inputTensor, gFloatTensorClass.getSize);
+        if (input_size != tensor_size) {
+            LOGE("input_size(%d) not equal as extern tensor_size(%d)", input_size, tensor_size);
+            return false;
+        }
+        LOGV("execute input tensor name : %s , tensor_size = %d, input_size = %d", tensorShape,
+             tensor_size, input_size);
+
+        jfloatArray read_buffer = (jfloatArray) env->NewFloatArray(input_size);
+        jint read_size = env->CallIntMethod(inputTensor, gFloatTensorClass.read, read_buffer, 0,
+                                            input_size);
+        jfloat *read_native_buffer = env->GetFloatArrayElements(read_buffer, 0);
+        auto input_tensor_data = shared_ptr<float>(new float[input_size],
+                                                   default_delete<float[]>());
+        copy_n(read_native_buffer, input_size, input_tensor_data.get());
+        env->ReleaseFloatArrayElements(read_buffer, read_native_buffer, 0);
+        env->DeleteLocalRef(read_buffer);
+
+        LOGV("read_size = %d", read_size);
+        inputs[tensorShape] = MaceTensor(input_shape, input_tensor_data);
+    }
+
+    /**
+     * for output tensor
+     */
+
+    auto buffer_out = shared_ptr<float>(new float[output_size], default_delete<float[]>());
+    /**
+     * check input name and size
+     */
+    outputs[output_name.c_str()] = MaceTensor(output_shape, buffer_out);
+
+    /**
+     * inference
+     */
+    MaceStatus status = maceContext->engine->Run(inputs, &outputs);
+    LOGV("inference status = %d", status.code());
+
+    if (status == MaceStatus::MACE_SUCCESS) {
+        for (auto &kv: outputs) {
+            auto java_output_tensor_name = kv.first;
+            auto java_output_tensor_shape = kv.second.shape();
+            auto java_output_tensor_data = kv.second.data().get();
+
+            /**
+             * construct shape array
+             */
+            jintArray shape = (jintArray) env->NewIntArray(java_output_tensor_shape.size());
+            auto int_shape = new jint[java_output_tensor_shape.size()];
+            for (int i = 0; i < java_output_tensor_shape.size(); i++) {
+                int_shape[i] = java_output_tensor_shape.data()[i];
+            }
+            env->SetIntArrayRegion(shape, 0, java_output_tensor_shape.size(), int_shape);
+
+            /**
+             * create the FloatTensor object in java
+             */
+            jobject java_float_tensor = env->NewObject(gNativeNetworkClass.clazz,
+                                                       gNativeNetworkClass.createFloatTensor,
+                                                       shape);
+
+            delete[] int_shape;
+            env->DeleteLocalRef(shape);
+
+            /**
+             * construct data array
+             */
+            int output_size = env->CallIntMethod(java_float_tensor, gFloatTensorClass.getSize);
+            jfloatArray data = (jfloatArray) env->NewFloatArray(output_size);
+            auto float_data = new jfloat[output_size];
+            for (int i = 0; i < output_size; i++) {
+                float_data[i] = java_output_tensor_data[i];
+            }
+            env->SetFloatArrayRegion(data, 0, output_size, float_data);
+            delete[] float_data;
+
+            env->CallVoidMethod(java_float_tensor, gFloatTensorClass.write, data, 0, output_size);
+            env->DeleteLocalRef(data);
+
+            /**
+             * add to outputs map in java
+             */
+            jstring java_string = env->NewStringUTF(java_output_tensor_name.c_str());
+            env->CallObjectMethod(output_tensors, gMapClass.put, java_string, java_float_tensor);
+            env->DeleteLocalRef(java_string);
+        }
+    }
+    LOGV("Leave : %s with maceContext = %ld : 0x%lx", __func__, (jlong) (maceContext),
+         (jlong) (maceContext));
+    return status == MaceStatus::MACE_SUCCESS;
+}
 
 jboolean jni_native_mace_code_release(JNIEnv *env, jobject thiz, jlong native_mace_context) {
     if (gDebug) {

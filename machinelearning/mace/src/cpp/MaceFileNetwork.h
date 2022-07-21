@@ -39,6 +39,7 @@ struct MaceContext {
     ModelInfo model_infos;
 };
 
+
 static struct {
     jclass clazz;
     jmethodID entrySet;
@@ -73,8 +74,6 @@ static struct {
     jclass clazz;
     jmethodID createFloatTensor;
 } gNativeNetworkClass;
-
-static bool gInit = false;
 
 static bool gDebug = false;
 

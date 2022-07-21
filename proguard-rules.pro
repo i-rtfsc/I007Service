@@ -56,3 +56,4 @@
 
 #jni 不参与混淆
 -keep class com.journeyOS.mace.internal.*
+-keep class com.journeyOS.mace.core.*

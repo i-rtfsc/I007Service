@@ -203,7 +203,7 @@ public class AiImageActivity extends AppCompatActivity {
     }
 
     private void handleCapturePic(ImageProxy image) {
-        SmartLog.d(TAG, "isUserRun = [" + isUserRun + "]");
+        //SmartLog.d(TAG, "isUserRun = [" + isUserRun + "]");
         if (!isLoadModel || !isUserRun) {
             image.close();
             return;

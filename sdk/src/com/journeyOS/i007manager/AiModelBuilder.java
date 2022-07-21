@@ -157,8 +157,8 @@ public class AiModelBuilder {
             switch (maceModel) {
                 case MOBILENET_V1:
                     builder.setRuntime(AiModel.Runtime.GPU);
-                    builder.setMaceFileModelData("/sdcard/mobilenet_v1/mobilenet_v1.data");
-                    builder.setMaceFileModelGraph("/sdcard/mobilenet_v1/mobilenet_v1.pb");
+                    builder.setMaceFileModelData("mobilenet_v1.data");
+                    builder.setMaceFileModelGraph("mobilenet_v1.pb");
                     Map<String, int[]> inputTensorsShapes = new HashMap<>();
                     inputTensorsShapes.put("input", new int[]{1, 224, 224, 3});
                     builder.setInputTensorsShapes(inputTensorsShapes);

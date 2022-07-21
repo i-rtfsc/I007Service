@@ -162,7 +162,19 @@ public class NativeMace {
      * @param input             输入的数据
      * @return 输出结果
      */
-    public static native float[] nativeMaceCodeExecute(long nativeMaceContext, float[] input);
+    public static native float[] nativeMaceCodeExecuteFloat(long nativeMaceContext, float[] input);
+
+    /**
+     * 推演
+     *
+     * @param nativeMaceContext mace上下文
+     * @param inputTensors      输入的shape
+     * @param outputTensors     输出的shape
+     * @return 是否成功
+     */
+    public static native boolean nativeMaceCodeExecute(long nativeMaceContext,
+                                                       Map<String, FloatTensor> inputTensors,
+                                                       Map<String, FloatTensor> outputTensors);
 
     /**
      * @param nativeMaceContext mace上下文

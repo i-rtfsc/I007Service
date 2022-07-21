@@ -19,7 +19,7 @@ package com.journeyOS.mace.core;
 /**
  * @author solo
  */
-public abstract class  FloatTensor extends Tensor {
+public abstract class FloatTensor extends Tensor {
     private final String TAG = FloatTensor.class.getSimpleName();
 
     /**

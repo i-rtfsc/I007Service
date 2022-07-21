@@ -48,15 +48,11 @@ namespace mace {
         public:
             virtual int64_t NowMicros() = 0;
 
-            virtual uint32_t CalculateCRC32(const unsigned char *p, uint64_t n);
-
-            virtual bool CheckArrayCRC32(const unsigned char *data, uint64_t len);
-
             virtual MaceStatus AdviseFree(void *addr, size_t length);
 
             virtual MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs);
 
-            virtual MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids);
+            virtual MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids);
 
             virtual FileSystem *GetFileSystem() = 0;
 
@@ -64,9 +60,9 @@ namespace mace {
 
             // Return the current backtrace, will allocate memory inside the call
             // which may fail
-            virtual std::vector <std::string> GetBackTraceUnsafe(int max_steps) = 0;
+            virtual std::vector<std::string> GetBackTraceUnsafe(int max_steps) = 0;
 
-            virtual std::unique_ptr <MallocLogger> NewMallocLogger(
+            virtual std::unique_ptr<MallocLogger> NewMallocLogger(
                     std::ostringstream *oss,
                     const std::string &name);
 
@@ -79,14 +75,6 @@ namespace mace {
         return port::Env::Default()->NowMicros();
     }
 
-    inline uint32_t CalculateCRC32(const unsigned char *p, uint64_t n) {
-        return port::Env::Default()->CalculateCRC32(p, n);
-    }
-
-    inline bool CheckArrayCRC32(const unsigned char *data, uint64_t len) {
-        return port::Env::Default()->CheckArrayCRC32(data, len);
-    }
-
     inline MaceStatus AdviseFree(void *addr, size_t length) {
         return port::Env::Default()->AdviseFree(addr, length);
     }
@@ -95,7 +83,7 @@ namespace mace {
         return port::Env::Default()->GetCPUMaxFreq(max_freqs);
     }
 
-    inline MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids) {
+    inline MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids) {
         return port::Env::Default()->SchedSetAffinity(cpu_ids);
     }
 
@@ -115,20 +103,20 @@ namespace mace {
 #if defined(__ANDROID__) || defined(__hexagon__)
         *memptr = memalign(alignment, size);
         if (*memptr == nullptr) {
-          return MaceStatus::MACE_OUT_OF_RESOURCES;
+            return MaceStatus::MACE_OUT_OF_RESOURCES;
         } else {
-          return MaceStatus::MACE_SUCCESS;
+            return MaceStatus::MACE_SUCCESS;
         }
 #else
         int error = posix_memalign(memptr, alignment, size);
         if (error != 0) {
-            if (*memptr != nullptr) {
-                free(*memptr);
-                *memptr = nullptr;
-            }
-            return MaceStatus::MACE_OUT_OF_RESOURCES;
+          if (*memptr != nullptr) {
+            free(*memptr);
+            *memptr = nullptr;
+          }
+          return MaceStatus::MACE_OUT_OF_RESOURCES;
         } else {
-            return MaceStatus::MACE_SUCCESS;
+          return MaceStatus::MACE_SUCCESS;
         }
 #endif
 #endif
@@ -160,8 +148,6 @@ namespace mace {
 #if defined(_WIN32) && !defined(S_ISREG)
 #define S_ISREG(m) (((m) & 0170000) == (0100000))
 #endif
-
-#define CRC32SIZE 4
 }  // namespace mace
 
 #endif  // MACE_PORT_ENV_H_

@@ -14,44 +14,28 @@
 
 // This is a generated file. DO NOT EDIT!
 
-#ifndef MACE_CODEGEN_MODELS_MOBILENET_V2_H_
-#define MACE_CODEGEN_MODELS_MOBILENET_V2_H_
+#ifndef MACE_CODEGEN_MODELS_MOBILENET_V2_MOBILENET_V2_H_
+#define MACE_CODEGEN_MODELS_MOBILENET_V2_MOBILENET_V2_H_
 
 #include <string>
 
 #include "mace/public/mace.h"
 
 namespace mace {
-    namespace mobilenet_v2 {
+namespace mobilenet_v2 {
 
 
-        MACE_API extern const unsigned char *LoadModelData();
+MACE_API extern const unsigned char *LoadModelData();
+MACE_API extern const int64_t GetModelSize();
 
-        MACE_API extern const int64_t
+MACE_API extern const std::shared_ptr<NetDef> CreateNet();
 
-        GetModelSize();
+MACE_API extern const std::string ModelName();
+MACE_API extern const std::string ModelChecksum();
+MACE_API extern const std::string ModelBuildTime();
+MACE_API extern const std::string ModelBuildOptions();
 
-        MACE_API extern const std::shared_ptr<MultiNetDef>
-
-        CreateMultiNet();
-
-        MACE_API extern const std::string
-
-        ModelName();
-
-        MACE_API extern const std::string
-
-        ModelChecksum();
-
-        MACE_API extern const std::string
-
-        ModelBuildTime();
-
-        MACE_API extern const std::string
-
-        ModelBuildOptions();
-
-    }  // namespace mobilenet_v2
+}  // namespace mobilenet_v2
 }  // namespace mace
 
-#endif  // MACE_CODEGEN_MODELS_MOBILENET_V2_H_
+#endif  // MACE_CODEGEN_MODELS_MOBILENET_V2_MOBILENET_V2_H_

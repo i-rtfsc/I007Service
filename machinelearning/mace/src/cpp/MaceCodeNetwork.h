@@ -59,6 +59,41 @@ static struct {
     jmethodID setOutputTensorShape;
 } gNativeMaceClass;
 
+static struct {
+    jclass clazz;
+    jmethodID entrySet;
+    jmethodID put;
+} gMapClass;
+
+static struct {
+    jclass clazz;
+    jmethodID iterator;
+} gSetClass;
+
+static struct {
+    jclass clazz;
+    jmethodID hasNext;
+    jmethodID next;
+} gIteratorClass;
+
+static struct {
+    jclass clazz;
+    jmethodID getKey;
+    jmethodID getValue;
+} gMap_EntryClass;
+
+static struct {
+    jclass clazz;
+    jmethodID read;
+    jmethodID write;
+    jmethodID getSize;
+} gFloatTensorClass;
+
+static struct {
+    jclass clazz;
+    jmethodID createFloatTensor;
+} gNativeNetworkClass;
+
 static bool gDebug = false;
 
 #endif //_MACE_CODE_NETWORK_H

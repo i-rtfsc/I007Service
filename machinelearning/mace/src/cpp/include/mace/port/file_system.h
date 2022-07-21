@@ -23,68 +23,53 @@
 #include "mace/utils/macros.h"
 
 namespace mace {
-    namespace port {
+namespace port {
 
-        class ReadOnlyMemoryRegion {
-        public:
-            ReadOnlyMemoryRegion() = default;
+class ReadOnlyMemoryRegion {
+ public:
+  ReadOnlyMemoryRegion() = default;
+  virtual ~ReadOnlyMemoryRegion() = default;
+  virtual const void *data() const = 0;
+  virtual uint64_t length() const = 0;
+ private:
+  MACE_DISABLE_COPY_AND_ASSIGN(ReadOnlyMemoryRegion);
+};
 
-            virtual ~ReadOnlyMemoryRegion() = default;
+class ReadOnlyBufferMemoryRegion : public ReadOnlyMemoryRegion {
+ public:
+  ReadOnlyBufferMemoryRegion() : data_(nullptr), length_(0) {}
+  ReadOnlyBufferMemoryRegion(const void *data, uint64_t length) :
+    data_(data), length_(length) {}
+  const void *data() const override { return data_; }
+  uint64_t length() const override { return length_; }
 
-            virtual const void *data() const = 0;
+ private:
+  const void *data_;
+  uint64_t length_;
+};
 
-            virtual uint64_t length() const = 0;
+class WritableFile {
+ public:
+  WritableFile() {}
+  virtual ~WritableFile();
+  virtual MaceStatus Append(const char *data, size_t length) = 0;
+  virtual MaceStatus Close() = 0;
+  virtual MaceStatus Flush() = 0;
+ private:
+  MACE_DISABLE_COPY_AND_ASSIGN(WritableFile);
+};
 
-        private:
-            MACE_DISABLE_COPY_AND_ASSIGN(ReadOnlyMemoryRegion);
-        };
+class FileSystem {
+ public:
+  FileSystem() = default;
+  virtual ~FileSystem() = default;
+  virtual MaceStatus NewReadOnlyMemoryRegionFromFile(const char *fname,
+      std::unique_ptr<ReadOnlyMemoryRegion>* result) = 0;
+  virtual MaceStatus NewWritableFile(const char *fname,
+      std::unique_ptr<WritableFile>* result);
+};
 
-        class ReadOnlyBufferMemoryRegion : public ReadOnlyMemoryRegion {
-        public:
-            ReadOnlyBufferMemoryRegion() : data_(nullptr), length_(0) {}
-
-            ReadOnlyBufferMemoryRegion(const void *data, uint64_t length) :
-                    data_(data), length_(length) {}
-
-            const void *data() const override { return data_; }
-
-            uint64_t length() const override { return length_; }
-
-        private:
-            const void *data_;
-            uint64_t length_;
-        };
-
-        class WritableFile {
-        public:
-            WritableFile() {}
-
-            virtual ~WritableFile();
-
-            virtual MaceStatus Append(const char *data, size_t length) = 0;
-
-            virtual MaceStatus Close() = 0;
-
-            virtual MaceStatus Flush() = 0;
-
-        private:
-            MACE_DISABLE_COPY_AND_ASSIGN(WritableFile);
-        };
-
-        class FileSystem {
-        public:
-            FileSystem() = default;
-
-            virtual ~FileSystem() = default;
-
-            virtual MaceStatus NewReadOnlyMemoryRegionFromFile(const char *fname,
-                                                               std::unique_ptr <ReadOnlyMemoryRegion> *result) = 0;
-
-            virtual MaceStatus NewWritableFile(const char *fname,
-                                               std::unique_ptr <WritableFile> *result);
-        };
-
-    }  // namespace port
+}  // namespace port
 }  // namespace mace
 
 #endif  // MACE_PORT_FILE_SYSTEM_H_

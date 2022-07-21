@@ -19,6 +19,7 @@ package com.journeyOS.mace;
 import android.app.Application;
 import android.text.TextUtils;
 
+import com.journeyOS.common.utils.FileUtils;
 import com.journeyOS.i007manager.AiModel;
 import com.journeyOS.i007manager.SmartLog;
 import com.journeyOS.mace.core.FloatTensor;
@@ -162,8 +163,9 @@ public abstract class MaceClassifier<T> extends Classifier<T> {
         if (!TextUtils.isEmpty(aiModel.getMaceFileModelGraph())) {
             try {
                 builder.setStorageDirectory(application.getFilesDir().getAbsolutePath());
-                builder.setModelData(aiModel.getMaceFileModelData());
-                builder.setModelGraph(aiModel.getMaceFileModelGraph());
+                builder.setModelData(FileUtils.assetFilePath(application, aiModel.getMaceFileModelData()));
+                builder.setModelGraph(FileUtils.assetFilePath(application, aiModel.getMaceFileModelGraph()));
+
                 builder.setInputLayers(aiModel.getInputTensorsShapes());
                 builder.setOutputLayers(aiModel.getOutputTensorsShapes());
             } catch (IOException e) {
