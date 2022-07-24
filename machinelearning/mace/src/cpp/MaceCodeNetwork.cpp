@@ -30,6 +30,35 @@
 
 static void _init_native_clazz_methods(JNIEnv *env, jobject clazz_obj) {
     /**
+     * com/journeyOS/mace/internal/NativeMace
+     */
+    gNativeMaceClass.clazz = env->FindClass("com/journeyOS/mace/internal/NativeMace");
+
+    /**
+     * 获取构造函数
+     */
+    gNativeMaceClass.init = env->GetMethodID(gNativeMaceClass.clazz, "<init>", "()V");
+
+    gNativeMaceClass.object = env->NewObject(gNativeMaceClass.clazz, gNativeMaceClass.init);
+
+    gNativeMaceClass.setModelVersion = env->GetMethodID(gNativeMaceClass.clazz,
+                                                        "setModelVersion",
+                                                        "(Ljava/lang/String;)V");
+
+    /**
+     * 获取 setInputTensorShape 函数
+     */
+    gNativeMaceClass.setInputTensorShape = env->GetMethodID(gNativeMaceClass.clazz,
+                                                            "setInputTensorShape",
+                                                            "(Ljava/lang/String;[I)V");
+    /**
+     * 获取 setOutputTensorShape 函数
+     */
+    gNativeMaceClass.setOutputTensorShape = env->GetMethodID(gNativeMaceClass.clazz,
+                                                             "setOutputTensorShape",
+                                                             "(Ljava/lang/String;[I)V");
+
+    /**
      * java/util/Map
      */
     gMapClass.clazz = env->FindClass("java/util/Map");
@@ -81,43 +110,15 @@ jobject jni_native_mace_code_get_model_info(JNIEnv *env, jclass thiz, jstring mo
     LOGV("Enter : %s", __func__);
 
     // parse mace_file_model name
-    const char *model_name_ptr = env->GetStringUTFChars(model_name_str, nullptr);
-    if (model_name_ptr == nullptr) {
-        return nullptr;
+    string model_name = MaceCommon::getInstance()->stringFromJni(env, model_name_str);
+    if (gDebug) {
+        LOGD("mace_file_model name = %s", model_name.c_str());
     }
 
-    /**
-     * com/journeyOS/mace/internal/NativeMace
-     */
-    gNativeMaceClass.clazz = env->FindClass("com/journeyOS/mace/internal/NativeMace");
-
-    /**
-     * 获取构造函数
-     */
-    gNativeMaceClass.init = env->GetMethodID(gNativeMaceClass.clazz, "<init>", "()V");
-
-    gNativeMaceClass.object = env->NewObject(gNativeMaceClass.clazz, gNativeMaceClass.init);
-
-    gNativeMaceClass.setModelVersion = env->GetMethodID(gNativeMaceClass.clazz,
-                                                        "setModelVersion",
-                                                        "(Ljava/lang/String;)V");
-
-    /**
-     * 获取 setInputTensorShape 函数
-     */
-    gNativeMaceClass.setInputTensorShape = env->GetMethodID(gNativeMaceClass.clazz,
-                                                            "setInputTensorShape",
-                                                            "(Ljava/lang/String;[I)V");
-    /**
-     * 获取 setOutputTensorShape 函数
-     */
-    gNativeMaceClass.setOutputTensorShape = env->GetMethodID(gNativeMaceClass.clazz,
-                                                             "setOutputTensorShape",
-                                                             "(Ljava/lang/String;[I)V");
+    _init_native_clazz_methods(env, thiz);
 
     MaceContext *maceContext = new MaceContext();
-    maceContext->model_name.assign(model_name_ptr);
-    env->ReleaseStringUTFChars(model_name_str, model_name_ptr);
+    maceContext->model_name.assign(model_name);
 
     auto model_info_iter = maceContext->model_infos.find(maceContext->model_name);
     if (model_info_iter == maceContext->model_infos.end()) {
@@ -207,16 +208,10 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
      * DO NOT USE tmp directory.
      * Please use APP's own directory and make sure the directory exists.
      */
-    const char *storage_path_ptr = env->GetStringUTFChars(storage_path, nullptr);
+    string _storage_file_path = MaceCommon::getInstance()->stringFromJni(env, storage_path);
     if (gDebug) {
-        LOGD("storage path = %s", storage_path_ptr);
+        LOGD("storage path = %s", _storage_file_path.c_str());
     }
-    if (storage_path_ptr == nullptr) {
-        LOGE("storage path was null");
-        return JNI_ERR;
-    }
-    const string storage_file_path(storage_path_ptr);
-    env->ReleaseStringUTFChars(storage_path, storage_path_ptr);
 
     /**
      * create MaceContext
@@ -226,9 +221,9 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     /**
      * SetStoragePath will be replaced by SetOpenCLCacheFullPath in the future
      */
-    if (strlen(storage_file_path.c_str()) > 0) {
+    if (strlen(_storage_file_path.c_str()) > 0) {
         maceContext->gpu_context = GPUContextBuilder()
-                .SetStoragePath(storage_path_ptr)
+                .SetStoragePath(_storage_file_path)
 //                mace tag v1.0.2 无此接口
 //                .SetOpenCLCacheReusePolicy(
 //                        static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
@@ -244,16 +239,12 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     /**
      * get device(runtime)
      */
-    const char *target_runtime_ptr = env->GetStringUTFChars(target_runtime, nullptr);
+    string _target_runtime = MaceCommon::getInstance()->stringFromJni(env, target_runtime);
     if (gDebug) {
-        LOGD("runtime = %s", target_runtime_ptr);
+        LOGD("runtime = %s", _target_runtime.c_str());
     }
-    if (target_runtime_ptr == nullptr) {
-        LOGE("target runtime was null");
-        return JNI_ERR;
-    }
-    maceContext->device_type = MaceCommon::getInstance()->parseDeviceType(target_runtime_ptr);
-    env->ReleaseStringUTFChars(target_runtime, target_runtime_ptr);
+    maceContext->device_type = MaceCommon::getInstance()->parseDeviceType(_target_runtime);
+
 
     /**
      * create MaceEngineConfig
@@ -280,15 +271,12 @@ jlong jni_native_mace_code_create_network_engine(JNIEnv *env, jclass thiz,
     /**
      * parse mace_file_model name
      */
-    const char *model_name_ptr = env->GetStringUTFChars(model_name_str, nullptr);
+    string _model_name = MaceCommon::getInstance()->stringFromJni(env, model_name_str);
     if (gDebug) {
-        LOGD("model name = %s", model_name_ptr);
+        LOGD("model name = %s", _model_name.c_str());
     }
-    if (model_name_ptr == nullptr) {
-        return JNI_ERR;
-    }
-    maceContext->model_name.assign(model_name_ptr);
-    env->ReleaseStringUTFChars(model_name_str, model_name_ptr);
+
+    maceContext->model_name.assign(_model_name);
 
     /**
      * load mace_file_model input and output name

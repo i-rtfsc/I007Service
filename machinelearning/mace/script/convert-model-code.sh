@@ -65,19 +65,3 @@ if [ $MACE_LINK_TYPE == "dynamic" ]; then
 fi
 
 popd
-
-pushd $MACE_DIR
-
-python $MACE_DIR/tools/converter.py convert --config=$ANDROID_MACE_DIR/mobilenet_v1-code.yml
-cp $MACE_DIR/build/mobilenet_v1/model/$TARGET_ABI/mobilenet_v1.a LIBRARY_DIR/model/$TARGET_ABI
-
-python $MACE_DIR/tools/converter.py convert --config=$ANDROID_MACE_DIR/mobilenet_v1_quant-code.yml
-cp $MACE_DIR/build/mobilenet_v1_quant/model/$TARGET_ABI/mobilenet_v1.a LIBRARY_DIR/model/$TARGET_ABI
-
-python $MACE_DIR/tools/converter.py convert --config=$ANDROID_MACE_DIR/mobilenet_v2-code.yml
-cp $MACE_DIR/build/mobilenet_v2/model/$TARGET_ABI/mobilenet_v2.a LIBRARY_DIR/model/$TARGET_ABI
-
-python $MACE_DIR/tools/converter.py convert --config=$ANDROID_MACE_DIR/mobilenet_v2_quant-code.yml
-cp $MACE_DIR/build/mobilenet_v2_quant/model/$TARGET_ABI/mobilenet_v2_quant.a LIBRARY_DIR/model/$TARGET_ABI
-
-popd

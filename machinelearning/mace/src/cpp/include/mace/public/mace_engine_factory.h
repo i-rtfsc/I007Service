@@ -16,6 +16,7 @@
 
 #ifndef MACE_CODEGEN_ENGINE_MACE_ENGINE_FACTORY_H_
 #define MACE_CODEGEN_ENGINE_MACE_ENGINE_FACTORY_H_
+
 #include <map>
 #include <memory>
 #include <string>
@@ -25,67 +26,83 @@
 
 namespace mace {
 
-namespace mobilenet_v1 {
+    namespace mobilenet_v1 {
 
-extern const unsigned char *LoadModelData();
-extern int64_t GetModelSize();
+        extern const unsigned char *LoadModelData();
 
-extern const std::shared_ptr<NetDef> CreateNet();
+        extern int64_t GetModelSize();
 
-extern const std::string ModelName();
-extern const std::string ModelChecksum();
-extern const std::string ModelBuildTime();
-extern const std::string ModelBuildOptions();
+        extern const std::shared_ptr <NetDef> CreateNet();
 
-}  // namespace mobilenet_v1
-namespace mobilenet_v2 {
+        extern const std::string ModelName();
 
-extern const unsigned char *LoadModelData();
-extern int64_t GetModelSize();
+        extern const std::string ModelChecksum();
 
-extern const std::shared_ptr<NetDef> CreateNet();
+        extern const std::string ModelBuildTime();
 
-extern const std::string ModelName();
-extern const std::string ModelChecksum();
-extern const std::string ModelBuildTime();
-extern const std::string ModelBuildOptions();
+        extern const std::string ModelBuildOptions();
 
-}  // namespace mobilenet_v2
-namespace mobilenet_v1_quant {
+    }  // namespace mobilenet_v1
+    namespace mobilenet_v2 {
 
-extern const unsigned char *LoadModelData();
-extern int64_t GetModelSize();
+        extern const unsigned char *LoadModelData();
 
-extern const std::shared_ptr<NetDef> CreateNet();
+        extern int64_t GetModelSize();
 
-extern const std::string ModelName();
-extern const std::string ModelChecksum();
-extern const std::string ModelBuildTime();
-extern const std::string ModelBuildOptions();
+        extern const std::shared_ptr <NetDef> CreateNet();
 
-}  // namespace mobilenet_v1_quant
-namespace mobilenet_v2_quant {
+        extern const std::string ModelName();
 
-extern const unsigned char *LoadModelData();
-extern int64_t GetModelSize();
+        extern const std::string ModelChecksum();
 
-extern const std::shared_ptr<NetDef> CreateNet();
+        extern const std::string ModelBuildTime();
 
-extern const std::string ModelName();
-extern const std::string ModelChecksum();
-extern const std::string ModelBuildTime();
-extern const std::string ModelBuildOptions();
+        extern const std::string ModelBuildOptions();
 
-}  // namespace mobilenet_v2_quant
+    }  // namespace mobilenet_v2
+    namespace mobilenet_v1_quantized {
 
-namespace {
-std::map<std::string, int> model_name_map {
-  std::make_pair("mobilenet_v1", 0),
-  std::make_pair("mobilenet_v2", 1),
-  std::make_pair("mobilenet_v1_quant", 2),
-  std::make_pair("mobilenet_v2_quant", 3),
-};
-}  // namespace
+        extern const unsigned char *LoadModelData();
+
+        extern int64_t GetModelSize();
+
+        extern const std::shared_ptr <NetDef> CreateNet();
+
+        extern const std::string ModelName();
+
+        extern const std::string ModelChecksum();
+
+        extern const std::string ModelBuildTime();
+
+        extern const std::string ModelBuildOptions();
+
+    }  // namespace mobilenet_v1_quantized
+    namespace mobilenet_v2_quantized {
+
+        extern const unsigned char *LoadModelData();
+
+        extern int64_t GetModelSize();
+
+        extern const std::shared_ptr <NetDef> CreateNet();
+
+        extern const std::string ModelName();
+
+        extern const std::string ModelChecksum();
+
+        extern const std::string ModelBuildTime();
+
+        extern const std::string ModelBuildOptions();
+
+    }  // namespace mobilenet_v2_quantized
+
+    namespace {
+        std::map<std::string, int> model_name_map{
+                std::make_pair("mobilenet_v1", 0),
+                std::make_pair("mobilenet_v2", 1),
+                std::make_pair("mobilenet_v1_quantized", 2),
+                std::make_pair("mobilenet_v2_quantized", 3),
+        };
+    }  // namespace
 
 /// \brief Create MaceEngine from code
 ///
@@ -101,126 +118,126 @@ std::map<std::string, int> model_name_map {
 /// \param engine[out]: output MaceEngine object
 /// \return MaceStatus::MACE_SUCCESS for success, MACE_INVALID_ARGS for wrong arguments,
 ///         MACE_OUT_OF_RESOURCES for resources is out of range.
-__attribute__((deprecated)) MaceStatus CreateMaceEngineFromCode(
-    const std::string &model_name,
-    const std::string &model_data_file,
-    const std::vector<std::string> &input_nodes,
-    const std::vector<std::string> &output_nodes,
-    const MaceEngineConfig &config,
-    std::shared_ptr<MaceEngine> *engine) {
-  // load model
-  if (engine == nullptr) {
-    return MaceStatus::MACE_INVALID_ARGS;
-  }
-  std::shared_ptr<NetDef> net_def;
-  (void)model_data_file;
-  const unsigned char * model_data;
-  MaceStatus status = MaceStatus::MACE_SUCCESS;
-  switch (model_name_map[model_name]) {
-    case 0: {
-      net_def = mace::mobilenet_v1::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v1::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v1::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 1: {
-      net_def = mace::mobilenet_v2::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v2::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v2::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 2: {
-      net_def = mace::mobilenet_v1_quant::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v1_quant::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v1_quant::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 3: {
-      net_def = mace::mobilenet_v2_quant::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v2_quant::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v2_quant::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-   default:
-     status = MaceStatus::MACE_INVALID_ARGS;
-  }
+    __attribute__((deprecated)) MaceStatus CreateMaceEngineFromCode(
+            const std::string &model_name,
+            const std::string &model_data_file,
+            const std::vector <std::string> &input_nodes,
+            const std::vector <std::string> &output_nodes,
+            const MaceEngineConfig &config,
+            std::shared_ptr <MaceEngine> *engine) {
+        // load model
+        if (engine == nullptr) {
+            return MaceStatus::MACE_INVALID_ARGS;
+        }
+        std::shared_ptr <NetDef> net_def;
+        (void) model_data_file;
+        const unsigned char *model_data;
+        MaceStatus status = MaceStatus::MACE_SUCCESS;
+        switch (model_name_map[model_name]) {
+            case 0: {
+                net_def = mace::mobilenet_v1::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v1::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v1::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 1: {
+                net_def = mace::mobilenet_v2::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v2::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v2::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 2: {
+                net_def = mace::mobilenet_v1_quantized::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v1_quantized::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v1_quantized::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 3: {
+                net_def = mace::mobilenet_v2_quantized::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v2_quantized::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v2_quantized::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            default:
+                status = MaceStatus::MACE_INVALID_ARGS;
+        }
 
-  return status;
-}
+        return status;
+    }
 
-MaceStatus CreateMaceEngineFromCode(
-    const std::string &model_name,
-    const unsigned char *model_weights_data,
-    const size_t model_weights_data_size,
-    const std::vector<std::string> &input_nodes,
-    const std::vector<std::string> &output_nodes,
-    const MaceEngineConfig &config,
-    std::shared_ptr<MaceEngine> *engine) {
-  // load model
-  if (engine == nullptr) {
-    return MaceStatus::MACE_INVALID_ARGS;
-  }
-  std::shared_ptr<NetDef> net_def;
-  const unsigned char * model_data;
-  (void)model_weights_data;
-  (void)model_weights_data_size;
+    MaceStatus CreateMaceEngineFromCode(
+            const std::string &model_name,
+            const unsigned char *model_weights_data,
+            const size_t model_weights_data_size,
+            const std::vector <std::string> &input_nodes,
+            const std::vector <std::string> &output_nodes,
+            const MaceEngineConfig &config,
+            std::shared_ptr <MaceEngine> *engine) {
+        // load model
+        if (engine == nullptr) {
+            return MaceStatus::MACE_INVALID_ARGS;
+        }
+        std::shared_ptr <NetDef> net_def;
+        const unsigned char *model_data;
+        (void) model_weights_data;
+        (void) model_weights_data_size;
 
-  MaceStatus status = MaceStatus::MACE_SUCCESS;
-  switch (model_name_map[model_name]) {
-    case 0: {
-      net_def = mace::mobilenet_v1::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v1::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v1::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 1: {
-      net_def = mace::mobilenet_v2::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v2::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v2::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 2: {
-      net_def = mace::mobilenet_v1_quant::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v1_quant::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v1_quant::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-    case 3: {
-      net_def = mace::mobilenet_v2_quant::CreateNet();
-      engine->reset(new mace::MaceEngine(config));
-      model_data = mace::mobilenet_v2_quant::LoadModelData();
-      const int64_t model_size = mace::mobilenet_v2_quant::GetModelSize();
-      status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
-                               model_data, model_size);
-      break;
-    }
-   default:
-     status = MaceStatus::MACE_INVALID_ARGS;
-  }
+        MaceStatus status = MaceStatus::MACE_SUCCESS;
+        switch (model_name_map[model_name]) {
+            case 0: {
+                net_def = mace::mobilenet_v1::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v1::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v1::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 1: {
+                net_def = mace::mobilenet_v2::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v2::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v2::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 2: {
+                net_def = mace::mobilenet_v1_quantized::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v1_quantized::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v1_quantized::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            case 3: {
+                net_def = mace::mobilenet_v2_quantized::CreateNet();
+                engine->reset(new mace::MaceEngine(config));
+                model_data = mace::mobilenet_v2_quantized::LoadModelData();
+                const int64_t model_size = mace::mobilenet_v2_quantized::GetModelSize();
+                status = (*engine)->Init(net_def.get(), input_nodes, output_nodes,
+                                         model_data, model_size);
+                break;
+            }
+            default:
+                status = MaceStatus::MACE_INVALID_ARGS;
+        }
 
-  return status;
-}
+        return status;
+    }
 
 }  // namespace mace
 #endif  // MACE_CODEGEN_ENGINE_MACE_ENGINE_FACTORY_H_

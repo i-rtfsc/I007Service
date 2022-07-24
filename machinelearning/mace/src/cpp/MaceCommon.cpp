@@ -51,9 +51,18 @@ DeviceType MaceCommon::parseDeviceType(const string &device) {
     }
 }
 
+string MaceCommon::stringFromJni(JNIEnv *env, jstring &s) {
+    jboolean isCopy;
+    const char *convertedValue = (env)->GetStringUTFChars(s, &isCopy);
+    string str = string(convertedValue);
+    env->ReleaseStringUTFChars(s, convertedValue);
+    return str;
+}
+
 jstring jni_native_get_mace_version(JNIEnv *env, jclass thiz) {
     const char *mace_version = MaceVersion();
     LOGV("mace version = %s", mace_version);
     return env->NewStringUTF(mace_version);
 }
+
 

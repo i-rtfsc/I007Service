@@ -52,7 +52,7 @@ namespace mace {
 
             virtual MaceStatus GetCPUMaxFreq(std::vector<float> *max_freqs);
 
-            virtual MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids);
+            virtual MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids);
 
             virtual FileSystem *GetFileSystem() = 0;
 
@@ -60,9 +60,9 @@ namespace mace {
 
             // Return the current backtrace, will allocate memory inside the call
             // which may fail
-            virtual std::vector<std::string> GetBackTraceUnsafe(int max_steps) = 0;
+            virtual std::vector <std::string> GetBackTraceUnsafe(int max_steps) = 0;
 
-            virtual std::unique_ptr<MallocLogger> NewMallocLogger(
+            virtual std::unique_ptr <MallocLogger> NewMallocLogger(
                     std::ostringstream *oss,
                     const std::string &name);
 
@@ -83,7 +83,7 @@ namespace mace {
         return port::Env::Default()->GetCPUMaxFreq(max_freqs);
     }
 
-    inline MaceStatus SchedSetAffinity(const std::vector<size_t> &cpu_ids) {
+    inline MaceStatus SchedSetAffinity(const std::vector <size_t> &cpu_ids) {
         return port::Env::Default()->SchedSetAffinity(cpu_ids);
     }
 
@@ -103,20 +103,20 @@ namespace mace {
 #if defined(__ANDROID__) || defined(__hexagon__)
         *memptr = memalign(alignment, size);
         if (*memptr == nullptr) {
-            return MaceStatus::MACE_OUT_OF_RESOURCES;
+          return MaceStatus::MACE_OUT_OF_RESOURCES;
         } else {
-            return MaceStatus::MACE_SUCCESS;
+          return MaceStatus::MACE_SUCCESS;
         }
 #else
         int error = posix_memalign(memptr, alignment, size);
         if (error != 0) {
-          if (*memptr != nullptr) {
-            free(*memptr);
-            *memptr = nullptr;
-          }
-          return MaceStatus::MACE_OUT_OF_RESOURCES;
+            if (*memptr != nullptr) {
+                free(*memptr);
+                *memptr = nullptr;
+            }
+            return MaceStatus::MACE_OUT_OF_RESOURCES;
         } else {
-          return MaceStatus::MACE_SUCCESS;
+            return MaceStatus::MACE_SUCCESS;
         }
 #endif
 #endif

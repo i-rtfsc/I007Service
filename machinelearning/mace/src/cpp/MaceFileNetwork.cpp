@@ -193,39 +193,39 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
     /**
      * prepare the path variable
      */
-    const char *model_name_ptr = env->GetStringUTFChars(model_name, nullptr);
+    string _model_name = MaceCommon::getInstance()->stringFromJni(env, model_name);
     if (gDebug) {
-        LOGD("mace_file_model name = %s", model_name_ptr);
+        LOGD("mace_file_model name = %s", _model_name.c_str());
     }
 
-    const char *model_graph_file_path_ptr = env->GetStringUTFChars(model_graph_file_path, nullptr);
+    string _model_graph_file_path = MaceCommon::getInstance()->stringFromJni(env, model_graph_file_path);
     if (gDebug) {
-        LOGD("mace_file_model graph file = %s", model_graph_file_path_ptr);
+        LOGD("mace_file_model graph file = %s", _model_graph_file_path.c_str());
     }
 
-    const char *model_data_file_path_ptr = env->GetStringUTFChars(model_data_file_path, nullptr);
+    string _model_data_file_path = MaceCommon::getInstance()->stringFromJni(env, model_data_file_path);
     if (gDebug) {
-        LOGD("mace_file_model data file = %s", model_data_file_path_ptr);
+        LOGD("mace_file_model data file = %s", _model_data_file_path.c_str());
     }
 
-    const char *storage_path_ptr = env->GetStringUTFChars(storage_directory, nullptr);
+    string _storage_directory = MaceCommon::getInstance()->stringFromJni(env, storage_directory);
     if (gDebug) {
-        LOGD("storage path = %s", storage_path_ptr);
+        LOGD("storage path = %s", _storage_directory.c_str());
     }
 
-    const char *target_runtime_ptr = env->GetStringUTFChars(target_runtime, nullptr);
+    string _target_runtime = MaceCommon::getInstance()->stringFromJni(env, target_runtime);
     if (gDebug) {
-        LOGD("target runtime = %s", target_runtime_ptr);
+        LOGD("target runtime = %s", _target_runtime.c_str());
     }
 
     /**
      * create MaceContext
      */
     MaceContext *maceContext = new MaceContext;
-    maceContext->model_name = model_name_ptr;
-    maceContext->device_type = MaceCommon::getInstance()->parseDeviceType(target_runtime_ptr);
-    maceContext->model_infos.model_graph_path = string(model_graph_file_path_ptr);
-    maceContext->model_infos.model_data_path = string(model_data_file_path_ptr);
+    maceContext->model_name = _model_name;
+    maceContext->device_type = MaceCommon::getInstance()->parseDeviceType(_target_runtime);
+    maceContext->model_infos.model_graph_path = _model_graph_file_path;
+    maceContext->model_infos.model_data_path = _model_data_file_path;
 
     if (gDebug) {
         LOGD("create MaceContext");
@@ -300,9 +300,9 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
      */
     MaceEngineConfig config(maceContext->device_type);
     if (maceContext->device_type == DeviceType::GPU) {
-        if (strlen(storage_path_ptr) > 0) {
+        if (_storage_directory.length() > 0) {
             maceContext->gpu_context = GPUContextBuilder()
-                    .SetStoragePath(storage_path_ptr)
+                    .SetStoragePath(_storage_directory)
 //                mace tag v1.0.2 无此接口，而用tag v1.1.1则加载文件模型报错
 //                    .SetOpenCLCacheReusePolicy(
 //                            static_cast<OpenCLCacheReusePolicy>(opencl_cache_reuse_policy))
@@ -330,15 +330,6 @@ jlong jni_native_mace_file_create_network_engine(JNIEnv *env, jobject thiz,
     if (gDebug) {
         LOGD("set mace engine context");
     }
-
-    /**
-     * release the resource
-     */
-    env->ReleaseStringUTFChars(model_name, model_name_ptr);
-    env->ReleaseStringUTFChars(model_graph_file_path, model_graph_file_path_ptr);
-    env->ReleaseStringUTFChars(model_data_file_path, model_data_file_path_ptr);
-    env->ReleaseStringUTFChars(storage_directory, storage_path_ptr);
-    env->ReleaseStringUTFChars(storage_directory, target_runtime_ptr);
 
     /**
      * dump the infomation

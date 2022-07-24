@@ -35,6 +35,8 @@ public:
 
     DeviceType parseDeviceType(const string &device);
 
+    string stringFromJni(JNIEnv *env, jstring& s);
+
 private:
     static MaceCommon *sInstance;
 };

@@ -175,8 +175,8 @@ public class AiModelBuilder {
         public static enum MaceModel {
             MOBILENET_V1("mobilenet_v1"),
             MOBILENET_V2("mobilenet_v2"),
-            MOBILENET_V1_QUANTIZED("mobilenet_v1_quant"),
-            MOBILENET_V2_QUANTIZED("mobilenet_v2_quant");
+            MOBILENET_V1_QUANTIZED("mobilenet_v1_quantized"),
+            MOBILENET_V2_QUANTIZED("mobilenet_v2_quantized");
 
             public final String ordinal;
 

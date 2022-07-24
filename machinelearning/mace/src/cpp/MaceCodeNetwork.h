@@ -43,9 +43,9 @@ struct MaceContext {
                                            {1, 224, 224, 3}, {1, 1001}, "v1.0.0"}},
             {"mobilenet_v2",       {"input", "MobilenetV2/Predictions/Reshape_1",
                                            {1, 224, 224, 3}, {1, 1001}, "v2.0.0"}},
-            {"mobilenet_v1_quant", {"input", "MobilenetV1/Predictions/Softmax:0",
+            {"mobilenet_v1_quantized", {"input", "MobilenetV1/Predictions/Softmax:0",
                                            {1, 224, 224, 3}, {1, 1001}, "v1.0.1"}},
-            {"mobilenet_v2_quant", {"input", "output",
+            {"mobilenet_v2_quantized", {"input", "output",
                                            {1, 224, 224, 3}, {1, 1001}, "v2.0.1"}}
     };
 };

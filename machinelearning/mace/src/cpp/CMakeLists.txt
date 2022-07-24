@@ -43,17 +43,17 @@ set(mobilenet_v1_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v1.a")
 add_library(mobilenet_v1_lib STATIC IMPORTED)
 set_target_properties(mobilenet_v1_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v1_lib})
 
-set(mobilenet_v1_quant_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v1_quant.a")
-add_library(mobilenet_v1_quant_lib STATIC IMPORTED)
-set_target_properties(mobilenet_v1_quant_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v1_quant_lib})
+set(mobilenet_v1_quantized_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v1_quantized.a")
+add_library(mobilenet_v1_quantized_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v1_quantized_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v1_quantized_lib})
 
 set(mobilenet_v2_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v2.a")
 add_library(mobilenet_v2_lib STATIC IMPORTED)
 set_target_properties(mobilenet_v2_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_lib})
 
-set(mobilenet_v2_quant_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v2_quant.a")
-add_library(mobilenet_v2_quant_lib STATIC IMPORTED)
-set_target_properties(mobilenet_v2_quant_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_quant_lib})
+set(mobilenet_v2_quantized_lib "${CMAKE_SOURCE_DIR}/model/${arch_eabi}/mobilenet_v2_quantized.a")
+add_library(mobilenet_v2_quantized_lib STATIC IMPORTED)
+set_target_properties(mobilenet_v2_quantized_lib PROPERTIES IMPORTED_LOCATION ${mobilenet_v2_quantized_lib})
 
 add_library(
         # Sets the name of the library.
@@ -82,9 +82,9 @@ target_link_libraries(
         # Specifies the target library.
         mace_neural_network
         mobilenet_v1_lib
-        mobilenet_v1_quant_lib
+        mobilenet_v1_quantized_lib
         mobilenet_v2_lib
-        mobilenet_v2_quant_lib
+        mobilenet_v2_quantized_lib
         mace_lib
         cplusplus_shared_lib
         # Links the target library to the log library
