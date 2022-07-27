@@ -101,6 +101,9 @@ public class AiImageActivity extends AppCompatActivity {
     private PreviewView mPreviewView;
     private TextView mResultTextView;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,12 +136,18 @@ public class AiImageActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStart() {
         super.onStart();
         isLoadModel = mAm.loadModel(mModel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -146,6 +155,9 @@ public class AiImageActivity extends AppCompatActivity {
         stopBackgroundThread();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {

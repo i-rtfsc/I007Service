@@ -84,6 +84,9 @@ public final class AiManagerService extends IAiManager.Stub {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean loadModel(AiModel aiModel) throws RemoteException {
         if (supportMachineLearning) {
@@ -93,6 +96,9 @@ public final class AiManagerService extends IAiManager.Stub {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean unloadModel(AiModel aiModel) throws RemoteException {
         if (supportMachineLearning) {
@@ -102,6 +108,9 @@ public final class AiManagerService extends IAiManager.Stub {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void recognize(AiModel aiModel, AiData aiData, IAiObserver observer) throws RemoteException {
         if (supportMachineLearning) {

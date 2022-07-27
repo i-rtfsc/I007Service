@@ -21,10 +21,11 @@ import android.util.Log;
 import com.journeyOS.i007manager.I007Manager;
 import com.journeyOS.i007manager.I007Result;
 import com.journeyOS.i007manager.SmartLog;
-import com.journeyOS.monitor.worker.AccessibilityBaseMonitor;
-import com.journeyOS.monitor.worker.BatteryBaseMonitor;
-import com.journeyOS.monitor.worker.LcdBaseMonitor;
-import com.journeyOS.monitor.worker.NetworkBaseMonitor;
+import com.journeyOS.monitor.worker.AccessibilityMonitor;
+import com.journeyOS.monitor.worker.BatteryMonitor;
+import com.journeyOS.monitor.worker.HeadSetMonitor;
+import com.journeyOS.monitor.worker.LcdMonitor;
+import com.journeyOS.monitor.worker.NetworkMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,7 @@ public final class MonitorManager {
         if ((factors & I007Manager.SCENE_FACTOR_APP) != 0) {
             BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_APP);
             if (monitor == null) {
-                monitor = AccessibilityBaseMonitor.getInstance();
+                monitor = AccessibilityMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_APP);
                 mMonitors.put(I007Manager.SCENE_FACTOR_APP, monitor);
             }
@@ -91,7 +92,7 @@ public final class MonitorManager {
         if ((factors & I007Manager.SCENE_FACTOR_LCD) != 0) {
             BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_LCD);
             if (monitor == null) {
-                monitor = LcdBaseMonitor.getInstance();
+                monitor = LcdMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_LCD);
                 mMonitors.put(I007Manager.SCENE_FACTOR_LCD, monitor);
             }
@@ -100,21 +101,25 @@ public final class MonitorManager {
         if ((factors & I007Manager.SCENE_FACTOR_NET) != 0) {
             BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_NET);
             if (monitor == null) {
-                monitor = NetworkBaseMonitor.getInstance();
+                monitor = NetworkMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_NET);
                 mMonitors.put(I007Manager.SCENE_FACTOR_NET, monitor);
             }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
-            //TODO
-            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_HEADSET);
+            if (monitor == null) {
+                monitor = HeadSetMonitor.getInstance();
+                monitor.init(I007Manager.SCENE_FACTOR_HEADSET);
+                mMonitors.put(I007Manager.SCENE_FACTOR_HEADSET, monitor);
+            }
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
             BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_BATTERY);
             if (monitor == null) {
-                monitor = BatteryBaseMonitor.getInstance();
+                monitor = BatteryMonitor.getInstance();
                 monitor.init(I007Manager.SCENE_FACTOR_BATTERY);
                 mMonitors.put(I007Manager.SCENE_FACTOR_BATTERY, monitor);
             }
@@ -147,8 +152,8 @@ public final class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
-            //TODO
-            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_HEADSET);
+            result = monitor.start();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {
@@ -182,8 +187,8 @@ public final class MonitorManager {
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_HEADSET) != 0) {
-            //TODO
-            SmartLog.i(TAG, "I007Manager.SCENE_FACTOR_HEADSET");
+            BaseMonitor monitor = mMonitors.get(I007Manager.SCENE_FACTOR_HEADSET);
+            result = monitor.stop();
         }
 
         if ((factors & I007Manager.SCENE_FACTOR_BATTERY) != 0) {

@@ -49,6 +49,7 @@ public class I007Result implements Parcelable {
     private I007Net net;
     private I007Battery battery;
     private I007Screen screen;
+    private I007HeadSet headSet;
 
     /**
      * 构造函数
@@ -58,13 +59,15 @@ public class I007Result implements Parcelable {
      * @param net       网络
      * @param battery   电池
      * @param screen    屏幕
+     * @param headSet   耳机
      */
-    public I007Result(long factoryId, I007App app, I007Net net, I007Battery battery, I007Screen screen) {
+    public I007Result(long factoryId, I007App app, I007Net net, I007Battery battery, I007Screen screen, I007HeadSet headSet) {
         this.factoryId = factoryId;
         this.app = app;
         this.net = net;
         this.battery = battery;
         this.screen = screen;
+        this.headSet = headSet;
     }
 
     /**
@@ -78,6 +81,7 @@ public class I007Result implements Parcelable {
         net = in.readParcelable(I007Net.class.getClassLoader());
         battery = in.readParcelable(I007Battery.class.getClassLoader());
         screen = in.readParcelable(I007Screen.class.getClassLoader());
+        headSet = in.readParcelable(I007HeadSet.class.getClassLoader());
     }
 
     /**
@@ -90,6 +94,7 @@ public class I007Result implements Parcelable {
         dest.writeParcelable(net, flags);
         dest.writeParcelable(battery, flags);
         dest.writeParcelable(screen, flags);
+        dest.writeParcelable(headSet, flags);
     }
 
     /**
@@ -111,6 +116,7 @@ public class I007Result implements Parcelable {
                 ", net=" + net +
                 ", battery=" + battery +
                 ", screen=" + screen +
+                ", headSet=" + headSet +
                 '}';
     }
 
@@ -160,6 +166,15 @@ public class I007Result implements Parcelable {
     }
 
     /**
+     * 获取耳机
+     *
+     * @return 耳机
+     */
+    public I007HeadSet getHeadSet() {
+        return headSet;
+    }
+
+    /**
      * Builder
      */
     public static class Builder {
@@ -168,6 +183,7 @@ public class I007Result implements Parcelable {
         private I007Net net;
         private I007Battery battery;
         private I007Screen screen;
+        private I007HeadSet headSet;
 
         /**
          * 设置场景因子
@@ -225,12 +241,23 @@ public class I007Result implements Parcelable {
         }
 
         /**
+         * 设置耳机
+         *
+         * @param headSet 耳机
+         * @return Builder
+         */
+        public Builder setHeadSet(I007HeadSet headSet) {
+            this.headSet = headSet;
+            return this;
+        }
+
+        /**
          * build
          *
          * @return I007Result
          */
         public I007Result build() {
-            return new I007Result(factoryId, app, net, battery, screen);
+            return new I007Result(factoryId, app, net, battery, screen, headSet);
         }
     }
 

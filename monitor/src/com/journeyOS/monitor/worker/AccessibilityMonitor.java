@@ -37,15 +37,15 @@ import com.journeyOS.monitor.accessibility.ActivityListener;
  *
  * @author solo
  */
-public final class AccessibilityBaseMonitor extends BaseMonitor implements ActivityListener {
-    private static final String TAG = AccessibilityBaseMonitor.class.getSimpleName();
-    private static volatile AccessibilityBaseMonitor sInstance = null;
+public final class AccessibilityMonitor extends BaseMonitor implements ActivityListener {
+    private static final String TAG = AccessibilityMonitor.class.getSimpleName();
+    private static volatile AccessibilityMonitor sInstance = null;
     private AccessibilityInfoObserver mAccessibilityInfoObserver;
     private Context mContext = null;
     private String mPackageName = null;
     private String mActivity = null;
 
-    private AccessibilityBaseMonitor() {
+    private AccessibilityMonitor() {
         SmartLog.d(TAG, "init");
         mContext = I007Core.getCore().getContext();
     }
@@ -55,11 +55,11 @@ public final class AccessibilityBaseMonitor extends BaseMonitor implements Activ
      *
      * @return AccessibilityMonitor实例
      */
-    public static AccessibilityBaseMonitor getInstance() {
+    public static AccessibilityMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (AccessibilityBaseMonitor.class) {
+            synchronized (AccessibilityMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new AccessibilityBaseMonitor();
+                    sInstance = new AccessibilityMonitor();
                 }
             }
         }

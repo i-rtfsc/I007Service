@@ -36,12 +36,12 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class NetworkBaseMonitor extends BaseMonitor {
-    private static final String TAG = NetworkBaseMonitor.class.getSimpleName();
-    private static volatile NetworkBaseMonitor sInstance = null;
+public final class NetworkMonitor extends BaseMonitor {
+    private static final String TAG = NetworkMonitor.class.getSimpleName();
+    private static volatile NetworkMonitor sInstance = null;
     private NetworkBroadcastReceiver mReceiver;
 
-    private NetworkBaseMonitor() {
+    private NetworkMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -50,11 +50,11 @@ public final class NetworkBaseMonitor extends BaseMonitor {
      *
      * @return NetworkMonitor
      */
-    public static NetworkBaseMonitor getInstance() {
+    public static NetworkMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (NetworkBaseMonitor.class) {
+            synchronized (NetworkMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new NetworkBaseMonitor();
+                    sInstance = new NetworkMonitor();
                 }
             }
         }

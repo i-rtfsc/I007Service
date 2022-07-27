@@ -40,6 +40,9 @@ public class I007SystemServer extends I007BaseService {
     private static final String TAG = I007SystemServer.class.getSimpleName();
     private IBinder mIBinder;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -47,17 +50,26 @@ public class I007SystemServer extends I007BaseService {
         mIBinder = new ServiceFetcher();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return mIBinder;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         SmartLog.d(TAG, "intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");

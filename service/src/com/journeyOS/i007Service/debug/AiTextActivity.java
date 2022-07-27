@@ -50,6 +50,9 @@ public class AiTextActivity extends AppCompatActivity {
     private EditText inputEditText;
     private ScrollView scrollView;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,12 +76,18 @@ public class AiTextActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStart() {
         super.onStart();
         mAm.loadModel(mModel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -123,4 +132,5 @@ public class AiTextActivity extends AppCompatActivity {
                     scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
                 });
     }
+
 }

@@ -33,13 +33,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class LcdBaseMonitor extends BaseMonitor {
-    private static final String TAG = LcdBaseMonitor.class.getSimpleName();
-    private static volatile LcdBaseMonitor sInstance = null;
+public final class LcdMonitor extends BaseMonitor {
+    private static final String TAG = LcdMonitor.class.getSimpleName();
+    private static volatile LcdMonitor sInstance = null;
     private Context mContext;
     private ScreenBroadcastReceiver mReceiver;
 
-    private LcdBaseMonitor() {
+    private LcdMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -48,11 +48,11 @@ public final class LcdBaseMonitor extends BaseMonitor {
      *
      * @return LCDMonitor实例
      */
-    public static LcdBaseMonitor getInstance() {
+    public static LcdMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (LcdBaseMonitor.class) {
+            synchronized (LcdMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new LcdBaseMonitor();
+                    sInstance = new LcdMonitor();
                 }
             }
         }

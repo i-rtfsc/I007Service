@@ -34,13 +34,13 @@ import com.journeyOS.monitor.MonitorManager;
  *
  * @author solo
  */
-public final class BatteryBaseMonitor extends BaseMonitor {
-    private static final String TAG = BatteryBaseMonitor.class.getSimpleName();
-    private static volatile BatteryBaseMonitor sInstance = null;
+public final class BatteryMonitor extends BaseMonitor {
+    private static final String TAG = BatteryMonitor.class.getSimpleName();
+    private static volatile BatteryMonitor sInstance = null;
     private Context mContext;
     private BatteryBroadcastReceiver mReceiver;
 
-    private BatteryBaseMonitor() {
+    private BatteryMonitor() {
         SmartLog.d(TAG, "init");
     }
 
@@ -49,11 +49,11 @@ public final class BatteryBaseMonitor extends BaseMonitor {
      *
      * @return BatteryMonitor
      */
-    public static BatteryBaseMonitor getInstance() {
+    public static BatteryMonitor getInstance() {
         if (sInstance == null) {
-            synchronized (BatteryBaseMonitor.class) {
+            synchronized (BatteryMonitor.class) {
                 if (sInstance == null) {
-                    sInstance = new BatteryBaseMonitor();
+                    sInstance = new BatteryMonitor();
                 }
             }
         }

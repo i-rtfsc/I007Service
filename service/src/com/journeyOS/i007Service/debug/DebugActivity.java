@@ -128,12 +128,12 @@ public class DebugActivity extends AppCompatActivity {
 
     private void update() {
         I007Manager i007m = I007Manager.getInstance();
-        i007m.updateFactor(I007Manager.SCENE_FACTOR_BATTERY);
+        i007m.updateFactor(I007Manager.SCENE_FACTOR_HEADSET);
     }
 
     private void remove() {
         I007Manager i007m = I007Manager.getInstance();
-        i007m.removeFactor(I007Manager.SCENE_FACTOR_BATTERY);
+        i007m.removeFactor(I007Manager.SCENE_FACTOR_HEADSET);
     }
 
     private void startActivityImpl(Class<?> cls) {
